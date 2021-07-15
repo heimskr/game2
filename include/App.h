@@ -11,6 +11,7 @@ class App {
 		Glib::RefPtr<Gtk::Builder> builder;
 		Glib::Dispatcher dispatcher;
 		Game game;
+		std::unique_ptr<Gtk::Dialog> dialog;
 
 		App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app), builder(Gtk::Builder::create()) {}
 
