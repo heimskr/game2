@@ -3,3 +3,4 @@ game
 .dep
 .vscode
 *~
+save*.txt

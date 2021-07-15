@@ -1,5 +1,5 @@
 CPP      := g++
-CPPFLAGS := -Wall -Wextra -g -O0 $(shell pkg-config --cflags gtk+-3.0) $(shell pkg-config --cflags gtkmm-3.0) -rdynamic
+CPPFLAGS := -Wall -Wextra -g -O0 -std=c++20 -Iinclude $(shell pkg-config --cflags gtk+-3.0) $(shell pkg-config --cflags gtkmm-3.0) -rdynamic
 LDFLAGS  := $(shell pkg-config --libs gtk+-3.0) $(shell pkg-config --libs gtkmm-3.0) -rdynamic
 OUTPUT   := game
 SOURCES  := $(shell find src -name \*.cpp)
