@@ -25,13 +25,20 @@
                     <property name="can-focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem">
+                        <property name="label">gtk-new</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem">
                         <property name="label">gtk-open</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
-                        <property name="always-show-image">True</property>
-                        <signal name="activate" handler="Foobar" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -41,7 +48,6 @@
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
-                        <property name="always-show-image">True</property>
                       </object>
                     </child>
                     <child>
@@ -51,13 +57,12 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem">
+                      <object class="GtkImageMenuItem" id="quit">
                         <property name="label">gtk-quit</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
-                        <property name="always-show-image">True</property>
                       </object>
                     </child>
                   </object>
