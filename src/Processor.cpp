@@ -3,7 +3,6 @@
 #include "Util.h"
 #include "processor/Processors.h"
 #include "Game.h"
-#include "main.h"
 
 Processor::Processor(Game &game_): game(&game_) {}
 

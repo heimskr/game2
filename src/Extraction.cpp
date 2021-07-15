@@ -3,7 +3,6 @@
 #include "Game.h"
 #include "Region.h"
 #include "Util.h"
-#include "main.h"
 
 std::string Extraction::toString() const {
 	return area->parent->name + ":" + area->name + ":" + resourceName + ":" + std::to_string(amount) + ":"
