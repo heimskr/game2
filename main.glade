@@ -87,6 +87,7 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="margin-top">5</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox">
@@ -145,6 +146,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
+                        <property name="padding">5</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
