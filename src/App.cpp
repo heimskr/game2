@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "App.h"
+#include "UI.h"
 
 std::unique_ptr<App> app;
 
@@ -10,7 +11,9 @@ void App::quit() {
 
 void App::updateRegion() {
 	auto lock = lockGame();
-	auto &region = game->currentRegion();
+
+	auto region_ptr = game->currentRegionPointer();
+	auto &region = *region_ptr;
 
 	Gtk::Label *label = getWidget<Gtk::Label>("region_name");
 	label->set_text(region.name);
@@ -21,11 +24,37 @@ void App::updateRegion() {
 
 	label = getWidget<Gtk::Label>("size_label");
 	label->set_text("Size: " + std::to_string(region.size));
+
+	if (region_ptr != lastRegion) {
+		lastRegion = region_ptr;
+		auto *box = getWidget<Gtk::Box>("regions_box");
+		removeChildren(*box);
+		areaWidgets.clear();
+		for (auto &[name, area]: region.areas) {
+			Gtk::Expander *expander = new Gtk::Expander(area->name);
+			areaWidgets.emplace_back(expander);
+			box->add(*expander);
+
+			Gtk::Box *ebox = new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL, 5);
+			areaWidgets.emplace_back(ebox);
+			expander->add(*ebox);
+
+			for (const auto &[rname, amount]: area->resources) {
+				Gtk::Box *rbox = new Gtk::Box(Gtk::Orientation::ORIENTATION_HORIZONTAL, 5);
+				areaWidgets.emplace_back(rbox);
+				ebox->add(*rbox);
+
+				Gtk::Button *button = new Gtk::Button("Extract");
+				areaWidgets.emplace_back(button);
+				rbox->add(*button);
+			}
+		}
+		box->show_all_children();
+	}
 }
 
 void App::updateTravel() {
 	auto lock = lockGame();
-	// constexpr int ROWS = 5, COLUMNS = 5;
 
 	auto *grid = getWidget<Gtk::Grid>("travel_grid");
 

@@ -1,11 +1,24 @@
 #pragma once
 
-#include "imgui.h"
-#include <unordered_map>
+#include "App.h"
 
-namespace UI {
-	extern std::unordered_map<const char *, ImFont *> fontMap;
+template <typename T>
+T * getWidget(const char *name) {
+	T *widget;
+	app->builder->get_widget<T>(name, widget);
+	return widget;
+}
 
-	ImFont * addFont(void *ttf_data, int ttf_size, float size_pixels, const ImFontConfig *config, const ImWchar *glyph_ranges);
-	ImFont * getFont(const char *);
+template <typename T>
+void setMargins(T &widget, int margin) {
+	widget.set_margin_top(margin);
+	widget.set_margin_right(margin);
+	widget.set_margin_bottom(margin);
+	widget.set_margin_left(margin);
+}
+
+template <typename T>
+void removeChildren(T &widget) {
+	for (Gtk::Widget *child: widget.get_children())
+		widget.remove(*child);
 }

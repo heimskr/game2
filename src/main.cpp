@@ -6,6 +6,7 @@
 #include "NameGen.h"
 #include "Game.h"
 #include "App.h"
+#include "UI.h"
 #include "ui/EntryDialog.h"
 
 void connect(const char *name, std::function<void()> fn) {
