@@ -2,6 +2,7 @@
 
 #include "App.h"
 #include "UI.h"
+#include "ui/InventoryDialog.h"
 
 std::unique_ptr<App> app;
 
@@ -42,12 +43,35 @@ void App::updateRegion() {
 			areaWidgets.emplace_back(ebox);
 			expander->add(*ebox);
 
+			Gtk::Box *bbox = new Gtk::Box();
+			bbox->set_spacing(5);
+			areaWidgets.emplace_back(bbox);
+			ebox->add(*bbox);
+
+			Gtk::Button *button = new Gtk::Button("Move");
+			areaWidgets.emplace_back(button);
+			button->set_tooltip_text("Move a resource from your inventory into the area");
+			bbox->add(*button);
+			button->signal_clicked().connect([&] {
+				auto *dialog = new InventoryDialog("Resource Selector", *app->mainWindow);
+				app->dialog.reset(dialog);
+				app->dialog->show();
+			});
+
+			button = new Gtk::Button("Resize");
+			areaWidgets.emplace_back(button);
+			bbox->add(*button);
+			button->set_halign(Gtk::Align::ALIGN_START);
+			button->signal_clicked().connect([&] {
+
+			});
+
 			for (const auto &[rname, amount]: area->resources) {
 				Gtk::Box *rbox = new Gtk::Box(Gtk::Orientation::ORIENTATION_HORIZONTAL, 5);
 				areaWidgets.emplace_back(rbox);
 				ebox->add(*rbox);
 
-				Gtk::Button *button = new Gtk::Button("Extract");
+				button = new Gtk::Button("Extract");
 				areaWidgets.emplace_back(button);
 				rbox->add(*button);
 
@@ -56,15 +80,6 @@ void App::updateRegion() {
 				label->set_halign(Gtk::Align::ALIGN_START);
 				label->set_hexpand(true);
 				rbox->add(*label);
-
-				button = new Gtk::Button("Move");
-				areaWidgets.emplace_back(button);
-				button->set_tooltip_text("Move a resource from your inventory into the area");
-				rbox->add(*button);
-
-				button = new Gtk::Button("Resize");
-				areaWidgets.emplace_back(button);
-				rbox->add(*button);
 			}
 		}
 		box->show_all_children();

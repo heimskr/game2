@@ -11,6 +11,7 @@ class App {
 	public:
 		Glib::RefPtr<Gtk::Application> gtkApp;
 		Glib::RefPtr<Gtk::Builder> builder;
+		Gtk::Window *mainWindow;
 		Glib::Dispatcher dispatcher;
 		std::shared_ptr<Game> game;
 		std::unique_ptr<Gtk::Dialog> dialog;
@@ -30,6 +31,7 @@ class App {
 		void updateTravel();
 
 		std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }
+		int run() { return gtkApp->run(*mainWindow); }
 
 	private:
 		static constexpr int ROWS = 5, COLUMNS = 5;
