@@ -14,16 +14,18 @@ void App::updateRegion() {
 
 	auto region_ptr = game->currentRegionPointer();
 	auto &region = *region_ptr;
-
-	Gtk::Label *label = getWidget<Gtk::Label>("region_name");
-	label->set_text(region.name);
-
-	label = getWidget<Gtk::Label>("position_label");
 	auto &pos = region.position;
-	label->set_text("Position: (" + std::to_string(pos.first) + ", " + std::to_string(pos.second) + ")");
 
-	label = getWidget<Gtk::Label>("size_label");
-	label->set_text("Size: " + std::to_string(region.size));
+	{
+		Gtk::Label *label = getWidget<Gtk::Label>("region_name");
+		label->set_text(region.name);
+
+		label = getWidget<Gtk::Label>("position_label");
+		label->set_text("Position: (" + std::to_string(pos.first) + ", " + std::to_string(pos.second) + ")");
+
+		label = getWidget<Gtk::Label>("size_label");
+		label->set_text("Size: " + std::to_string(region.size));
+	}
 
 	if (region_ptr != lastRegion) {
 		lastRegion = region_ptr;
@@ -34,6 +36,7 @@ void App::updateRegion() {
 			Gtk::Expander *expander = new Gtk::Expander(area->name);
 			areaWidgets.emplace_back(expander);
 			box->add(*expander);
+			expander->set_margin_bottom(10);
 
 			Gtk::Box *ebox = new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL, 5);
 			areaWidgets.emplace_back(ebox);
@@ -45,6 +48,21 @@ void App::updateRegion() {
 				ebox->add(*rbox);
 
 				Gtk::Button *button = new Gtk::Button("Extract");
+				areaWidgets.emplace_back(button);
+				rbox->add(*button);
+
+				Gtk::Label *label = new Gtk::Label(rname + " x " + std::to_string(amount));
+				areaWidgets.emplace_back(label);
+				label->set_halign(Gtk::Align::ALIGN_START);
+				label->set_hexpand(true);
+				rbox->add(*label);
+
+				button = new Gtk::Button("Move");
+				areaWidgets.emplace_back(button);
+				button->set_tooltip_text("Move a resource from your inventory into the area");
+				rbox->add(*button);
+
+				button = new Gtk::Button("Resize");
 				areaWidgets.emplace_back(button);
 				rbox->add(*button);
 			}
