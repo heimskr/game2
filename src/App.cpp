@@ -11,13 +11,15 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	// regionTab = std::make_unique<RegionTab>(*this);
 
 	mainWindow = std::make_unique<Gtk::ApplicationWindow>();
+	builder = Gtk::Builder::create();
+	builder->add_from_file("main.ui");
 
-	header = std::make_unique<Gtk::HeaderBar>();
-	header->set_title_widget(*(titleLabel = std::make_unique<Gtk::Label>("Trade Game")));
+	header = builder->get_widget<Gtk::HeaderBar>("headerbar");
 	mainWindow->set_titlebar(*header);
 
 	notebook = std::make_unique<Gtk::Notebook>();
 	mainWindow->set_child(*notebook);
+	mainWindow->set_default_size(1000, 600);
 	notebook->hide();
 }
 

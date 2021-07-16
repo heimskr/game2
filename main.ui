@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="hamburger_menu">
+    
+  </menu>
+  <object class="GtkHeaderBar" id="headerbar">
+    <property name="title-widget">
+      <object class="GtkLabel">
+        <property name="label" translatable="yes">Trade Game</property>
+        <property name="single-line-mode">True</property>
+        <property name="ellipsize">end</property>
+        <property name="width-chars">5</property>
+        <style>
+          <class name="title" />
+        </style>
+      </object>
+    </property>
+    <child type="end">
+      <object class="GtkMenuButton" id="gear_menu_button">
+        <property name="valign">center</property>
+        <property name="focus-on-click">0</property>
+        <property name="menu-model">hamburger_menu</property>
+        <property name="icon-name">open-menu-symbolic</property>
+        <accessibility>
+          <property name="label" translatable="yes">Primary menu</property>
+        </accessibility>
+      </object>
+    </child>
+  </object>
+</interface>

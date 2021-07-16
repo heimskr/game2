@@ -14,8 +14,7 @@ class App {
 		Glib::RefPtr<Gtk::Builder> builder;
 
 		std::unique_ptr<Gtk::ApplicationWindow> mainWindow;
-		std::unique_ptr<Gtk::HeaderBar> header;
-		std::unique_ptr<Gtk::Label> titleLabel;
+		Gtk::HeaderBar *header;
 		std::unique_ptr<Gtk::Notebook> notebook;
 
 		Glib::Dispatcher updateDialogDispatcher;
