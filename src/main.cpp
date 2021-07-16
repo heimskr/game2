@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 
+#include "NameGen.h"
 #include "Game.h"
 #include "App.h"
 #include "ui/EntryDialog.h"
@@ -32,8 +33,10 @@ int main(int argc, char *argv[]) {
 		// auto *dialog = new Gtk::MessageDialog(*window, "What", false, Gtk::MessageType::MESSAGE_QUESTION, Gtk::ButtonsType::BUTTONS_OK_CANCEL, true);
 		auto *dialog = new EntryDialog("What", *window, "Hey there.");
 		app->dialog.reset(dialog);
+		dialog->set_text(NameGen::makeRandomLanguage().makeName());
 		dialog->signal_submit().connect([&](Glib::ustring str) {
-			std::cout << "String[" << str << "]\n";
+			app->game.updateName(app->game.currentRegion(), str);
+			app->updateRegion();
 		});
 		// dialog->set_secondary_text("Hello there.");
 		// dialog->signal_response().connect([&](int response) {

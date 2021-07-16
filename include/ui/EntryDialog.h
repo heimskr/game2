@@ -32,6 +32,8 @@ class EntryDialog: public Gtk::Dialog {
 			show_all_children();
 		}
 
+		EntryDialog & set_text(const Glib::ustring &str) { entry.set_text(str); return *this; }
+
 		virtual ~EntryDialog() {}
 
 	protected:
