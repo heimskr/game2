@@ -165,6 +165,12 @@ Region & Game::currentRegion() {
 	return *regions.at(position);
 }
 
+std::shared_ptr<Region> Game::currentRegionPointer() {
+	if (regions.count(position) == 0)
+		return nullptr;
+	return regions.at(position);
+}
+
 bool Game::erase(Region &region) {
 	// If this region is the only region, don't erase it.
 	if (regions.size() == 1 && regions.begin()->second->position == region.position)

@@ -180,6 +180,8 @@
               <object class="GtkGrid" id="travel_grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="row-homogeneous">True</property>
+                <property name="column-homogeneous">True</property>
                 <child>
                   <placeholder/>
                 </child>

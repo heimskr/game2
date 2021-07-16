@@ -21,7 +21,7 @@ class Game {
 		RecipeManager recipes = {*this};
 
 		std::map<std::string, double> inventory, craftingInventory;
-		std::map<Region::Position, std::unique_ptr<Region>> regions;
+		std::map<Region::Position, std::shared_ptr<Region>> regions;
 		std::list<Extraction> extractions;
 		std::list<std::shared_ptr<Processor>> processors;
 		std::unordered_map<std::string, std::shared_ptr<Processor>> processorsByID;
@@ -46,6 +46,7 @@ class Game {
 		bool updateName(Region &, const std::string &);
 
 		Region & currentRegion();
+		std::shared_ptr<Region> currentRegionPointer();
 		bool erase(Region &);
 		void eraseExtractions(const Area &);
 

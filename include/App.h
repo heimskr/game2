@@ -19,6 +19,10 @@ class App {
 		void quit();
 		void updateRegion();
 		void updateTravel();
+
+	private:
+		static constexpr int ROWS = 5, COLUMNS = 5;
+		Region::Position getPosition(Region &, int row, int column);
 };
 
 extern std::unique_ptr<App> app;

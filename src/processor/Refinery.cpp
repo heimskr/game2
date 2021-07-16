@@ -1,5 +1,4 @@
 #include "Game.h"
-#include "main.h"
 #include "Resource.h"
 #include "processor/Refinery.h"
 
