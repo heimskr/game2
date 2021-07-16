@@ -85,23 +85,16 @@ class InventoryDialog: public UpdatingDialog {
 		sigc::signal<void(Glib::ustring)> signal_submit_;
 
 		void insertRow(const std::string &name, double amount, unsigned row) {
-			// std::cout << "Inserting " << name << "\n";
-			// auto *label = new Gtk::Label(name);
 			auto *label = &nameLabels.emplace(name, Gtk::Label(name)).first->second;
-			// widgets.emplace_back(label);
 			label->set_hexpand(true);
 			label->set_halign(Gtk::Align::ALIGN_START);
 			grid.attach(*label, 0, row);
 
-			// label = new Gtk::Label(std::to_string(amount));
 			label = &amountLabels.emplace(name, Gtk::Label(std::to_string(amount))).first->second;
-			// widgets.emplace_back(label);
 			label->set_halign(Gtk::Align::ALIGN_START);
 			grid.attach(*label, 1, row);
 
-			// auto *button = new Gtk::Button("Select");
 			auto *button = &buttons.emplace(name, Gtk::Button("Select")).first->second;
-			// widgets.emplace_back(button);
 			button->signal_clicked().connect([this, name] { submit(name); });
 			grid.attach(*button, 2, row);
 		}

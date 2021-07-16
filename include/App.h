@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "Game.h"
+#include "ui/RegionTab.h"
 
 class App {
 	public:
@@ -17,19 +18,20 @@ class App {
 		std::unique_ptr<Gtk::Dialog> dialog;
 		std::recursive_mutex gameMutex, dialogMutex;
 		std::thread tickThread;
+		std::unique_ptr<RegionTab> regionTab;
 		bool alive = true;
 
-		std::vector<Gtk::Button> travelButtons;
 
-		std::shared_ptr<Region> lastRegion;
+		std::vector<Gtk::Button> travelButtons;
 		std::vector<std::unique_ptr<Gtk::Widget>> areaWidgets;
 
 		App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app), builder(Gtk::Builder::create()) {
+			builder->add_from_file("main.glade");
 			updateDialogDispatcher.connect(sigc::mem_fun(*this, &App::updateDialog));
+			regionTab = std::make_unique<RegionTab>(*this);
 		}
 
 		void quit();
-		void updateRegion();
 		void updateTravel();
 
 		std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }

@@ -10,6 +10,20 @@ T * getWidget(const char *name) {
 }
 
 template <typename T>
+T * getWidget(App *app, const char *name) {
+	T *widget;
+	app->builder->get_widget<T>(name, widget);
+	return widget;
+}
+
+template <typename T>
+T * getWidget(App &app, const char *name) {
+	T *widget;
+	app.builder->get_widget<T>(name, widget);
+	return widget;
+}
+
+template <typename T>
 void setMargins(T &widget, int margin) {
 	widget.set_margin_top(margin);
 	widget.set_margin_right(margin);
@@ -21,4 +35,10 @@ template <typename T>
 void removeChildren(T &widget) {
 	for (Gtk::Widget *child: widget.get_children())
 		widget.remove(*child);
+}
+
+template <typename T>
+void removeChildren(T *widget) {
+	for (Gtk::Widget *child: widget->get_children())
+		widget->remove(*child);
 }

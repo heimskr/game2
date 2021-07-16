@@ -18,13 +18,22 @@ void connect(const char *name, std::function<void()> fn) {
 
 int main(int argc, char *argv[]) {
 	app = std::make_unique<App>(Gtk::Application::create(argc, argv, "com.heimskr.game2"));
-	app->builder->add_from_file("main.glade");
 
 	app->mainWindow = getWidget<Gtk::Window>("mainwindow");
 	auto *notebook = getWidget<Gtk::Notebook>("notebook");
 
-	connect("new",  [&] { notebook->show(); app->game = Game::loadDefaults(); app->updateRegion(); app->updateTravel(); });
-	connect("load", [&] { notebook->show(); app->game = Game::load();         app->updateRegion(); app->updateTravel(); });
+	connect("new",  [&] {
+		notebook->show();
+		app->game = Game::loadDefaults();
+		app->regionTab->update();
+		app->updateTravel();
+	});
+	connect("load", [&] {
+		notebook->show();
+		app->game = Game::load();
+		app->regionTab->update();
+		app->updateTravel();
+	});
 	connect("save", [&] { app->game->save(); });
 	connect("quit", [&] { app->quit(); });
 
@@ -39,7 +48,7 @@ int main(int argc, char *argv[]) {
 		dialog->signal_submit().connect([&](Glib::ustring str) {
 			auto lock = app->lockGame();
 			app->game->updateName(app->game->currentRegion(), str);
-			app->updateRegion();
+			app->regionTab->update();
 			app->updateTravel();
 		});
 		app->dialog->show();
@@ -57,7 +66,7 @@ int main(int argc, char *argv[]) {
 				auto lock = app->lockGame();
 				if (response == Gtk::ResponseType::RESPONSE_OK) {
 					app->game->erase(app->game->currentRegion());
-					app->updateRegion();
+					app->regionTab->update();
 					app->updateTravel();
 				}
 				app->dialog->hide();
