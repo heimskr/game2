@@ -53,6 +53,7 @@ void App::updateRegion() {
 			button->set_tooltip_text("Move a resource from your inventory into the area");
 			bbox->add(*button);
 			button->signal_clicked().connect([&] {
+				auto dialock = app->lockDialog();
 				auto *dialog = new InventoryDialog("Resource Selector", *app->mainWindow);
 				app->dialog.reset(dialog);
 				app->dialog->show();

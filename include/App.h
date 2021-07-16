@@ -15,9 +15,11 @@ class App {
 		Glib::Dispatcher dispatcher;
 		std::shared_ptr<Game> game;
 		std::unique_ptr<Gtk::Dialog> dialog;
-		std::recursive_mutex gameMutex;
+		std::recursive_mutex gameMutex, dialogMutex;
 		std::thread tickThread;
 		bool alive = true;
+
+		sigc::signal<void()> signal_update_dialog() const { return signal_update_dialog_; }
 
 		std::vector<Gtk::Button> travelButtons;
 
@@ -31,10 +33,12 @@ class App {
 		void updateTravel();
 
 		std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }
+		std::unique_lock<std::recursive_mutex> lockDialog() { return std::unique_lock(dialogMutex); }
 		int run() { return gtkApp->run(*mainWindow); }
 
 	private:
 		static constexpr int ROWS = 5, COLUMNS = 5;
+		sigc::signal<void()> signal_update_dialog_;
 		Region::Position getPosition(Region &, int row, int column);
 };
 
