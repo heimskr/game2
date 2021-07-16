@@ -40,8 +40,6 @@ class EntryDialog: public Gtk::Dialog {
 
 		EntryDialog & set_text(const Glib::ustring &str) { entry.set_text(str); return *this; }
 
-		virtual ~EntryDialog() {}
-
 	protected:
 		sigc::signal<void(Glib::ustring)> signal_submit_;
 

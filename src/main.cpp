@@ -40,5 +40,31 @@ int main(int argc, char *argv[]) {
 		dialog->show();
 	});
 
+	getWidget<Gtk::Button>("delete_region")->signal_clicked().connect([&] {
+		if (1 < app->game.regions.size()) {
+			auto *dialog = new Gtk::MessageDialog(*window, "Are you sure you want to delete " +
+				app->game.currentRegion().name + "?", false, Gtk::MessageType::MESSAGE_QUESTION,
+				Gtk::ButtonsType::BUTTONS_OK_CANCEL, true);
+			app->dialog.reset(dialog);
+			dialog->signal_response().connect([&](int response) {
+				switch (response) {
+					case Gtk::ResponseType::RESPONSE_OK:
+						app->game.erase(app->game.currentRegion());
+						app->updateRegion();
+						break;
+					default:
+						break;
+				}
+				dialog->hide();
+			});
+			dialog->show();
+		} else {
+			app->dialog.reset(new Gtk::MessageDialog(*window, "Can't delete region: no other region exists", false,
+				Gtk::MessageType::MESSAGE_ERROR, Gtk::ButtonsType::BUTTONS_CLOSE, true));
+			app->dialog->signal_response().connect([&](int) { app->dialog->hide(); });
+			app->dialog->show();
+		}
+	});
+
 	return app->gtkApp->run(*window);
 }
