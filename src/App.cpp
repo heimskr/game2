@@ -10,8 +10,17 @@ void App::quit() {
 
 void App::updateRegion() {
 	auto lock = lockGame();
-	auto *label = getWidget<Gtk::Label>("region_name");
-	label->set_text(game->currentRegion().name);
+	auto &region = game->currentRegion();
+
+	Gtk::Label *label = getWidget<Gtk::Label>("region_name");
+	label->set_text(region.name);
+
+	label = getWidget<Gtk::Label>("position_label");
+	auto &pos = region.position;
+	label->set_text("Position: (" + std::to_string(pos.first) + ", " + std::to_string(pos.second) + ")");
+
+	label = getWidget<Gtk::Label>("size_label");
+	label->set_text("Size: " + std::to_string(region.size));
 }
 
 void App::updateTravel() {
@@ -37,6 +46,7 @@ void App::updateTravel() {
 						game->position = pos;
 					else
 						*game += Region::generate(*game, pos);
+					updateRegion();
 					updateTravel();
 				});
 				grid->attach(button, column, row);
