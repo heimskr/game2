@@ -32,6 +32,9 @@ int main(int argc, char *argv[]) {
 		// auto *dialog = new Gtk::MessageDialog(*window, "What", false, Gtk::MessageType::MESSAGE_QUESTION, Gtk::ButtonsType::BUTTONS_OK_CANCEL, true);
 		auto *dialog = new EntryDialog("What", *window, "Hey there.");
 		app->dialog.reset(dialog);
+		dialog->signal_submit().connect([&](Glib::ustring str) {
+			std::cout << "String[" << str << "]\n";
+		});
 		// dialog->set_secondary_text("Hello there.");
 		// dialog->signal_response().connect([&](int response) {
 		// 	app->dialog->hide();
