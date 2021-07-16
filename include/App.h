@@ -12,7 +12,12 @@ class App {
 	public:
 		Glib::RefPtr<Gtk::Application> gtkApp;
 		Glib::RefPtr<Gtk::Builder> builder;
-		std::unique_ptr<Gtk::Window> mainWindow;
+
+		std::unique_ptr<Gtk::ApplicationWindow> mainWindow;
+		std::unique_ptr<Gtk::HeaderBar> header;
+		std::unique_ptr<Gtk::Label> titleLabel;
+		std::unique_ptr<Gtk::Notebook> notebook;
+
 		Glib::Dispatcher updateDialogDispatcher;
 		std::shared_ptr<Game> game;
 		std::unique_ptr<Gtk::Dialog> dialog;
@@ -25,11 +30,7 @@ class App {
 		std::vector<Gtk::Button> travelButtons;
 		std::vector<std::unique_ptr<Gtk::Widget>> areaWidgets;
 
-		App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app), builder(Gtk::Builder::create()) {
-			builder->add_from_file("main.glade");
-			updateDialogDispatcher.connect(sigc::mem_fun(*this, &App::updateDialog));
-			regionTab = std::make_unique<RegionTab>(*this);
-		}
+		App(Glib::RefPtr<Gtk::Application>);
 
 		void quit();
 		void updateTravel();
@@ -37,7 +38,10 @@ class App {
 		std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }
 		std::unique_lock<std::recursive_mutex> lockDialog() { return std::unique_lock(dialogMutex); }
 		int run(int argc, char **argv) {
-			gtkApp->add_window(*mainWindow);
+			gtkApp->signal_activate().connect([this] {
+				gtkApp->add_window(*mainWindow);
+				mainWindow->show();
+			});
 			return gtkApp->run(argc, argv);
 		}
 

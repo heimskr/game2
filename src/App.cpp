@@ -6,6 +6,21 @@
 
 std::unique_ptr<App> app;
 
+App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
+	updateDialogDispatcher.connect(sigc::mem_fun(*this, &App::updateDialog));
+	// regionTab = std::make_unique<RegionTab>(*this);
+
+	mainWindow = std::make_unique<Gtk::ApplicationWindow>();
+
+	header = std::make_unique<Gtk::HeaderBar>();
+	header->set_title_widget(*(titleLabel = std::make_unique<Gtk::Label>("Trade Game")));
+	mainWindow->set_titlebar(*header);
+
+	notebook = std::make_unique<Gtk::Notebook>();
+	mainWindow->set_child(*notebook);
+	notebook->hide();
+}
+
 void App::quit() {
 	gtkApp->quit();
 }
