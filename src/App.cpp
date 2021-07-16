@@ -134,7 +134,12 @@ void App::updateTravel() {
 	grid->show_all_children();
 }
 
-
+void App::updateDialog() {
+	auto dialock = lockDialog();
+	if (dialog)
+		if (auto *udialog = dynamic_cast<UpdatingDialog *>(dialog.get()))
+			udialog->updateData();
+}
 
 Region::Position App::getPosition(Region &region, int row, int column) {
 	return {region.position.first + column - COLUMNS / 2, region.position.second + row - ROWS / 2};

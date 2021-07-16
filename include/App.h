@@ -12,21 +12,21 @@ class App {
 		Glib::RefPtr<Gtk::Application> gtkApp;
 		Glib::RefPtr<Gtk::Builder> builder;
 		Gtk::Window *mainWindow;
-		Glib::Dispatcher dispatcher;
+		Glib::Dispatcher updateDialogDispatcher;
 		std::shared_ptr<Game> game;
 		std::unique_ptr<Gtk::Dialog> dialog;
 		std::recursive_mutex gameMutex, dialogMutex;
 		std::thread tickThread;
 		bool alive = true;
 
-		sigc::signal<void()> signal_update_dialog() const { return signal_update_dialog_; }
-
 		std::vector<Gtk::Button> travelButtons;
 
 		std::shared_ptr<Region> lastRegion;
 		std::vector<std::unique_ptr<Gtk::Widget>> areaWidgets;
 
-		App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app), builder(Gtk::Builder::create()) {}
+		App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app), builder(Gtk::Builder::create()) {
+			updateDialogDispatcher.connect(sigc::mem_fun(*this, &App::updateDialog));
+		}
 
 		void quit();
 		void updateRegion();
@@ -38,8 +38,9 @@ class App {
 
 	private:
 		static constexpr int ROWS = 5, COLUMNS = 5;
-		sigc::signal<void()> signal_update_dialog_;
+		void updateDialog();
 		Region::Position getPosition(Region &, int row, int column);
+
 };
 
 extern std::unique_ptr<App> app;

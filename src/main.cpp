@@ -71,25 +71,15 @@ int main(int argc, char *argv[]) {
 		}
 	});
 
-	app->signal_update_dialog().connect([&] {
-		auto dialock = app->lockDialog();
-		if (app->dialog)
-			if (auto *dialog = dynamic_cast<UpdatingDialog *>(app->dialog.get()))
-				dialog->updateData();
-	});
-
 	app->tickThread = std::thread([&] {
 		while (app->alive) {
-			bool ticked = false;
 			{
 				auto lock = app->lockGame();
 				if (app->game) {
 					app->game->tick(0.01);
-					ticked = true;
+					app->updateDialogDispatcher.emit();
 				}
 			}
-			if (ticked)
-				app->signal_update_dialog().emit();
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 	});
