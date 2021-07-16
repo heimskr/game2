@@ -9,11 +9,13 @@ void App::quit() {
 }
 
 void App::updateRegion() {
+	auto lock = lockGame();
 	auto *label = getWidget<Gtk::Label>("region_name");
 	label->set_text(game->currentRegion().name);
 }
 
 void App::updateTravel() {
+	auto lock = lockGame();
 	// constexpr int ROWS = 5, COLUMNS = 5;
 
 	auto *grid = getWidget<Gtk::Grid>("travel_grid");

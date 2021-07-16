@@ -2,7 +2,7 @@ CPP      := g++
 CPPFLAGS := -Wall -Wextra -g -O0 -std=c++20 -Iinclude -rdynamic
 INCLUDES := $(shell pkg-config --cflags gtk+-3.0) $(shell pkg-config --cflags gtkmm-3.0)
 LIBS     := $(shell pkg-config --libs   gtk+-3.0) $(shell pkg-config --libs   gtkmm-3.0)
-LDFLAGS  := -rdynamic
+LDFLAGS  := -rdynamic -pthread
 OUTPUT   := game
 SOURCES  := $(shell find src -name \*.cpp)
 OBJECTS  := $(SOURCES:.cpp=.o)

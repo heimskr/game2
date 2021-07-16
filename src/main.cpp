@@ -64,5 +64,19 @@ int main(int argc, char *argv[]) {
 		}
 	});
 
-	return app->gtkApp->run(*window);
+	app->tickThread = std::thread([&] {
+		while (app->alive) {
+			{
+				auto lock = app->lockGame();
+				if (app->game)
+					app->game->tick(0.01);
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
+	});
+
+	const int status = app->gtkApp->run(*window);
+	app->alive = false;
+	app->tickThread.join();
+	return status;
 }
