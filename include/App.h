@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtkmm-3.0/gtkmm.h>
+#include <gtkmm-4.0/gtkmm.h>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -12,7 +12,7 @@ class App {
 	public:
 		Glib::RefPtr<Gtk::Application> gtkApp;
 		Glib::RefPtr<Gtk::Builder> builder;
-		Gtk::Window *mainWindow;
+		std::unique_ptr<Gtk::Window> mainWindow;
 		Glib::Dispatcher updateDialogDispatcher;
 		std::shared_ptr<Game> game;
 		std::unique_ptr<Gtk::Dialog> dialog;
@@ -36,7 +36,10 @@ class App {
 
 		std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }
 		std::unique_lock<std::recursive_mutex> lockDialog() { return std::unique_lock(dialogMutex); }
-		int run() { return gtkApp->run(*mainWindow); }
+		int run(int argc, char **argv) {
+			gtkApp->add_window(*mainWindow);
+			return gtkApp->run(argc, argv);
+		}
 
 	private:
 		static constexpr int ROWS = 5, COLUMNS = 5;

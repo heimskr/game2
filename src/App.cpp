@@ -13,16 +13,16 @@ void App::quit() {
 void App::updateTravel() {
 	auto lock = lockGame();
 
-	auto *grid = getWidget<Gtk::Grid>("travel_grid");
+	auto *grid = builder->get_widget<Gtk::Grid>("travel_grid");
 
 	if (travelButtons.empty())
 		for (int row = 0; row < ROWS; ++row)
 			for (int column = 0; column < COLUMNS; ++column) {
 				Gtk::Button &button = travelButtons.emplace_back("");
 				button.set_can_focus(false);
-				button.set_halign(Gtk::Align::ALIGN_FILL);
-				button.set_valign(Gtk::Align::ALIGN_FILL);
-				button.property_expand().set_value(true);
+				button.set_halign(Gtk::Align::FILL);
+				button.set_valign(Gtk::Align::FILL);
+				button.set_expand(true);
 				button.signal_clicked().connect([this, row, column] {
 					std::shared_ptr<Region> region = game->currentRegionPointer();
 					if (!region)
@@ -54,7 +54,6 @@ void App::updateTravel() {
 	setMargins(*grid, 5);
 	grid->set_row_spacing(5);
 	grid->set_column_spacing(5);
-	grid->show_all_children();
 }
 
 void App::updateDialog() {

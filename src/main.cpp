@@ -1,5 +1,5 @@
 #include <functional>
-#include <gtkmm-3.0/gtkmm.h>
+#include <gtkmm-4.0/gtkmm.h>
 #include <iostream>
 #include <memory>
 
@@ -11,35 +11,35 @@
 #include "ui/UpdatingDialog.h"
 
 void connect(const char *name, std::function<void()> fn) {
-	Gtk::MenuItem *item;
-	app->builder->get_widget(name, item);
-	item->signal_activate().connect(fn);
+	// Gtk::MenuItem *item;
+	// app->builder->get_widget(name, item);
+	// item->signal_activate().connect(fn);
 }
 
 int main(int argc, char *argv[]) {
-	app = std::make_unique<App>(Gtk::Application::create(argc, argv, "com.heimskr.game2"));
+	app = std::make_unique<App>(Gtk::Application::create("com.heimskr.game2"));
 
-	app->mainWindow = getWidget<Gtk::Window>("mainwindow");
-	auto *notebook = getWidget<Gtk::Notebook>("notebook");
+	app->mainWindow = std::make_unique<Gtk::Window>();
+	auto *notebook = app->builder->get_widget<Gtk::Notebook>("notebook");
 
-	connect("new",  [&] {
-		notebook->show();
-		app->game = Game::loadDefaults();
-		app->regionTab->update();
-		app->updateTravel();
-	});
-	connect("load", [&] {
-		notebook->show();
-		app->game = Game::load();
-		app->regionTab->update();
-		app->updateTravel();
-	});
-	connect("save", [&] { app->game->save(); });
-	connect("quit", [&] { app->quit(); });
+	// connect("new",  [&] {
+	// 	notebook->show();
+	// 	app->game = Game::loadDefaults();
+	// 	app->regionTab->update();
+	// 	app->updateTravel();
+	// });
+	// connect("load", [&] {
+	// 	notebook->show();
+	// 	app->game = Game::load();
+	// 	app->regionTab->update();
+	// 	app->updateTravel();
+	// });
+	// connect("save", [&] { app->game->save(); });
+	// connect("quit", [&] { app->quit(); });
 
 	notebook->hide();
 
-	auto *rename = getWidget<Gtk::Button>("rename_region");
+	auto *rename = app->builder->get_widget<Gtk::Button>("rename_region");
 	rename->signal_clicked().connect([&] {
 		auto dialock = app->lockDialog();
 		auto *dialog = new EntryDialog("Rename Region", *app->mainWindow, "New region name:");
@@ -54,17 +54,17 @@ int main(int argc, char *argv[]) {
 		app->dialog->show();
 	});
 
-	getWidget<Gtk::Button>("delete_region")->signal_clicked().connect([&] {
+	app->builder->get_widget<Gtk::Button>("delete_region")->signal_clicked().connect([&] {
 		auto lock = app->lockGame();
 		auto dialock = app->lockDialog();
 		if (1 < app->game->regions.size()) {
 			auto *dialog = new Gtk::MessageDialog(*app->mainWindow, "Are you sure you want to delete " +
-				app->game->currentRegion().name + "?", false, Gtk::MessageType::MESSAGE_QUESTION,
-				Gtk::ButtonsType::BUTTONS_OK_CANCEL, true);
+				app->game->currentRegion().name + "?", false, Gtk::MessageType::QUESTION,
+				Gtk::ButtonsType::OK_CANCEL, true);
 			app->dialog.reset(dialog);
 			app->dialog->signal_response().connect([&](int response) {
 				auto lock = app->lockGame();
-				if (response == Gtk::ResponseType::RESPONSE_OK) {
+				if (response == Gtk::ResponseType::OK) {
 					app->game->erase(app->game->currentRegion());
 					app->regionTab->update();
 					app->updateTravel();
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 			app->dialog->show();
 		} else {
 			app->dialog.reset(new Gtk::MessageDialog(*app->mainWindow, "Can't delete region: no other region exists", false,
-				Gtk::MessageType::MESSAGE_ERROR, Gtk::ButtonsType::BUTTONS_CLOSE, true));
+				Gtk::MessageType::ERROR, Gtk::ButtonsType::CLOSE, true));
 			app->dialog->signal_response().connect([&](int) { app->dialog->hide(); });
 			app->dialog->show();
 		}
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 		}
 	});
 
-	const int status = app->run();
+	const int status = app->run(argc, argv);
 	app->alive = false;
 	app->tickThread.join();
 	return status;

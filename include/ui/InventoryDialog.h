@@ -20,24 +20,29 @@ class InventoryDialog: public UpdatingDialog {
 		UpdatingDialog(title, parent, modal) {
 			set_default_size(500, -1);
 
-			get_content_area()->add(scrolled);
-			scrolled.add(grid);
+			get_content_area()->append(scrolled);
+			scrolled.set_child(grid);
 			scrolled.set_size_request(-1, 500);
-			get_content_area()->add(cancel);
+			get_content_area()->append(cancel);
 			grid.set_row_spacing(5);
 			grid.set_column_spacing(5);
-			grid.set_margin_left(5);
-			grid.set_margin_right(5);
+			grid.set_margin_start(5);
+			grid.set_margin_end(5);
 
 			updateContent();
 
-			cancel.signal_clicked().connect(sigc::mem_fun(this, &InventoryDialog::hide));
-			show_all_children();
+			cancel.signal_clicked().connect(sigc::mem_fun(*this, &InventoryDialog::hide));
 		}
 
 		void updateContent() {
-			for (Gtk::Widget *child: grid.get_children())
-				grid.remove(*child);
+			for (auto &[name, label]: nameLabels)
+				grid.remove(label);
+
+			for (auto &[name, label]: amountLabels)
+				grid.remove(label);
+
+			for (std::unique_ptr<Gtk::Widget> &widget: widgets)
+				grid.remove(*widget);
 
 			nameLabels.clear();
 			amountLabels.clear();
@@ -87,11 +92,11 @@ class InventoryDialog: public UpdatingDialog {
 		void insertRow(const std::string &name, double amount, unsigned row) {
 			auto *label = &nameLabels.emplace(name, Gtk::Label(name)).first->second;
 			label->set_hexpand(true);
-			label->set_halign(Gtk::Align::ALIGN_START);
+			label->set_halign(Gtk::Align::START);
 			grid.attach(*label, 0, row);
 
 			label = &amountLabels.emplace(name, Gtk::Label(std::to_string(amount))).first->second;
-			label->set_halign(Gtk::Align::ALIGN_START);
+			label->set_halign(Gtk::Align::START);
 			grid.attach(*label, 1, row);
 
 			auto *button = &buttons.emplace(name, Gtk::Button("Select")).first->second;

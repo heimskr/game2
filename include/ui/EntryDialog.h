@@ -1,12 +1,12 @@
 #pragma once
 
-#include <gtkmm-3.0/gtkmm.h>
+#include <gtkmm-4.0/gtkmm.h>
 
 class EntryDialog: public Gtk::Dialog {
 	public:
 		Gtk::Label label;
 		Gtk::Entry entry;
-		Gtk::ButtonBox buttons;
+		Gtk::Box buttons;
 		Gtk::Button okay, cancel;
 
 		sigc::signal<void(Glib::ustring)> signal_submit() const { return signal_submit_; }
@@ -17,25 +17,32 @@ class EntryDialog: public Gtk::Dialog {
 			get_default_size(width, height);
 			set_default_size(300, height);
 			label.set_text(text);
-			label.set_halign(Gtk::Align::ALIGN_START);
+			label.set_halign(Gtk::Align::START);
 			okay.set_label("OK");
 			cancel.set_label("Cancel");
-			buttons.add(cancel);
-			buttons.add(okay);
+			buttons.append(cancel);
+			buttons.append(okay);
 			buttons.set_spacing(5);
 			auto &area = *get_content_area();
-			area.add(label);
-			area.add(entry);
-			area.add(buttons);
+			area.append(label);
+			area.append(entry);
+			area.append(buttons);
 			area.set_spacing(5);
 			area.set_margin_top(5);
-			area.set_margin_left(5);
-			area.set_margin_right(5);
-			buttons.set_halign(Gtk::Align::ALIGN_END);
-			entry.signal_activate().connect(sigc::mem_fun(this, &EntryDialog::submit));
-			okay.signal_clicked().connect(sigc::mem_fun(this, &EntryDialog::submit));
-			cancel.signal_clicked().connect(sigc::mem_fun(this, &EntryDialog::hide));
-			show_all_children();
+			area.set_margin_start(5);
+			area.set_margin_end(5);
+			buttons.set_halign(Gtk::Align::END);
+			entry.signal_insert_text().connect([&](const Glib::ustring &str, int *ptr) {
+				std::cout << "text inserted: [" << str << "] at ";
+				if (ptr)
+					std::cout << *ptr;
+				else
+					std::cout << "null";
+				std::cout << '\n';
+			});
+			// entry.signal_activate().connect(sigc::mem_fun(this, &EntryDialog::submit));
+			okay.signal_clicked().connect(sigc::mem_fun(*this, &EntryDialog::submit));
+			cancel.signal_clicked().connect(sigc::mem_fun(*this, &EntryDialog::hide));
 		}
 
 		EntryDialog & set_text(const Glib::ustring &str) { entry.set_text(str); return *this; }
