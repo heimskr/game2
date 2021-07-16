@@ -8,6 +8,7 @@
 #include "App.h"
 #include "UI.h"
 #include "ui/EntryDialog.h"
+#include "ui/UpdatingDialog.h"
 
 void connect(const char *name, std::function<void()> fn) {
 	Gtk::MenuItem *item;
@@ -69,8 +70,12 @@ int main(int argc, char *argv[]) {
 		while (app->alive) {
 			{
 				auto lock = app->lockGame();
-				if (app->game)
+				if (app->game) {
 					app->game->tick(0.01);
+					if (app->dialog)
+						if (auto *dialog = dynamic_cast<UpdatingDialog *>(app->dialog.get()))
+							dialog->updateData();
+				}
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
