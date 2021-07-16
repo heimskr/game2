@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
 	auto *window = getWidget<Gtk::Window>("mainwindow");
 	auto *notebook = getWidget<Gtk::Notebook>("notebook");
 
-	connect("new",  [&] { notebook->show(); app->game.loadDefaults(); app->updateRegion(); });
-	connect("load", [&] { notebook->show(); app->game.load();         app->updateRegion(); });
+	connect("new",  [&] { notebook->show(); app->game.loadDefaults(); app->updateRegion(); app->updateTravel(); });
+	connect("load", [&] { notebook->show(); app->game.load();         app->updateRegion(); app->updateTravel(); });
 	connect("save", [&] { app->game.save(); });
 	connect("quit", [&] { app->quit(); });
 
