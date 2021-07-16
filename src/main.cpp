@@ -47,16 +47,13 @@ int main(int argc, char *argv[]) {
 				app->game->currentRegion().name + "?", false, Gtk::MessageType::MESSAGE_QUESTION,
 				Gtk::ButtonsType::BUTTONS_OK_CANCEL, true);
 			app->dialog.reset(dialog);
-			dialog->signal_response().connect([&](int response) {
-				switch (response) {
-					case Gtk::ResponseType::RESPONSE_OK:
-						app->game->erase(app->game->currentRegion());
-						app->updateRegion();
-						break;
-					default:
-						break;
+			app->dialog->signal_response().connect([&](int response) {
+				if (response == Gtk::ResponseType::RESPONSE_OK) {
+					app->game->erase(app->game->currentRegion());
+					app->updateRegion();
+					app->updateTravel();
 				}
-				dialog->hide();
+				app->dialog->hide();
 			});
 			dialog->show();
 		} else {
