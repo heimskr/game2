@@ -9,6 +9,7 @@ class InventoryDialog: public UpdatingDialog {
 	public:
 		std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 		std::unordered_map<std::string, Gtk::Label> nameLabels, amountLabels;
+		std::unordered_map<std::string, Gtk::Button> buttons;
 		Gtk::ScrolledWindow scrolled;
 		Gtk::Grid grid;
 		Gtk::Button cancel {"Cancel"};
@@ -59,14 +60,18 @@ class InventoryDialog: public UpdatingDialog {
 					removed.push_back(name);
 
 			for (const std::string &name: removed) {
+				std::cout << "Removing " << name << "\n";
+				grid.remove(nameLabels.at(name));
+				grid.remove(amountLabels.at(name));
+				grid.remove(buttons.at(name));
 				nameLabels.erase(name);
 				amountLabels.erase(name);
+				buttons.erase(name);
 			}
 
 			unsigned row = 0;
 			for (const auto &[name, amount]: app->game->inventory) {
 				if (nameLabels.count(name) == 0) {
-					// Insert row
 					grid.insert_row(row);
 					insertRow(name, amount, row);
 				} else {
@@ -80,6 +85,7 @@ class InventoryDialog: public UpdatingDialog {
 		sigc::signal<void(Glib::ustring)> signal_submit_;
 
 		void insertRow(const std::string &name, double amount, unsigned row) {
+			std::cout << "Inserting " << name << "\n";
 			// auto *label = new Gtk::Label(name);
 			auto *label = &nameLabels.emplace(name, Gtk::Label(name)).first->second;
 			// widgets.emplace_back(label);
@@ -93,8 +99,9 @@ class InventoryDialog: public UpdatingDialog {
 			label->set_halign(Gtk::Align::ALIGN_START);
 			grid.attach(*label, 1, row);
 
-			auto *button = new Gtk::Button("Select");
-			widgets.emplace_back(button);
+			// auto *button = new Gtk::Button("Select");
+			auto *button = &buttons.emplace(name, Gtk::Button("Select")).first->second;
+			// widgets.emplace_back(button);
 			button->signal_clicked().connect([this, name] { submit(name); });
 			grid.attach(*button, 2, row);
 		}
