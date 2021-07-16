@@ -23,6 +23,7 @@ class EntryDialog: public Gtk::Dialog {
 			area.add(buttons);
 			area.set_spacing(5);
 			area.set_margin_top(5);
+			buttons.set_halign(Gtk::Align::ALIGN_END);
 			
 			show_all_children();
 		}
