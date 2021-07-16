@@ -10,7 +10,7 @@ void App::quit() {
 
 void App::updateRegion() {
 	auto *label = getWidget<Gtk::Label>("region_name");
-	label->set_text(game.currentRegion().name);
+	label->set_text(game->currentRegion().name);
 }
 
 void App::updateTravel() {
@@ -27,32 +27,31 @@ void App::updateTravel() {
 				button.set_valign(Gtk::Align::ALIGN_FILL);
 				button.property_expand().set_value(true);
 				button.signal_clicked().connect([this, row, column] {
-					std::shared_ptr<Region> region = game.currentRegionPointer();
+					std::shared_ptr<Region> region = game->currentRegionPointer();
 					if (!region)
 						return;
 					const Region::Position pos = getPosition(*region, row, column);
-					if (game.regions.count(pos) != 0)
-						game.position = pos;
+					if (game->regions.count(pos) != 0)
+						game->position = pos;
 					else
-						game += Region::generate(game, pos);
+						*game += Region::generate(*game, pos);
 					updateTravel();
 				});
 				grid->attach(button, column, row);
 			}
 
-	auto region = game.currentRegionPointer();
+	auto region = game->currentRegionPointer();
 
-	for (int row = 0; row < ROWS; ++row) {
+	for (int row = 0; row < ROWS; ++row)
 		for (int column = 0; column < COLUMNS; ++column) {
 			Gtk::Button &button = travelButtons.at(row * COLUMNS + column);
 			button.set_label("");
 			if (region) {
 				const Region::Position pos = getPosition(*region, row, column);
-				if (game.regions.count(pos) != 0)
-					button.set_label(game.regions.at(pos)->name);
+				if (game->regions.count(pos) != 0)
+					button.set_label(game->regions.at(pos)->name);
 			}
 		}
-	}
 
 	setMargins(*grid, 5);
 	grid->set_row_spacing(5);

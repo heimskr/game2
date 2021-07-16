@@ -21,9 +21,9 @@ int main(int argc, char *argv[]) {
 	auto *window = getWidget<Gtk::Window>("mainwindow");
 	auto *notebook = getWidget<Gtk::Notebook>("notebook");
 
-	connect("new",  [&] { notebook->show(); app->game.loadDefaults(); app->updateRegion(); app->updateTravel(); });
-	connect("load", [&] { notebook->show(); app->game.load();         app->updateRegion(); app->updateTravel(); });
-	connect("save", [&] { app->game.save(); });
+	connect("new",  [&] { notebook->show(); app->game = Game::loadDefaults(); app->updateRegion(); app->updateTravel(); });
+	connect("load", [&] { notebook->show(); app->game = Game::load();         app->updateRegion(); app->updateTravel(); });
+	connect("save", [&] { app->game->save(); });
 	connect("quit", [&] { app->quit(); });
 
 	notebook->hide();
@@ -34,22 +34,23 @@ int main(int argc, char *argv[]) {
 		app->dialog.reset(dialog);
 		dialog->set_text(NameGen::makeRandomLanguage().makeName());
 		dialog->signal_submit().connect([&](Glib::ustring str) {
-			app->game.updateName(app->game.currentRegion(), str);
+			app->game->updateName(app->game->currentRegion(), str);
 			app->updateRegion();
+			app->updateTravel();
 		});
 		dialog->show();
 	});
 
 	getWidget<Gtk::Button>("delete_region")->signal_clicked().connect([&] {
-		if (1 < app->game.regions.size()) {
+		if (1 < app->game->regions.size()) {
 			auto *dialog = new Gtk::MessageDialog(*window, "Are you sure you want to delete " +
-				app->game.currentRegion().name + "?", false, Gtk::MessageType::MESSAGE_QUESTION,
+				app->game->currentRegion().name + "?", false, Gtk::MessageType::MESSAGE_QUESTION,
 				Gtk::ButtonsType::BUTTONS_OK_CANCEL, true);
 			app->dialog.reset(dialog);
 			dialog->signal_response().connect([&](int response) {
 				switch (response) {
 					case Gtk::ResponseType::RESPONSE_OK:
-						app->game.erase(app->game.currentRegion());
+						app->game->erase(app->game->currentRegion());
 						app->updateRegion();
 						break;
 					default:

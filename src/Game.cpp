@@ -240,9 +240,10 @@ void Game::tick(double delta) {
 		link.tick();
 }
 
-void Game::loadDefaults() {
-	regions.clear();
-	Region &home = *regions.insert({Region::Position(0, 0), std::make_unique<Region>(*this, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
+std::shared_ptr<Game> Game::loadDefaults() {
+	std::shared_ptr<Game> game = std::make_shared<Game>();
+	game->regions.clear();
+	Region &home = *game->regions.insert({Region::Position(0, 0), std::make_unique<Region>(*game, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
 	home.greed = 0.25;
 	home.money = 10'000;
 	auto forest = std::make_shared<ForestArea>(&home, 32);
@@ -260,8 +261,9 @@ void Game::loadDefaults() {
 	home += mountain;
 	home += lake;
 	home += farmland;
-	processors.push_back(std::make_shared<Furnace>(*this));
+	game->processors.push_back(std::make_shared<Furnace>(*game));
 	Logger::info("Loaded default data.");
+	return game;
 }
 
 void Game::extract(Area &area, const std::string &name, double amount) {

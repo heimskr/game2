@@ -52,7 +52,7 @@ class Game {
 
 		void tick(double delta);
 
-		void loadDefaults();
+		static std::shared_ptr<Game> loadDefaults();
 
 		void extract(Area &, const std::string &name, double amount);
 		void extract(Area &, const std::string &name, double amount, double rate);

@@ -10,7 +10,7 @@ class App {
 		Glib::RefPtr<Gtk::Application> gtkApp;
 		Glib::RefPtr<Gtk::Builder> builder;
 		Glib::Dispatcher dispatcher;
-		Game game;
+		std::shared_ptr<Game> game;
 		std::unique_ptr<Gtk::Dialog> dialog;
 		std::vector<Gtk::Button> travelButtons;
 
