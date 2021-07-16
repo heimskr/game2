@@ -30,28 +30,13 @@ int main(int argc, char *argv[]) {
 
 	auto *rename = getWidget<Gtk::Button>("rename_region");
 	rename->signal_clicked().connect([&] {
-		// auto *dialog = new Gtk::MessageDialog(*window, "What", false, Gtk::MessageType::MESSAGE_QUESTION, Gtk::ButtonsType::BUTTONS_OK_CANCEL, true);
-		auto *dialog = new EntryDialog("What", *window, "Hey there.");
+		auto *dialog = new EntryDialog("Rename Region", *window, "New region name:");
 		app->dialog.reset(dialog);
 		dialog->set_text(NameGen::makeRandomLanguage().makeName());
 		dialog->signal_submit().connect([&](Glib::ustring str) {
 			app->game.updateName(app->game.currentRegion(), str);
 			app->updateRegion();
 		});
-		// dialog->set_secondary_text("Hello there.");
-		// dialog->signal_response().connect([&](int response) {
-		// 	app->dialog->hide();
-		// 	switch (response) {
-		// 		case Gtk::ResponseType::RESPONSE_OK:
-		// 			std::cout << "ok\n";
-		// 			break;
-		// 		case Gtk::ResponseType::RESPONSE_CANCEL:
-		// 			std::cout << "cancel\n";
-		// 			break;
-		// 		default:
-		// 			std::cout << "response[" << response << "]\n";
-		// 	}
-		// });
 		dialog->show();
 	});
 
