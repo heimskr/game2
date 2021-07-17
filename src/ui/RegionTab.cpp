@@ -153,7 +153,7 @@ void RegionTab::update() {
 					});
 					if (!last_rbox) {
 						map.emplace(resource_name, rbox);
-						ebox.prepend(*rbox);
+						rbox->insert_after(ebox, *ebox.get_first_child());
 					} else
 						rbox->insert_after(ebox, *last_rbox);
 					last_rbox = rbox.get();
