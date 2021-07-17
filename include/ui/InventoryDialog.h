@@ -20,6 +20,7 @@ class InventoryDialog: public UpdatingDialog {
 		UpdatingDialog(title, parent, modal) {
 			set_default_size(500, -1);
 
+			get_content_area()->set_orientation(Gtk::Orientation::VERTICAL);
 			get_content_area()->append(scrolled);
 			scrolled.set_child(grid);
 			scrolled.set_size_request(-1, 500);

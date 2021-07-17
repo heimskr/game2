@@ -8,17 +8,16 @@ std::unique_ptr<App> app;
 
 App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	updateDialogDispatcher.connect(sigc::mem_fun(*this, &App::updateDialog));
-	// regionTab = std::make_unique<RegionTab>(*this);
 
 	mainWindow = std::make_unique<Gtk::ApplicationWindow>();
 	builder = Gtk::Builder::create();
 	builder->add_from_file("main.ui");
-	auto display = Gdk::Display::get_default();
+
 	cssProvider = Gtk::CssProvider::create();
 	cssProvider->load_from_path("style.css");
-	Gtk::StyleContext::add_provider_for_display(display, cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	Gtk::StyleContext::add_provider_for_display(Gdk::Display::get_default(), cssProvider,
+		GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	
-
 	header = builder->get_widget<Gtk::HeaderBar>("headerbar");
 	mainWindow->set_titlebar(*header);
 
@@ -48,11 +47,11 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 		app->game->save();
 	}));
 
+	// mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
+
 	regionTab = std::make_unique<RegionTab>(*this);
 
 	notebook->prepend_page(regionTab->box, "Region");
-
-	// mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
 }
 
 void App::quit() {

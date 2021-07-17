@@ -18,11 +18,16 @@ class RegionTab {
 		Gtk::Box box {Gtk::Orientation::VERTICAL};
 		Gtk::Label nameLabel, positionLabel, sizeLabel;
 		std::shared_ptr<Region> lastRegion;
-		std::vector<std::unique_ptr<Gtk::Widget>> widgets;
+		std::vector<std::shared_ptr<Gtk::Widget>> widgets;
 
-		std::unordered_map<std::string, Gtk::Box *> expanderBoxes; // area => box
-		std::unordered_map<std::string, std::unordered_map<std::string, Gtk::Box *>> boxMaps; // area => resource => box
-		std::unordered_map<std::string, std::unordered_set<std::string>> resourceSets; // area => resources
+		std::vector<Gtk::Expander> expanders;
+
+		// area name => box
+		std::unordered_map<std::string, std::shared_ptr<Gtk::Box>> expanderBoxes;
+		// area name => resource name => box
+		std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Gtk::Box>>> boxMaps;
+		// area name => resource set
+		std::unordered_map<std::string, std::unordered_set<std::string>> resourceSets;
 
 		RegionTab() = delete;
 		RegionTab(RegionTab &&) = delete;
