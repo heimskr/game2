@@ -15,6 +15,7 @@ class EntryDialog: public Gtk::Dialog {
 
 		EntryDialog(const Glib::ustring &title, Gtk::Window &parent, const Glib::ustring &text, bool modal = true):
 		Dialog(title, parent, modal) {
+			std::cout << "what\n";
 			int width, height;
 			get_default_size(width, height);
 			set_default_size(300, height);
@@ -26,9 +27,6 @@ class EntryDialog: public Gtk::Dialog {
 			buttons.append(okay);
 			buttons.set_spacing(5);
 			auto &area = *get_content_area();
-			area.append(label);
-			area.append(entry);
-			area.append(buttons);
 			area.set_orientation(Gtk::Orientation::VERTICAL);
 			area.set_spacing(5);
 			area.set_margin_top(5);
@@ -37,18 +35,23 @@ class EntryDialog: public Gtk::Dialog {
 			area.set_margin_bottom(5);
 			buttons.set_halign(Gtk::Align::END);
 			entry.set_activates_default(true);
-			// entry.signal_insert_text().connect([&](const Glib::ustring &str, int *ptr) {
-			// 	std::cout << "text inserted: [" << str << "] at ";
-			// 	if (ptr)
-			// 		std::cout << *ptr;
-			// 	else
-			// 		std::cout << "null";
-			// 	std::cout << '\n';
-			// });
+			entry.set_input_purpose(Gtk::InputPurpose::NUMBER);
+			entry.signal_insert_text().connect([&](const Glib::ustring &str, int *ptr) {
+				std::cout << "text inserted: [" << str << "] at ";
+				if (ptr)
+					std::cout << *ptr;
+				else
+					std::cout << "null";
+				std::cout << '\n';
+			});
 			// entry.signal_activate().connect(sigc::mem_fun(this, &EntryDialog::submit));
 			okay.signal_clicked().connect(sigc::mem_fun(*this, &EntryDialog::submit));
 			okay.set_receives_default(true);
 			cancel.signal_clicked().connect(sigc::mem_fun(*this, &EntryDialog::hide));
+			std::cout << "ok\n";
+			area.append(label);
+			area.append(entry);
+			area.append(buttons);
 		}
 
 		EntryDialog & set_text(const Glib::ustring &str) { entry.set_text(str); return *this; }
