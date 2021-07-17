@@ -66,7 +66,7 @@ void App::delay(std::function<void()> fn) {
 }
 
 void App::alert(const Glib::ustring &message, Gtk::MessageType type, bool modal, bool use_markup) {
-	dialog.reset(new Gtk::MessageDialog(message, use_markup, type, Gtk::ButtonsType::OK, modal));
+	dialog.reset(new Gtk::MessageDialog(*mainWindow, message, use_markup, type, Gtk::ButtonsType::OK, modal));
 	dialog->signal_response().connect([this](int) {
 		dialog->close();
 	});

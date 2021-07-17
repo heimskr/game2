@@ -50,7 +50,7 @@ class EntryDialog: public Gtk::Dialog {
 		sigc::signal<void(const Glib::ustring &)> signal_submit_;
 
 		void submit() {
-			signal_submit_.emit(entry.get_text());
 			hide();
+			signal_submit_.emit(entry.get_text());
 		}
 };
