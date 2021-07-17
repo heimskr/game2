@@ -30,6 +30,12 @@ install: $(OUTPUT)
 	mkdir -p ~/.cache/gnome-builder/install/game2/host/
 	cp $(OUTPUT) ~/.cache/gnome-builder/install/game2/host/
 
+count:
+	cloc . --exclude-dir=.vscode
+
+countbf:
+	cloc --by-file . --exclude-dir=.vscode
+
 DEPFILE  := .dep
 DEPTOKEN := "\# MAKEDEPENDS"
 
