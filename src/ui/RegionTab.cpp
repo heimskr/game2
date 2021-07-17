@@ -1,5 +1,6 @@
 #include "App.h"
 #include "UI.h"
+#include "ui/EntryDialog.h"
 #include "ui/InventoryDialog.h"
 #include "ui/NumericEntry.h"
 #include "ui/RegionTab.h"
@@ -86,10 +87,14 @@ void RegionTab::update() {
 				app.dialog.reset(dialog);
 				dialog->signal_submit().connect([this](const Glib::ustring &str) {
 					std::cout << "Selected " << str << "\n";
-					app.delay([this]() {
-						// auto *dialog = new InventoryDialog("What", *app.mainWindow);
-						// app.dialog.reset(dialog);
-						// app.dialog->show();
+					app.delay([this, str]() {
+						auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow,
+							"Amount of " + str + " to transfer:");
+						dialog->signal_submit().connect([](const Glib::ustring &amount_text) {
+							std::cout << "Amount: " << amount_text << "\n";
+						});
+						app.dialog.reset(dialog);
+						app.dialog->show();
 					});
 				});
 				app.dialog->show();
