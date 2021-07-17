@@ -21,7 +21,7 @@ class App {
 		Glib::Dispatcher updateDialogDispatcher;
 		std::shared_ptr<Game> game;
 		std::unique_ptr<Gtk::Dialog> dialog;
-		std::recursive_mutex gameMutex, dialogMutex;
+		std::recursive_mutex gameMutex;
 		std::thread tickThread;
 		std::unique_ptr<RegionTab> regionTab;
 		bool alive = true;
@@ -34,10 +34,13 @@ class App {
 
 		void quit();
 		void delay(std::function<void()>);
+		void alert(const Glib::ustring &message, Gtk::MessageType = Gtk::MessageType::INFO, bool modal = true,
+		           bool use_markup = false);
+		void error(const Glib::ustring &message, bool modal = true, bool use_markup = false);
 		void updateTravel();
 
 		std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }
-		std::unique_lock<std::recursive_mutex> lockDialog() { return std::unique_lock(dialogMutex); }
+
 		int run(int argc, char **argv) {
 			gtkApp->signal_activate().connect([this] {
 				gtkApp->add_window(*mainWindow);

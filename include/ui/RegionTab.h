@@ -44,4 +44,7 @@ class RegionTab {
 
 		void update();
 		void reset();
+
+	private:
+		bool insert(std::shared_ptr<Area>, const Glib::ustring &resource_name, double amount);
 };

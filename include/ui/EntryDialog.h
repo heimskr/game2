@@ -35,14 +35,6 @@ class EntryDialog: public Gtk::Dialog {
 			buttons.set_halign(Gtk::Align::END);
 			entry.set_activates_default(true);
 			entry.set_input_purpose(Gtk::InputPurpose::NUMBER);
-			entry.signal_insert_text().connect([](const Glib::ustring &str, int *ptr) {
-				std::cout << "text inserted: [" << str << "] at ";
-				if (ptr)
-					std::cout << *ptr;
-				else
-					std::cout << "null";
-				std::cout << std::endl;
-			});
 			entry.signal_activate().connect(sigc::mem_fun(*this, &EntryDialog::submit));
 			okay.signal_clicked().connect(sigc::mem_fun(*this, &EntryDialog::submit));
 			okay.set_receives_default(true);

@@ -63,7 +63,9 @@ void RegionTab::update() {
 
 		widgets.clear();
 
-		for (auto &[area_name, area]: region.areas) {
+		for (const auto &pair: region.areas) {
+			const std::string &area_name = pair.first;
+			std::shared_ptr<Area> area = pair.second;
 			Gtk::Expander &expander = expanders.emplace_back(area->name);
 			box.append(expander);
 			expander.set_margin_bottom(10);
@@ -81,18 +83,23 @@ void RegionTab::update() {
 			widgets.emplace_back(button);
 			button->set_tooltip_text("Move a resource from your inventory into the area");
 			bbox->append(*button);
-			button->signal_clicked().connect([this] {
-				auto dialock = app.lockDialog();
+			button->signal_clicked().connect([this, area] {
 				auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
 				app.dialog.reset(dialog);
-
-				dialog->signal_submit().connect([this](const Glib::ustring &str) {
-					std::cout << "Selected " << str << "\n";
-					app.delay([this, str]() {
+				dialog->signal_submit().connect([this, area](const Glib::ustring &resource_name) {
+					app.delay([this, resource_name, area]() {
 						auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow,
-							"Amount of " + str + " to transfer:");
-						dialog->signal_submit().connect([](const Glib::ustring &amount_text) {
-							std::cout << "Amount: " << amount_text << "\n";
+							"Amount of " + resource_name + " to transfer:");
+						dialog->signal_submit().connect([this, resource_name, area](const Glib::ustring &amount_text) {
+							double amount;
+							try {
+								amount = parseDouble(amount_text);
+							} catch (std::invalid_argument &) {
+								app.delay([this] { app.error("Invalid amount."); });
+								return;
+							}
+							if (insert(area, resource_name, amount))
+								update();
 						});
 						app.dialog.reset(dialog);
 						app.dialog->show();
@@ -157,5 +164,35 @@ void RegionTab::update() {
 				rbox->updateLabel(resource_name, amount);
 			}
 		}
+	}
+}
+
+bool RegionTab::insert(std::shared_ptr<Area> area, const Glib::ustring &resource_name, double amount) {
+	try {
+		if (amount <= 0) {
+			app.alert("Error: Invalid amount.");
+			return false;
+		}
+
+		if (app.game->inventory.count(resource_name) == 0) {
+			app.alert("Error: You don't have any of that resource.");
+			return false;
+		}
+
+		double &in_inventory = app.game->inventory.at(resource_name);
+		if (ltna(in_inventory, amount)) {
+			app.alert("Error: You don't have enough of that resource.");
+			return false;
+		}
+
+		if ((in_inventory -= amount) < Resource::MIN_AMOUNT)
+			app.game->inventory.erase(resource_name);
+
+		area->resources[resource_name] += amount;
+		return true;
+	} catch (const std::exception &err) {
+		fprintf(stderr, "??? %s\n", err.what());
+		app.error("??? " + std::string(err.what()));
+		return false;
 	}
 }

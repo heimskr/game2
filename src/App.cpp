@@ -65,6 +65,18 @@ void App::delay(std::function<void()> fn) {
 	});
 }
 
+void App::alert(const Glib::ustring &message, Gtk::MessageType type, bool modal, bool use_markup) {
+	dialog.reset(new Gtk::MessageDialog(message, use_markup, type, Gtk::ButtonsType::OK, modal));
+	dialog->signal_response().connect([this](int) {
+		dialog->close();
+	});
+	dialog->show();
+}
+
+void App::error(const Glib::ustring &message, bool modal, bool use_markup) {
+	alert(message, Gtk::MessageType::ERROR, modal, use_markup);
+}
+
 void App::updateTravel() {
 	return;
 	auto lock = lockGame();
@@ -113,7 +125,6 @@ void App::updateTravel() {
 }
 
 void App::updateDialog() {
-	auto dialock = lockDialog();
 	if (dialog)
 		if (auto *udialog = dynamic_cast<UpdatingDialog *>(dialog.get()))
 			udialog->updateData();
