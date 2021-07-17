@@ -18,6 +18,7 @@ class App {
 		std::unique_ptr<Gtk::ApplicationWindow> mainWindow;
 		Gtk::HeaderBar *header;
 		std::unique_ptr<Gtk::Notebook> notebook;
+		Gtk::Button *saveButton = nullptr;
 
 		Glib::Dispatcher updateDialogDispatcher;
 		std::shared_ptr<Game> game;

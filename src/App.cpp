@@ -15,6 +15,9 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	builder = Gtk::Builder::create();
 	builder->add_from_file("main.ui");
 
+	saveButton = builder->get_widget<Gtk::Button>("save_button");
+	saveButton->set_visible(false);
+
 	cssProvider = Gtk::CssProvider::create();
 	cssProvider->load_from_path("style.css");
 	Gtk::StyleContext::add_provider_for_display(Gdk::Display::get_default(), cssProvider,
@@ -32,6 +35,7 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 		notebook->show();
 		auto lock = lockGame();
 		app->game = Game::loadDefaults();
+		saveButton->set_visible(true);
 		onTravel();
 	}));
 
@@ -39,6 +43,7 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 		notebook->show();
 		auto lock = lockGame();
 		app->game = Game::load();
+		saveButton->set_visible(true);
 		onTravel();
 	}));
 

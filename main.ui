@@ -28,7 +28,7 @@
 			</object>
 		</child>
 		<child>
-			<object class="GtkButton">
+			<object class="GtkButton" id="save_button">
 				<property name="action-name">win.save</property>
 				<property name="icon-name">document-save-symbolic</property>
 				<property name="tooltip-text" translatable="yes">Save</property>
