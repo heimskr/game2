@@ -13,6 +13,11 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	mainWindow = std::make_unique<Gtk::ApplicationWindow>();
 	builder = Gtk::Builder::create();
 	builder->add_from_file("main.ui");
+	auto display = Gdk::Display::get_default();
+	cssProvider = Gtk::CssProvider::create();
+	cssProvider->load_from_path("style.css");
+	Gtk::StyleContext::add_provider_for_display(display, cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	
 
 	header = builder->get_widget<Gtk::HeaderBar>("headerbar");
 	mainWindow->set_titlebar(*header);
@@ -22,21 +27,32 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	mainWindow->set_default_size(1000, 600);
 	notebook->hide();
 
-	mainWindow->add_action("new", Gio::ActionMap::ActivateSlot([&] {
-		std::cout << "New.\n";
+	mainWindow->add_action("new", Gio::ActionMap::ActivateSlot([this] {
+		notebook->show();
+		auto lock = lockGame();
+		app->game = Game::loadDefaults();
+		app->regionTab->update();
+		app->updateTravel();
 	}));
 
-	mainWindow->add_action("open", Gio::ActionMap::ActivateSlot([&] {
-		std::cout << "Open.\n";
+	mainWindow->add_action("open", Gio::ActionMap::ActivateSlot([this] {
+		notebook->show();
+		auto lock = lockGame();
+		app->game = Game::load();
+		app->regionTab->update();
+		app->updateTravel();
 	}));
 
 	mainWindow->add_action("save", Gio::ActionMap::ActivateSlot([&] {
-		std::cout << "Save.\n";
+		auto lock = lockGame();
+		app->game->save();
 	}));
 
-	mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {
-		std::cout << "Save as.\n";
-	}));
+	regionTab = std::make_unique<RegionTab>(*this);
+
+	notebook->prepend_page(regionTab->box, "Region");
+
+	// mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
 }
 
 void App::quit() {
@@ -44,6 +60,7 @@ void App::quit() {
 }
 
 void App::updateTravel() {
+	return;
 	auto lock = lockGame();
 
 	auto *grid = builder->get_widget<Gtk::Grid>("travel_grid");

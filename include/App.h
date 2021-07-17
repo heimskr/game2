@@ -12,6 +12,7 @@ class App {
 	public:
 		Glib::RefPtr<Gtk::Application> gtkApp;
 		Glib::RefPtr<Gtk::Builder> builder;
+		Glib::RefPtr<Gtk::CssProvider> cssProvider;
 
 		std::unique_ptr<Gtk::ApplicationWindow> mainWindow;
 		Gtk::HeaderBar *header;

@@ -10,27 +10,9 @@
 #include "ui/EntryDialog.h"
 #include "ui/UpdatingDialog.h"
 
-void connect(const char *name, std::function<void()> fn) {
-	// Gtk::MenuItem *item;
-	// app->builder->get_widget(name, item);
-	// item->signal_activate().connect(fn);
-}
-
 int main(int argc, char *argv[]) {
 	app = std::make_unique<App>(Gtk::Application::create("com.heimskr.game2"));
 
-	// connect("new",  [&] {
-	// 	notebook->show();
-	// 	app->game = Game::loadDefaults();
-	// 	app->regionTab->update();
-	// 	app->updateTravel();
-	// });
-	// connect("load", [&] {
-	// 	notebook->show();
-	// 	app->game = Game::load();
-	// 	app->regionTab->update();
-	// 	app->updateTravel();
-	// });
 	// connect("save", [&] { app->game->save(); });
 	// connect("quit", [&] { app->quit(); });
 

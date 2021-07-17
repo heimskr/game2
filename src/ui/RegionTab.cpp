@@ -3,13 +3,22 @@
 #include "ui/InventoryDialog.h"
 #include "ui/RegionTab.h"
 
-RegionTab::RegionTab(App &app_): app(app_), box(*app.builder->get_widget<Gtk::Box>("regions_box")) {
-	reset();
-}
+RegionTab::RegionTab(App &app_): app(app_) {
 
-void RegionTab::reset() {
-	removeChildren(box);
-	update();
+	box.append(nameLabel);
+	box.append(positionLabel);
+	box.append(sizeLabel);
+	box.set_spacing(5);
+	setMargins(box, 5);
+
+	for (Gtk::Label *label: {&positionLabel, &sizeLabel})
+		label->set_halign(Gtk::Align::START);
+
+	nameLabel.get_style_context()->add_class("big");
+
+	app.gtkApp->signal_activate().connect([this] {
+		update();
+	});
 }
 
 void RegionTab::update() {
@@ -24,16 +33,12 @@ void RegionTab::update() {
 	auto &region = *region_ptr;
 	auto &pos = region.position;
 
-	{
-		Gtk::Label *label = app.builder->get_widget<Gtk::Label>("region_name");
-		label->set_text(region.name);
+	// Let's hope no one uses markup in their region name.
+	nameLabel.set_markup("<b>" + region.name + "</b>");
+	positionLabel.set_text("Position: (" + std::to_string(pos.first) + ", " + std::to_string(pos.second) + ")");
+	sizeLabel.set_text("Size: " + std::to_string(region.size));
 
-		label = app.builder->get_widget<Gtk::Label>("position_label");
-		label->set_text("Position: (" + std::to_string(pos.first) + ", " + std::to_string(pos.second) + ")");
-
-		label = app.builder->get_widget<Gtk::Label>("size_label");
-		label->set_text("Size: " + std::to_string(region.size));
-	}
+	return;
 
 	if (region_ptr != lastRegion) {
 		lastRegion = region_ptr;

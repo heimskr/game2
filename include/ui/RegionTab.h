@@ -15,7 +15,8 @@ class Region;
 class RegionTab {
 	public:
 		App &app;
-		Gtk::Box &box;
+		Gtk::Box box {Gtk::Orientation::VERTICAL};
+		Gtk::Label nameLabel, positionLabel, sizeLabel;
 		std::shared_ptr<Region> lastRegion;
 		std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 
