@@ -21,7 +21,7 @@ class App {
 		std::unique_ptr<Gtk::Notebook> notebook;
 		Gtk::Button *saveButton = nullptr;
 
-		Glib::Dispatcher updateDialogDispatcher;
+		Glib::Dispatcher updateDispatcher;
 		std::shared_ptr<Game> game;
 		std::unique_ptr<Gtk::Dialog> dialog;
 		std::recursive_mutex gameMutex;
@@ -49,7 +49,7 @@ class App {
 
 	private:
 		static constexpr int ROWS = 5, COLUMNS = 5;
-		void updateDialog();
+		void update();
 };
 
 extern std::unique_ptr<App> app;

@@ -9,7 +9,7 @@
 std::unique_ptr<App> app;
 
 App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
-	updateDialogDispatcher.connect(sigc::mem_fun(*this, &App::updateDialog));
+	updateDispatcher.connect(sigc::mem_fun(*this, &App::update));
 
 	mainWindow = std::make_unique<Gtk::ApplicationWindow>();
 	builder = Gtk::Builder::create();
@@ -101,8 +101,10 @@ void App::onTravel() {
 	travelTab->update();
 }
 
-void App::updateDialog() {
+void App::update() {
 	if (dialog)
 		if (auto *udialog = dynamic_cast<UpdatingDialog *>(dialog.get()))
 			udialog->updateData();
+	inventoryTab->update();
+	regionTab->update();
 }

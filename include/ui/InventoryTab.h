@@ -22,5 +22,8 @@ class InventoryTab {
 		void update();
 
 	private:
-		std::vector<std::unique_ptr<Gtk::Widget>> widgets;
+		// std::vector<std::unique_ptr<Gtk::Widget>> widgets;
+		std::map<std::string, Gtk::Button> discardButtons;
+		std::map<std::string, Gtk::Label> nameLabels, amountLabels;
+		void insertRow(const std::string &resource_name, double amount, int row);
 };

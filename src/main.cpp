@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 				auto lock = app->lockGame();
 				if (app->game) {
 					app->game->tick(0.01);
-					app->updateDialogDispatcher.emit();
+					app->updateDispatcher.emit();
 				}
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
