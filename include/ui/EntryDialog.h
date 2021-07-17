@@ -43,7 +43,7 @@ class EntryDialog: public Gtk::Dialog {
 					std::cout << "null";
 				std::cout << std::endl;
 			});
-			// entry.signal_activate().connect(sigc::mem_fun(this, &EntryDialog::submit));
+			entry.signal_activate().connect(sigc::mem_fun(*this, &EntryDialog::submit));
 			okay.signal_clicked().connect(sigc::mem_fun(*this, &EntryDialog::submit));
 			okay.set_receives_default(true);
 			cancel.signal_clicked().connect(sigc::mem_fun(*this, &EntryDialog::hide));
