@@ -20,8 +20,15 @@ $(OUTPUT): $(OBJECTS)
 test: $(OUTPUT)
 	./$(OUTPUT)
 
+run: $(OUTPUT)
+	./$(OUTPUT)
+
 clean:
 	rm -f *.o **/*.o $(OUTPUT)
+
+install: $(OUTPUT)
+	mkdir -p ~/.cache/gnome-builder/install/game2/host/
+	cp $(OUTPUT) ~/.cache/gnome-builder/install/game2/host/
 
 DEPFILE  := .dep
 DEPTOKEN := "\# MAKEDEPENDS"

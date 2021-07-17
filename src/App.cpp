@@ -21,6 +21,24 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	mainWindow->set_child(*notebook);
 	mainWindow->set_default_size(1000, 600);
 	notebook->hide();
+
+	mainWindow->add_action("new", Gio::ActionMap::ActivateSlot([&] {
+		std::cout << "New.\n";
+	}));
+
+	mainWindow->add_action("open", Gio::ActionMap::ActivateSlot([&] {
+		std::cout << "Open.\n";
+	}));
+
+	mainWindow->add_action("save", Gio::ActionMap::ActivateSlot([&] {
+		std::cout << "Save.\n";
+	}));
+
+	mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {
+		std::cout << "Save as.\n";
+	}));
+
+
 }
 
 void App::quit() {
