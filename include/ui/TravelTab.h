@@ -20,4 +20,9 @@ class TravelTab {
 
 		TravelTab & operator=(const TravelTab &) = delete;
 		TravelTab & operator=(TravelTab &&) = delete;
+
+		void update();
+
+	private:
+		Region::Position getPosition(Region &, int row, int column);
 };

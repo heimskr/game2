@@ -38,23 +38,15 @@ class App {
 		void alert(const Glib::ustring &message, Gtk::MessageType = Gtk::MessageType::INFO, bool modal = true,
 		           bool use_markup = false);
 		void error(const Glib::ustring &message, bool modal = true, bool use_markup = false);
-		void updateTravel();
 
 		std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }
 
-		int run(int argc, char **argv) {
-			gtkApp->signal_activate().connect([this] {
-				gtkApp->add_window(*mainWindow);
-				mainWindow->show();
-			});
-			return gtkApp->run(argc, argv);
-		}
+		int run(int argc, char **argv);
+		void onTravel();
 
 	private:
 		static constexpr int ROWS = 5, COLUMNS = 5;
 		void updateDialog();
-		Region::Position getPosition(Region &, int row, int column);
-
 };
 
 extern std::unique_ptr<App> app;
