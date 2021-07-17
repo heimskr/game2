@@ -2,18 +2,22 @@
 
 #include "ui/NumericEntry.h"
 
-void NumericEntry::insert_text_vfunc(const Glib::ustring &text, int &position) {
-	std::cout << "insert_text_vfunc(" << text << ")\n";
-	for (auto ch: text)
-		if (!Glib::Unicode::isdigit(ch))
+static void (*old_insert_text)(GtkEditable *editable, const char *text, int length, int *position) = nullptr;
+
+static void new_insert_text(GtkEditable *editable, const char *text, int length, int *position) {
+	Glib::ustring str(text, length);
+	for (auto ch: str)
+		if (!Glib::Unicode::isdigit(ch) && ch != '.')
 			return;
-	Gtk::Entry::on_insert_text(text, &position);
+	old_insert_text(editable, text, length, position);
 }
 
-void NumericEntry::on_insert_text(const Glib::ustring &text, int *position) {
-	std::cout << "on_insert_text(" << text << ")\n";
-	for (auto ch: text)
-		if (!Glib::Unicode::isdigit(ch))
-			return;
-	Gtk::Entry::on_insert_text(text, position);
+NumericEntry::NumericEntry() {
+	signal_map().connect([this] {
+		Gtk::Text *text = dynamic_cast<Gtk::Text *>(get_first_child());
+		GtkEditableInterface *interface = GTK_EDITABLE_GET_IFACE(GTK_EDITABLE(text->gobj()));
+		if (!old_insert_text)
+			old_insert_text = interface->do_insert_text;
+		interface->do_insert_text = new_insert_text;
+	});
 }

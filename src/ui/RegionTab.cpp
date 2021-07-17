@@ -85,6 +85,7 @@ void RegionTab::update() {
 				auto dialock = app.lockDialog();
 				auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
 				app.dialog.reset(dialog);
+
 				dialog->signal_submit().connect([this](const Glib::ustring &str) {
 					std::cout << "Selected " << str << "\n";
 					app.delay([this, str]() {
