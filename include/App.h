@@ -33,6 +33,7 @@ class App {
 		App(Glib::RefPtr<Gtk::Application>);
 
 		void quit();
+		void delay(std::function<void()>);
 		void updateTravel();
 
 		std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }

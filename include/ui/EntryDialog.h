@@ -2,10 +2,11 @@
 
 #include <gtkmm-4.0/gtkmm.h>
 
+template <typename E>
 class EntryDialog: public Gtk::Dialog {
 	public:
 		Gtk::Label label;
-		Gtk::Entry entry;
+		E entry;
 		Gtk::Box buttons;
 		Gtk::Button okay, cancel;
 

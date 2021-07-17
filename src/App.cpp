@@ -58,6 +58,13 @@ void App::quit() {
 	gtkApp->quit();
 }
 
+void App::delay(std::function<void()> fn) {
+	mainWindow->add_tick_callback([fn](const auto &) {
+		fn();
+		return false;
+	});
+}
+
 void App::updateTravel() {
 	return;
 	auto lock = lockGame();

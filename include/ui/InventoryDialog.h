@@ -106,7 +106,7 @@ class InventoryDialog: public UpdatingDialog {
 		}
 
 		void submit(const std::string &resource) {
-			signal_submit_.emit(resource);
 			hide();
+			signal_submit_.emit(resource);
 		}
 };

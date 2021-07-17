@@ -14,6 +14,15 @@ class Region;
 
 class RegionTab {
 	public:
+		struct Rbox: public Gtk::Box {
+			Gtk::Button extractButton {"Extract"};
+			Gtk::Label label;
+			std::function<void()> onClick;
+			Rbox() = delete;
+			Rbox(const std::string &resource_name, double amount, std::function<void()> on_click);
+			void updateLabel(const std::string &resource_name, double amount);
+		};
+
 		App &app;
 		Gtk::Box box {Gtk::Orientation::VERTICAL};
 		Gtk::Label nameLabel, positionLabel, sizeLabel;
@@ -22,10 +31,10 @@ class RegionTab {
 
 		std::vector<Gtk::Expander> expanders;
 
-		// area name => box
+		// area name => ebox
 		std::unordered_map<std::string, std::shared_ptr<Gtk::Box>> expanderBoxes;
-		// area name => resource name => box
-		std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Gtk::Box>>> boxMaps;
+		// area name => resource name => rbox
+		std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Rbox>>> boxMaps;
 		// area name => resource set
 		std::unordered_map<std::string, std::unordered_set<std::string>> resourceSets;
 
