@@ -37,8 +37,6 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {
 		std::cout << "Save as.\n";
 	}));
-
-
 }
 
 void App::quit() {
