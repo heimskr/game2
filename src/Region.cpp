@@ -187,7 +187,7 @@ std::string Region::toString() const {
 	std::stringstream out;
 	// Don't insert thousand separators
 	out.imbue(std::locale::classic());
-	out << name << ":" << position.first << ":" << position.second << ":" << size << ":" << money << ":" << greed << ";";
+	out << name << ":" << position.x << ":" << position.y << ":" << size << ":" << money << ":" << greed << ";";
 	for (const auto &pair: areas)
 		out << pair.second->toString() << ";";
 	return out.str();
@@ -213,10 +213,6 @@ std::unique_ptr<Region> Region::fromString(Game &game, const std::string &str) {
 		region->areas.emplace(area->name, area);
 	}
 	return region;
-}
-
-Region::Position operator+(const Region::Position &left, const Region::Position &right) {
-	return {left.first + right.first, left.second + right.second};
 }
 
 std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t size) {

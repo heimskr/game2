@@ -49,7 +49,7 @@ void RegionTab::update() {
 
 	// Let's hope no one uses markup in their region name.
 	nameLabel.set_markup("<b>" + region.name + "</b>");
-	positionLabel.set_text("Position: (" + std::to_string(pos.first) + ", " + std::to_string(pos.second) + ")");
+	positionLabel.set_text("Position: " + std::string(pos));
 	sizeLabel.set_text("Size: " + std::to_string(region.size));
 
 	// return;

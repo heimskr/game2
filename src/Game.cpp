@@ -185,7 +185,7 @@ bool Game::erase(Region &region) {
 	}
 	const bool out = regions.erase(region.position) != 0;
 	if (reposition)
-		position = suggestPosition(false, position.first, position.second);
+		position = suggestPosition(false, position.x, position.y);
 	return out;
 }
 
@@ -288,7 +288,7 @@ std::string Game::toString() const {
 	for (const auto &[name, amount]: craftingInventory)
 		out << name << "=" << amount << "\n";
 	out << "\n[Position]\n";
-	out << position.first << "," << position.second << "\n";
+	out << position.x << "," << position.y << "\n";
 	out << "\n[Extractions]\n";
 	for (const Extraction &extraction: extractions)
 		out << extraction.toString() << "\n";
@@ -395,8 +395,7 @@ void Game::save() {
 
 Game & Game::operator+=(std::unique_ptr<Region> &&ptr) {
 	if (regions.count(ptr->position) != 0)
-		throw std::runtime_error("A region already exists at (" + std::to_string(ptr->position.first) + ", "
-			+ std::to_string(ptr->position.first) + ")");
+		throw std::runtime_error("A region already exists at " + std::string(ptr->position));
 	regions.emplace(ptr->position, std::move(ptr));
 	return *this;
 }

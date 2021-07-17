@@ -51,5 +51,5 @@ void TravelTab::update() {
 }
 
 Region::Position TravelTab::getPosition(Region &region, int row, int column) {
-	return {region.position.first + column - COLUMNS / 2, region.position.second + row - ROWS / 2};
+	return region.position + Region::Position(column - COLUMNS / 2, row - ROWS / 2);
 }

@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "ui/RegionTab.h"
 #include "ui/TravelTab.h"
+#include "ui/InventoryTab.h"
 
 class App {
 	public:
@@ -27,6 +28,7 @@ class App {
 		std::thread tickThread;
 		std::unique_ptr<RegionTab> regionTab;
 		std::unique_ptr<TravelTab> travelTab;
+		std::unique_ptr<InventoryTab> inventoryTab;
 		bool alive = true;
 
 		std::vector<Gtk::Button> travelButtons;
