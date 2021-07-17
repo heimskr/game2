@@ -276,6 +276,7 @@ void Game::extract(Area &area, const std::string &name, double amount, double ra
 
 std::string Game::toString() const {
 	std::stringstream out;
+	out.imbue(std::locale::classic());
 	out << "[Regions]\n";
 	for (const auto &pair: regions)
 		out << pair.second->toString() << "\n";

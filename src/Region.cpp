@@ -185,6 +185,8 @@ Region & Region::operator+=(std::shared_ptr<Area> area) {
 
 std::string Region::toString() const {
 	std::stringstream out;
+	// Don't insert thousand separators
+	out.imbue(std::locale::classic());
 	out << name << ":" << position.first << ":" << position.second << ":" << size << ":" << money << ":" << greed << ";";
 	for (const auto &pair: areas)
 		out << pair.second->toString() << ";";

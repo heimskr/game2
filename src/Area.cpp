@@ -71,6 +71,7 @@ size_t Area::totalPopulation() const {
 
 std::string Area::toString() const {
 	std::stringstream out;
+	out.imbue(std::locale::classic());
 	out << name << ":" << size << ":" << (playerOwned? "1" : "0") << ":" << static_cast<unsigned>(getType()) << ":";
 	bool first = true;
 	for (const auto &pair: resources) {

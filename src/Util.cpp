@@ -102,6 +102,7 @@ double randomRangeDouble(double min, double max) {
 
 std::string stringify(const std::map<std::string, double> &map) {
 	std::stringstream out;
+	out.imbue(std::locale::classic());
 	bool first = true;
 	for (const auto &[name, amount]: map) {
 		if (first)
