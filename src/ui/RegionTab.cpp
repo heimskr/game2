@@ -70,68 +70,45 @@ void RegionTab::update() {
 			box.append(expander);
 			expander.set_margin_bottom(10);
 
-			GtkExpander *ew = expander.gobj();
-			g_signal_connect(ew, "notify::expanded", G_CALLBACK(+[](GObject *obj, GParamSpec *, gpointer) {
-				Gtk::Expander *exp = Glib::wrap(GTK_EXPANDER(obj), true);
-				std::cout << "expanded: " << exp->get_expanded();
-				Gtk::Widget *widg = exp
-					->get_first_child()
-					->get_first_child()
-					// ->get_first_child()
-				;
-				if (widg) {
-					std::cout << " " << typeid(*widg).name() << "/" << widg->get_name();
-					Gtk::Button *btn = dynamic_cast<Gtk::Button *>(widg);
-					std::cout << " " << btn;
-				} else std::cout << " oops";
-				std::cout << "\n";
-			}), nullptr);
-
-			static int name_x = 0;
-
 			auto ebox = std::make_shared<Gtk::Box>(Gtk::Orientation::VERTICAL, 5);
-			ebox->set_name("ebox_" + std::to_string(name_x++));
 			widgets.push_back(ebox);
 			expanderBoxes.emplace(area_name, ebox);
 			expander.set_child(*ebox);
 
 			Gtk::Box *bbox = new Gtk::Box(Gtk::Orientation::HORIZONTAL, 5);
-			ebox->set_name("bbox_" + std::to_string(name_x++));
 			widgets.emplace_back(bbox);
 			ebox->append(*bbox);
 
 			Gtk::Button *button = new Gtk::Button("Move");
-			ebox->set_name("move_" + std::to_string(name_x++));
 			widgets.emplace_back(button);
 			button->set_tooltip_text("Move a resource from your inventory into the area");
 			bbox->append(*button);
-			// button->signal_clicked().connect([this, area] {
-				// auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
-				// app.dialog.reset(dialog);
-				// dialog->signal_submit().connect([this, area](const Glib::ustring &resource_name) {
-				// 	app.delay([this, resource_name, area]() {
-				// 		auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow,
-				// 			"Amount of " + resource_name + " to transfer:");
-				// 		dialog->signal_submit().connect([this, resource_name, area](const Glib::ustring &amount_text) {
-				// 			double amount;
-				// 			try {
-				// 				amount = parseDouble(amount_text);
-				// 			} catch (std::invalid_argument &) {
-				// 				app.delay([this] { app.error("Invalid amount."); });
-				// 				return;
-				// 			}
-				// 			if (insert(area, resource_name, amount))
-				// 				update();
-				// 		});
-				// 		app.dialog.reset(dialog);
-				// 		app.dialog->show();
-				// 	});
-				// });
-				// app.dialog->show();
-			// });
+			button->signal_clicked().connect([this, area] {
+				auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
+				app.dialog.reset(dialog);
+				dialog->signal_submit().connect([this, area](const Glib::ustring &resource_name) {
+					app.delay([this, resource_name, area]() {
+						auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow,
+							"Amount of " + resource_name + " to transfer:");
+						dialog->signal_submit().connect([this, resource_name, area](const Glib::ustring &amount_text) {
+							double amount;
+							try {
+								amount = parseDouble(amount_text);
+							} catch (std::invalid_argument &) {
+								app.delay([this] { app.error("Invalid amount."); });
+								return;
+							}
+							if (insert(area, resource_name, amount))
+								update();
+						});
+						app.dialog.reset(dialog);
+						app.dialog->show();
+					});
+				});
+				app.dialog->show();
+			});
 
 			button = new Gtk::Button("Resize");
-			ebox->set_name("resize_" + std::to_string(name_x++));
 			widgets.emplace_back(button);
 			bbox->append(*button);
 			button->set_halign(Gtk::Align::START);
