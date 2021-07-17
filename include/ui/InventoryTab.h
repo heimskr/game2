@@ -7,6 +7,7 @@ class App;
 class InventoryTab {
 	public:
 		App &app;
+		Gtk::ScrolledWindow scrolled;
 		Gtk::Grid grid;
 
 		InventoryTab() = delete;
@@ -17,5 +18,9 @@ class InventoryTab {
 		InventoryTab & operator=(const InventoryTab &) = delete;
 		InventoryTab & operator=(InventoryTab &&) = delete;
 
+		void reset();
 		void update();
+
+	private:
+		std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 };

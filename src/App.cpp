@@ -37,6 +37,7 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 		app->game = Game::loadDefaults();
 		saveButton->set_visible(true);
 		onTravel();
+		inventoryTab->reset();
 	}));
 
 	mainWindow->add_action("open", Gio::ActionMap::ActivateSlot([this] {
@@ -45,6 +46,7 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 		app->game = Game::load();
 		saveButton->set_visible(true);
 		onTravel();
+		inventoryTab->reset();
 	}));
 
 	mainWindow->add_action("save", Gio::ActionMap::ActivateSlot([&] {
@@ -56,9 +58,11 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 
 	regionTab = std::make_unique<RegionTab>(*this);
 	travelTab = std::make_unique<TravelTab>(*this);
+	inventoryTab = std::make_unique<InventoryTab>(*this);
 
 	notebook->append_page(regionTab->box, "Region");
 	notebook->append_page(travelTab->grid, "Travel");
+	notebook->append_page(inventoryTab->scrolled, "Inventory");
 }
 
 void App::quit() {
