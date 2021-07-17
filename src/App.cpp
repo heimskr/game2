@@ -3,6 +3,8 @@
 #include "App.h"
 #include "UI.h"
 #include "ui/InventoryDialog.h"
+#include "ui/RegionTab.h"
+#include "ui/TravelTab.h"
 
 std::unique_ptr<App> app;
 
@@ -50,8 +52,10 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	// mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
 
 	regionTab = std::make_unique<RegionTab>(*this);
+	travelTab = std::make_unique<TravelTab>(*this);
 
-	notebook->prepend_page(regionTab->box, "Region");
+	notebook->append_page(regionTab->box, "Region");
+	notebook->append_page(travelTab->grid, "Travel");
 }
 
 void App::quit() {

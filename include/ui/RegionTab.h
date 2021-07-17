@@ -39,8 +39,12 @@ class RegionTab {
 		std::unordered_map<std::string, std::unordered_set<std::string>> resourceSets;
 
 		RegionTab() = delete;
+		RegionTab(const RegionTab &) = delete;
 		RegionTab(RegionTab &&) = delete;
-		RegionTab(App &app_);
+		RegionTab(App &);
+
+		RegionTab & operator=(const RegionTab &) = delete;
+		RegionTab & operator=(RegionTab &&) = delete;
 
 		void update();
 		void reset();

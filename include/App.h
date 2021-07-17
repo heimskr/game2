@@ -7,6 +7,7 @@
 
 #include "Game.h"
 #include "ui/RegionTab.h"
+#include "ui/TravelTab.h"
 
 class App {
 	public:
@@ -24,8 +25,8 @@ class App {
 		std::recursive_mutex gameMutex;
 		std::thread tickThread;
 		std::unique_ptr<RegionTab> regionTab;
+		std::unique_ptr<TravelTab> travelTab;
 		bool alive = true;
-
 
 		std::vector<Gtk::Button> travelButtons;
 		std::vector<std::unique_ptr<Gtk::Widget>> areaWidgets;

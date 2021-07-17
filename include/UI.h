@@ -1,14 +1,8 @@
 #pragma once
 
-#include "App.h"
+#include <gtkmm-4.0/gtkmm.h>
 
-template <typename T>
-void setMargins(T &widget, int margin) {
-	widget.set_margin_top(margin);
-	widget.set_margin_end(margin);
-	widget.set_margin_bottom(margin);
-	widget.set_margin_start(margin);
-}
+void setMargins(Gtk::Widget &widget, int margin);
 
 template <typename T>
 void removeChildren(T &widget) {
