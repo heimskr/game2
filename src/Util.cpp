@@ -34,6 +34,19 @@ namespace Game2 {
 		return out;
 	}
 
+	std::string join(const std::vector<std::string> &pieces, const std::string &delimiter) {
+		std::stringstream ss;
+		bool first = true;
+		for (const std::string &piece: pieces) {
+			if (first)
+				first = false;
+			else
+				ss << delimiter;
+			ss << piece;
+		}
+		return ss.str();
+	}
+
 	long parseLong(const std::string &str, int base) {
 		const char *c_str = str.c_str();
 		char *end;

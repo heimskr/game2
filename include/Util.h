@@ -32,6 +32,7 @@ namespace Game2 {
 	}
 
 	std::vector<std::string> split(const std::string &str, const std::string &delimiter, bool condense = true);
+	std::string join(const std::vector<std::string> &pieces, const std::string &delimiter);
 	long parseLong(const std::string &, int base = 10);
 	long parseLong(const std::string *, int base = 10);
 	long parseLong(const char *, int base = 10);

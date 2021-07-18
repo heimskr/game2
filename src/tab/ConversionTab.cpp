@@ -8,6 +8,7 @@
 #include "ui/ElectrolyzerWidget.h"
 #include "ui/FermenterWidget.h"
 #include "ui/FurnaceWidget.h"
+#include "ui/ProcessorsDialog.h"
 #include "ui/RefineryWidget.h"
 #include "ui/RocketFurnaceWidget.h"
 
@@ -21,7 +22,16 @@ namespace Game2 {
 	}
 
 	void ConversionTab::add() {
-		std::cout << "add\n";
+		auto *dialog = new ProcessorsDialog("Processors", *app.mainWindow);
+		app.dialog.reset(dialog);
+		dialog->signal_submit().connect([this](std::optional<Processor::Type> type) {
+			if (type.has_value()) {
+				std::cout << "Type: " << Processor::typeName(*type) << "\n";
+			} else {
+				std::cout << "No type.\n";
+			}
+		});
+		app.dialog->show();
 	}
 
 	void ConversionTab::sort() {
