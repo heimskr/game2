@@ -29,16 +29,16 @@ namespace Game2 {
 			std::unique_ptr<Gtk::Dialog> dialog;
 			std::recursive_mutex gameMutex;
 			std::thread tickThread;
-			std::unique_ptr<RegionTab> regionTab;
-			std::unique_ptr<TravelTab> travelTab;
-			std::unique_ptr<InventoryTab> inventoryTab;
-			std::unique_ptr<ExtractionsTab> extractionsTab;
-			std::unique_ptr<ConversionTab> conversionTab;
-			std::unique_ptr<MarketTab> marketTab;
+			std::shared_ptr<RegionTab> regionTab;
+			std::shared_ptr<TravelTab> travelTab;
+			std::shared_ptr<InventoryTab> inventoryTab;
+			std::shared_ptr<ExtractionsTab> extractionsTab;
+			std::shared_ptr<ConversionTab> conversionTab;
+			std::shared_ptr<MarketTab> marketTab;
 			bool alive = true;
 
 			std::vector<Gtk::Button> travelButtons;
-			std::vector<std::unique_ptr<Gtk::Widget>> areaWidgets;
+			std::vector<std::unique_ptr<Gtk::Widget>> areaWidgets, titleWidgets;
 
 			App(Glib::RefPtr<Gtk::Application>);
 
@@ -51,14 +51,19 @@ namespace Game2 {
 			std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }
 
 			int run(int argc, char **argv);
+			void resetTitle();
 			void onTravel();
 			void update();
 
 		private:
 			static constexpr int ROWS = 5, COLUMNS = 5;
 
+			std::vector<std::shared_ptr<Tab>> tabs;
+			std::shared_ptr<Tab> activeTab;
+
+			sigc::connection notebookConnection;
 			void connectSave();
-			void addTab(Tab &);
+			void addTab(std::shared_ptr<Tab>);
 			void hackWindow();
 	};
 

@@ -53,23 +53,42 @@ namespace Game2 {
 
 		// mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
 
-		regionTab = std::make_unique<RegionTab>(*this);
-		travelTab = std::make_unique<TravelTab>(*this);
-		inventoryTab = std::make_unique<InventoryTab>(*this);
-		extractionsTab = std::make_unique<ExtractionsTab>(*this);
-		conversionTab = std::make_unique<ConversionTab>(*this);
-		marketTab = std::make_unique<MarketTab>(*this);
+		activeTab = regionTab = std::make_shared<RegionTab>(*this);
+		travelTab = std::make_shared<TravelTab>(*this);
+		inventoryTab = std::make_shared<InventoryTab>(*this);
+		extractionsTab = std::make_shared<ExtractionsTab>(*this);
+		conversionTab = std::make_shared<ConversionTab>(*this);
+		marketTab = std::make_shared<MarketTab>(*this);
 
-		addTab(*regionTab);
-		addTab(*travelTab);
-		addTab(*inventoryTab);
-		addTab(*extractionsTab);
-		addTab(*conversionTab);
-		addTab(*marketTab);
+		addTab(regionTab);
+		addTab(travelTab);
+		addTab(inventoryTab);
+		addTab(extractionsTab);
+		addTab(conversionTab);
+		addTab(marketTab);
+
+		notebook->signal_unmap().connect([this] {
+			notebookConnection.disconnect();
+		});
+
+		notebook->signal_show().connect([this] {
+			notebookConnection = notebook->signal_switch_page().connect([this](Gtk::Widget *, guint page_number) {
+				resetTitle();
+				activeTab->onBlur();
+				activeTab = tabs.at(page_number);
+				activeTab->onFocus();
+			});
+		});
 
 		moneyDispatcher.connect([this] {
 			marketTab->updateMoney();
 		});
+	}
+
+	void App::resetTitle() {
+		for (auto &child: titleWidgets)
+			header->remove(*child);
+		titleWidgets.clear();
 	}
 
 	void App::connectSave() {
@@ -80,8 +99,9 @@ namespace Game2 {
 		}));
 	}
 
-	void App::addTab(Tab &tab) {
-		notebook->append_page(tab.getWidget(), tab.getName());
+	void App::addTab(std::shared_ptr<Tab> tab) {
+		notebook->append_page(tab->getWidget(), tab->getName());
+		tabs.push_back(tab);
 	}
 
 	void App::quit() {
