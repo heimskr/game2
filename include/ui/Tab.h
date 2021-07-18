@@ -5,5 +5,6 @@
 class Tab {
 	public:
 		virtual Gtk::Widget & getWidget() = 0;
+		virtual Glib::ustring getName() = 0;
 		virtual ~Tab() {}
 };

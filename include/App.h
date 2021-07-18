@@ -9,6 +9,7 @@
 #include "ui/RegionTab.h"
 #include "ui/TravelTab.h"
 #include "ui/InventoryTab.h"
+#include "ui/ExtractionsTab.h"
 
 class App {
 	public:
@@ -29,6 +30,7 @@ class App {
 		std::unique_ptr<RegionTab> regionTab;
 		std::unique_ptr<TravelTab> travelTab;
 		std::unique_ptr<InventoryTab> inventoryTab;
+		std::unique_ptr<ExtractionsTab> extractionsTab;
 		bool alive = true;
 
 		std::vector<Gtk::Button> travelButtons;
@@ -50,6 +52,8 @@ class App {
 
 	private:
 		static constexpr int ROWS = 5, COLUMNS = 5;
+
+		void addTab(Tab &);
 };
 
 extern std::unique_ptr<App> app;

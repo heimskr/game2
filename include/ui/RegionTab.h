@@ -52,6 +52,7 @@ class RegionTab: public Tab {
 		RegionTab & operator=(RegionTab &&) = delete;
 
 		Gtk::Widget & getWidget() override { return box; }
+		Glib::ustring getName() override { return "Region"; }
 
 		void update();
 		void reset();

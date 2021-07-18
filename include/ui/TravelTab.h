@@ -25,6 +25,7 @@ class TravelTab: public Tab {
 		TravelTab & operator=(TravelTab &&) = delete;
 
 		Gtk::Widget & getWidget() override { return grid; }
+		Glib::ustring getName() override { return "Travel"; }
 		void update();
 
 	private:

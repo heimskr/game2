@@ -59,10 +59,16 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	regionTab = std::make_unique<RegionTab>(*this);
 	travelTab = std::make_unique<TravelTab>(*this);
 	inventoryTab = std::make_unique<InventoryTab>(*this);
+	extractionsTab = std::make_unique<ExtractionsTab>(*this);
 
-	notebook->append_page(regionTab->getWidget(), "Region");
-	notebook->append_page(travelTab->getWidget(), "Travel");
-	notebook->append_page(inventoryTab->getWidget(), "Inventory");
+	addTab(*regionTab);
+	addTab(*travelTab);
+	addTab(*inventoryTab);
+	addTab(*extractionsTab);
+}
+
+void App::addTab(Tab &tab) {
+notebook->append_page(tab.getWidget(), tab.getName());
 }
 
 void App::quit() {
@@ -108,4 +114,5 @@ void App::update() {
 	travelTab->update();
 	inventoryTab->update();
 	regionTab->update();
+	extractionsTab->reset();
 }

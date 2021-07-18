@@ -23,6 +23,7 @@ class InventoryTab: public Tab {
 		InventoryTab & operator=(InventoryTab &&) = delete;
 
 		Gtk::Widget & getWidget() override { return scrolled; }
+		Glib::ustring getName() override { return "Inventory"; }
 		void reset();
 		void update();
 
