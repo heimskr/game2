@@ -12,10 +12,7 @@
 
 int main(int argc, char *argv[]) {
 	app = std::make_unique<App>(Gtk::Application::create("com.heimskr.game2"));
-
-	// connect("save", [&] { app->game->save(); });
-	// connect("quit", [&] { app->quit(); });
-
+	srand(time(nullptr));
 
 	// auto *rename = app->builder->get_widget<Gtk::Button>("rename_region");
 	// rename->signal_clicked().connect([&] {
