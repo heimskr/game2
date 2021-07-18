@@ -10,6 +10,8 @@
 #include "ui/EntryDialog.h"
 #include "ui/UpdatingDialog.h"
 
+constexpr long UPDATE_PERIOD = 25;
+
 int main(int argc, char *argv[]) {
 	srand(time(nullptr));
 	app = std::make_unique<App>(Gtk::Application::create("com.heimskr.game2"));
@@ -19,11 +21,11 @@ int main(int argc, char *argv[]) {
 			{
 				auto lock = app->lockGame();
 				if (app->game) {
-					app->game->tick(0.01);
+					app->game->tick(UPDATE_PERIOD / 1000.);
 					app->updateDispatcher.emit();
 				}
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_PERIOD));
 		}
 	});
 
