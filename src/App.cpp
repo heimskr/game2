@@ -60,11 +60,13 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	travelTab = std::make_unique<TravelTab>(*this);
 	inventoryTab = std::make_unique<InventoryTab>(*this);
 	extractionsTab = std::make_unique<ExtractionsTab>(*this);
+	conversionTab = std::make_unique<ConversionTab>(*this);
 
 	addTab(*regionTab);
 	addTab(*travelTab);
 	addTab(*inventoryTab);
 	addTab(*extractionsTab);
+	addTab(*conversionTab);
 }
 
 void App::addTab(Tab &tab) {

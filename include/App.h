@@ -10,6 +10,7 @@
 #include "ui/TravelTab.h"
 #include "ui/InventoryTab.h"
 #include "ui/ExtractionsTab.h"
+#include "ui/ConversionTab.h"
 
 class App {
 	public:
@@ -31,6 +32,7 @@ class App {
 		std::unique_ptr<TravelTab> travelTab;
 		std::unique_ptr<InventoryTab> inventoryTab;
 		std::unique_ptr<ExtractionsTab> extractionsTab;
+		std::unique_ptr<ConversionTab> conversionTab;
 		bool alive = true;
 
 		std::vector<Gtk::Button> travelButtons;
