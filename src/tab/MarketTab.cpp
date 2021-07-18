@@ -223,14 +223,14 @@ namespace Game2 {
 			resetBuy();
 		} else {
 			for (const auto &[name, amount]: non_owned) {
-				if (sellAmountLabels.count(name) != 0) {
+				if (buyAmountLabels.count(name) != 0) {
 					const Glib::ustring string = niceDouble(amount);
 					auto &label = buyAmountLabels.at(name);
 					if (label.get_text() != string)
 						label.set_text(string);
 				}
 
-				if (sellPriceLabels.count(name) != 0) {
+				if (buyPriceLabels.count(name) != 0) {
 					const Glib::ustring string = niceDouble(Stonks::buyPrice(app.game->resources.at(name).basePrice,
 						amount, money));
 					auto &label = buyPriceLabels.at(name);
