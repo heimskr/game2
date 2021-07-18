@@ -5,6 +5,7 @@
 #include "ui/CrusherWidget.h"
 #include "ui/ElectrolyzerWidget.h"
 #include "ui/FermenterWidget.h"
+#include "ui/RefineryWidget.h"
 
 ConversionTab::ConversionTab(App &app_): app(app_) {
 	addButton.set_icon_name("list-add-symbolic");
@@ -63,6 +64,14 @@ void ConversionTab::reset() {
 
 			case Processor::Type::Fermenter: {
 				auto *widget = new FermenterWidget(app, *processor);
+				widgets.emplace_back(widget);
+				widget->init();
+				vbox.append(*widget);
+				break;
+			}
+
+			case Processor::Type::Refinery: {
+				auto *widget = new RefineryWidget(app, *processor);
 				widgets.emplace_back(widget);
 				widget->init();
 				vbox.append(*widget);

@@ -2,10 +2,13 @@
 
 #include "ui/ProcessorWidget.h"
 
-class ElectrolyzerWidget: public ProcessorWidget {
+class RefineryWidget: public ProcessorWidget {
 	public:
 		using ProcessorWidget::ProcessorWidget;
 
 	protected:
 		void addExtraButtons() override;
+
+	private:
+		Gtk::Button modeButton;
 };
