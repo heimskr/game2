@@ -36,5 +36,8 @@ namespace Game2 {
 			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 
 			void addHeader();
+			void resetGrids();
+			void sell(const std::string &resource_name);
+			void buy(const std::string &resource_name);
 	};
 }

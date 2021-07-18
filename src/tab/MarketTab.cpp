@@ -1,6 +1,9 @@
+#include <iostream>
+
 #include "App.h"
 #include "UI.h"
 #include "Util.h"
+#include "Stonks.h"
 #include "tab/MarketTab.h"
 
 namespace Game2 {
@@ -17,7 +20,7 @@ namespace Game2 {
 		topGrid.set_column_spacing(10);
 		box.append(topGrid);
 		gridBox.set_homogeneous(true);
-		gridBox.set_spacing(10);
+		gridBox.set_spacing(50);
 		scrolled.set_child(gridBox);
 		leftGrid.set_row_spacing(5);
 		leftGrid.set_column_spacing(5);
@@ -38,6 +41,7 @@ namespace Game2 {
 
 		updateMoney();
 		addHeader();
+		resetGrids();
 	}
 
 	void MarketTab::updateMoney() {
@@ -79,5 +83,75 @@ namespace Game2 {
 		widgets.emplace_back(label);
 		label->add_css_class("table-header");
 		rightGrid.attach(*label, 2, 0);
+	}
+
+	void MarketTab::resetGrids() {
+		auto lock = app.lockGame();
+		if (!app.game)
+			return;
+
+		Region &region = app.game->currentRegion();
+		auto non_owned = region.allNonOwnedResources();
+		double money = app.game->money;
+		double greed = region.greed;
+
+		int row = 1;
+		for (const auto &[name, amount]: app.game->inventory) {
+			auto *button = new Gtk::Button;
+			widgets.emplace_back(button);
+			button->set_icon_name("list-remove-symbolic");
+			button->set_tooltip_text("Sell resource");
+			button->signal_clicked().connect([this, name] { sell(name); });
+			leftGrid.attach(*button, 0, row);
+
+			auto *label = new Gtk::Label(name, Gtk::Align::START);
+			widgets.emplace_back(label);
+			leftGrid.attach(*label, 1, row);
+
+			label = new Gtk::Label(niceDouble(amount), Gtk::Align::START);
+			widgets.emplace_back(label);
+			leftGrid.attach(*label, 2, row);
+
+			label = new Gtk::Label(niceDouble(Stonks::sellPrice(app.game->resources.at(name).basePrice,
+				non_owned.count(name)? non_owned.at(name) : 0, money, greed)), Gtk::Align::START);
+			widgets.emplace_back(label);
+			leftGrid.attach(*label, 3, row);
+
+			++row;
+		}
+
+		row = 1;
+
+		for (const auto &[name, amount]: non_owned) {
+			auto *label = new Gtk::Label(name, Gtk::Align::START);
+			widgets.emplace_back(label);
+			rightGrid.attach(*label, 0, row);
+
+			label = new Gtk::Label(niceDouble(amount), Gtk::Align::START);
+			widgets.emplace_back(label);
+			rightGrid.attach(*label, 1, row);
+
+			label = new Gtk::Label(niceDouble(Stonks::buyPrice(app.game->resources.at(name).basePrice, amount, money)),
+				Gtk::Align::START);
+			widgets.emplace_back(label);
+			rightGrid.attach(*label, 2, row);
+
+			auto *button = new Gtk::Button;
+			widgets.emplace_back(button);
+			button->set_icon_name("list-add-symbolic");
+			button->set_tooltip_text("Buy resource");
+			button->signal_clicked().connect([this, name] { buy(name); });
+			rightGrid.attach(*button, 3, row);
+
+			++row;
+		}
+	}
+
+	void MarketTab::sell(const std::string &resource_name) {
+		std::cout << "Sell " << resource_name << "\n";
+	}
+
+	void MarketTab::buy(const std::string &resource_name) {
+		std::cout << "Buy " << resource_name << "\n";
 	}
 }
