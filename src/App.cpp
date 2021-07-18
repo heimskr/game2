@@ -105,6 +105,7 @@ void App::update() {
 	if (dialog)
 		if (auto *udialog = dynamic_cast<UpdatingDialog *>(dialog.get()))
 			udialog->updateData();
+	travelTab->update();
 	inventoryTab->update();
 	regionTab->update();
 }

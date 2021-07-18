@@ -57,6 +57,27 @@ RegionTab::RegionTab(App &app_): app(app_) {
 		});
 		app.dialog->show();
 	});
+
+	deleteButton.signal_clicked().connect([this] {
+		auto lock = app.lockGame();
+		Game &game = *app.game;
+		if (1 < game.regions.size()) {
+			auto *dialog = new Gtk::MessageDialog(*app.mainWindow, "Are you sure you want to delete " +
+				game.currentRegion().name + "?", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true);
+			app.dialog.reset(dialog);
+			app.dialog->signal_response().connect([&](int response) {
+				auto lock = app.lockGame();
+				if (response == Gtk::ResponseType::OK) {
+					game.erase(game.currentRegion());
+					app.update();
+				}
+				app.dialog->hide();
+			});
+			app.dialog->show();
+		} else {
+			app.error("Can't delete region: no other region exists");
+		}
+	});
 }
 
 void RegionTab::update() {
