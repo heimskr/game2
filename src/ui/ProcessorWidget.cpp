@@ -128,19 +128,21 @@ namespace Game2 {
 		if (!compare(previousInputs, processor.input) || !compare(previousOutputs, processor.output)) {
 			resetGrid();
 		} else {
-			for (const auto &[resource_name, amount]: processor.input) {
-				const Glib::ustring amount_string = niceDouble(amount);
-				Gtk::Label &label = inputAmounts.at(resource_name);
-				if (label.get_text() != amount_string)
-					label.set_text(amount_string);
-			}
+			for (const auto &[resource_name, amount]: processor.input)
+				if (inputAmounts.count(resource_name) != 0) {
+					const Glib::ustring amount_string = niceDouble(amount);
+					Gtk::Label &label = inputAmounts.at(resource_name);
+					if (label.get_text() != amount_string)
+						label.set_text(amount_string);
+				}
 
-			for (const auto &[resource_name, amount]: processor.output) {
-				const Glib::ustring amount_string = niceDouble(amount);
-				Gtk::Label &label = outputAmounts.at(resource_name);
-				if (label.get_text() != amount_string)
-					label.set_text(amount_string);
-			}
+			for (const auto &[resource_name, amount]: processor.output)
+				if (outputAmounts.count(resource_name) != 0) {
+					const Glib::ustring amount_string = niceDouble(amount);
+					Gtk::Label &label = outputAmounts.at(resource_name);
+					if (label.get_text() != amount_string)
+						label.set_text(amount_string);
+				}
 		}
 	}
 

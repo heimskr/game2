@@ -51,7 +51,7 @@ namespace Game2 {
 				removed.push_back(name);
 
 		for (const std::string &name: removed) {
-			std::cout << "Removing " << name << "\n";
+			std::cout << "Removing " << name << " from inventory dialog\n";
 			grid.remove(nameLabels.at(name));
 			grid.remove(amountLabels.at(name));
 			grid.remove(buttons.at(name));
