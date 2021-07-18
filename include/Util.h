@@ -4,7 +4,7 @@
 #include <random>
 #include <sstream>
 #include <string>
-#include "platform.h"
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -53,3 +53,15 @@ bool lte(double, double);
 /** Less than and not approximate */
 bool ltna(double, double);
 std::string makeUUID();
+
+template <typename T>
+bool compare(const std::unordered_set<T> &first, const std::unordered_set<T> &second) {
+	if (first.size() != second.size())
+		return false;
+
+	for (const T &item: first)
+		if (second.count(item) == 0)
+			return false;
+
+	return true;
+}

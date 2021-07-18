@@ -119,4 +119,5 @@ void App::update() {
 	travelTab->update();
 	inventoryTab->update();
 	regionTab->update();
+	conversionTab->update();
 }

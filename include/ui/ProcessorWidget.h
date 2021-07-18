@@ -2,6 +2,8 @@
 
 #include <gtkmm-4.0/gtkmm.h>
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "Processor.h"
@@ -14,6 +16,9 @@ class ProcessorWidget: public Gtk::Box {
 
 		ProcessorWidget & init();
 		void resetGrid();
+		void updateGrid();
+
+		virtual void update() {}
 
 	protected:
 		App &app;
@@ -29,7 +34,8 @@ class ProcessorWidget: public Gtk::Box {
 
 	private:
 		std::vector<std::unique_ptr<Gtk::Widget>> gridWidgets;
-		std::vector<std::string> previousInputs, previousOutputs;
+		std::unordered_map<std::string, Gtk::Label> inputNames, inputAmounts, outputNames, outputAmounts;
+		std::unordered_set<std::string> previousInputs, previousOutputs;
 
 		void addResource();
 		void toggleAutoExtract();

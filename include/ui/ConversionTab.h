@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "ui/Tab.h"
+#include "ui/ProcessorWidget.h"
 
 class App;
 
@@ -24,6 +25,7 @@ class ConversionTab: public Tab {
 		Glib::ustring getName() override { return "Conversion"; }
 
 		void reset();
+		void update();
 
 	private:
 		Gtk::Box mainBox {Gtk::Orientation::VERTICAL};
@@ -32,5 +34,5 @@ class ConversionTab: public Tab {
 		Gtk::Box vbox {Gtk::Orientation::VERTICAL};
 		Gtk::Button addButton, sortButton, distributeButton;
 
-		std::vector<std::unique_ptr<Gtk::Widget>> widgets;
+		std::vector<std::unique_ptr<ProcessorWidget>> processorWidgets;
 };

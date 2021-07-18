@@ -5,7 +5,9 @@
 #include "ui/CrusherWidget.h"
 #include "ui/ElectrolyzerWidget.h"
 #include "ui/FermenterWidget.h"
+#include "ui/FurnaceWidget.h"
 #include "ui/RefineryWidget.h"
+#include "ui/RocketFurnaceWidget.h"
 
 ConversionTab::ConversionTab(App &app_): app(app_) {
 	addButton.set_icon_name("list-add-symbolic");
@@ -30,7 +32,7 @@ ConversionTab::ConversionTab(App &app_): app(app_) {
 
 void ConversionTab::reset() {
 	removeChildren(vbox);
-	widgets.clear();
+	processorWidgets.clear();
 
 	auto lock = app.lockGame();
 	if (!app.game)
@@ -40,7 +42,7 @@ void ConversionTab::reset() {
 		switch (processor->getType()) {
 			case Processor::Type::Centrifuge: {
 				auto *widget = new CentrifugeWidget(app, *processor);
-				widgets.emplace_back(widget);
+				processorWidgets.emplace_back(widget);
 				widget->init();
 				vbox.append(*widget);
 				break;
@@ -48,7 +50,7 @@ void ConversionTab::reset() {
 
 			case Processor::Type::Crusher: {
 				auto *widget = new CrusherWidget(app, *processor);
-				widgets.emplace_back(widget);
+				processorWidgets.emplace_back(widget);
 				widget->init();
 				vbox.append(*widget);
 				break;
@@ -56,7 +58,7 @@ void ConversionTab::reset() {
 
 			case Processor::Type::Electrolyzer: {
 				auto *widget = new ElectrolyzerWidget(app, *processor);
-				widgets.emplace_back(widget);
+				processorWidgets.emplace_back(widget);
 				widget->init();
 				vbox.append(*widget);
 				break;
@@ -64,7 +66,15 @@ void ConversionTab::reset() {
 
 			case Processor::Type::Fermenter: {
 				auto *widget = new FermenterWidget(app, *processor);
-				widgets.emplace_back(widget);
+				processorWidgets.emplace_back(widget);
+				widget->init();
+				vbox.append(*widget);
+				break;
+			}
+
+			case Processor::Type::Furnace: {
+				auto *widget = new FurnaceWidget(app, *processor);
+				processorWidgets.emplace_back(widget);
 				widget->init();
 				vbox.append(*widget);
 				break;
@@ -72,7 +82,15 @@ void ConversionTab::reset() {
 
 			case Processor::Type::Refinery: {
 				auto *widget = new RefineryWidget(app, *processor);
-				widgets.emplace_back(widget);
+				processorWidgets.emplace_back(widget);
+				widget->init();
+				vbox.append(*widget);
+				break;
+			}
+
+			case Processor::Type::RocketFurnace: {
+				auto *widget = new RocketFurnaceWidget(app, *processor);
+				processorWidgets.emplace_back(widget);
 				widget->init();
 				vbox.append(*widget);
 				break;
@@ -80,5 +98,12 @@ void ConversionTab::reset() {
 
 			default:;
 		}
+	}
+}
+
+void ConversionTab::update() {
+	for (auto &widget: processorWidgets) {
+		widget->updateGrid();
+		widget->update();
 	}
 }
