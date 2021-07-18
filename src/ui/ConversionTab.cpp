@@ -19,7 +19,9 @@ ConversionTab::ConversionTab(App &app_): app(app_) {
 	buttonBox.set_spacing(5);
 	mainBox.append(buttonBox);
 	vbox.set_spacing(5);
-	mainBox.append(vbox);
+	scrolled.set_child(vbox);
+	scrolled.set_vexpand(true);
+	mainBox.append(scrolled);
 	mainBox.set_spacing(5);
 	setMargins(mainBox, 5);
 	reset();

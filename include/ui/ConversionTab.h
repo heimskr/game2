@@ -28,6 +28,7 @@ class ConversionTab: public Tab {
 	private:
 		Gtk::Box mainBox {Gtk::Orientation::VERTICAL};
 		Gtk::Box buttonBox {Gtk::Orientation::HORIZONTAL};
+		Gtk::ScrolledWindow scrolled;
 		Gtk::Box vbox {Gtk::Orientation::VERTICAL};
 		Gtk::Button addButton, sortButton, distributeButton;
 
