@@ -5,6 +5,8 @@
 #include "Util.h"
 #include "Stonks.h"
 #include "tab/MarketTab.h"
+#include "ui/EntryDialog.h"
+#include "ui/NumericEntry.h"
 
 namespace Game2 {
 	MarketTab::MarketTab(App &app_): app(app_) {
@@ -251,6 +253,42 @@ namespace Game2 {
 	}
 
 	void MarketTab::buy(const std::string &resource_name) {
-		std::cout << "Buy " << resource_name << "\n";
+		auto *dialog = new EntryDialog<NumericEntry>("Buy", *app.mainWindow, "Amount to buy:");
+		app.dialog.reset(dialog);
+		dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
+			app.delay([this, resource_name, response] {
+				double amount;
+				try {
+					amount = parseDouble(response);
+				} catch (std::invalid_argument &) {
+					app.error("Invalid amount.");
+					return;
+				}
+
+				app.gameMutex.lock();
+				auto region = app.game->currentRegionPointer();
+				const size_t total_price = Stonks::totalBuyPrice(*region, resource_name, amount);
+				if (app.game->money < total_price) {
+					app.error("You don't have enough money.");
+					app.gameMutex.unlock();
+					return;
+				}
+				auto *dialog = new Gtk::MessageDialog(*app.mainWindow, "Amount: " + std::to_string(total_price), false,
+					Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true);
+				app.dialog.reset(dialog);
+				dialog->signal_response().connect([this, resource_name, total_price, amount, region](int response) {
+					if (response == Gtk::ResponseType::OK) {
+						region->subtractResourceFromNonOwned(resource_name, amount);
+						app.game->addToInventory(resource_name, amount);
+						region->setMoney(region->money + total_price);
+						app.game->setMoney(app.game->money - total_price);
+					}
+					app.gameMutex.unlock();
+					app.dialog->hide();
+				});
+				app.dialog->show();
+			});
+		});
+		app.dialog->show();
 	}
 }

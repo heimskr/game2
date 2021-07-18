@@ -54,6 +54,7 @@ namespace Game2 {
 			bool erase(Region &);
 			void eraseExtractions(const Area &);
 			void setMoney(size_t);
+			void addToInventory(const std::string &resource_name, double amount);
 
 			void tick(double delta);
 

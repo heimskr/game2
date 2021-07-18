@@ -208,6 +208,10 @@ namespace Game2 {
 		}
 	}
 
+	void Game::addToInventory(const std::string &resource_name, double amount) {
+		inventory[resource_name] += amount;
+	}
+
 	void Game::tick(double delta) {
 		for (auto &pair: regions)
 			pair.second->tick(delta);
