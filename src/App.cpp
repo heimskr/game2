@@ -35,28 +35,25 @@ namespace Game2 {
 		mainWindow->add_action("new", Gio::ActionMap::ActivateSlot([this] {
 			notebook->show();
 			auto lock = lockGame();
-			app->game = Game::loadDefaults(*this);
+			game = Game::loadDefaults(*this);
 			saveButton->set_visible(true);
 			onTravel();
 			inventoryTab->reset();
 			conversionTab->reset();
 			marketTab->reset();
+			connectSave();
 		}));
 
 		mainWindow->add_action("open", Gio::ActionMap::ActivateSlot([this] {
 			notebook->show();
 			auto lock = lockGame();
-			app->game = Game::load(*this);
+			game = Game::load(*this);
 			saveButton->set_visible(true);
 			onTravel();
 			inventoryTab->reset();
 			conversionTab->reset();
 			marketTab->reset();
-		}));
-
-		mainWindow->add_action("save", Gio::ActionMap::ActivateSlot([&] {
-			auto lock = lockGame();
-			app->game->save();
+			connectSave();
 		}));
 
 		// mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
@@ -78,6 +75,14 @@ namespace Game2 {
 		moneyDispatcher.connect([this] {
 			marketTab->updateMoney();
 		});
+	}
+
+	void App::connectSave() {
+		mainWindow->add_action("save", Gio::ActionMap::ActivateSlot([this] {
+			auto lock = lockGame();
+			if (game)
+				game->save();
+		}));
 	}
 
 	void App::addTab(Tab &tab) {

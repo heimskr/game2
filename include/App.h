@@ -58,6 +58,7 @@ namespace Game2 {
 		private:
 			static constexpr int ROWS = 5, COLUMNS = 5;
 
+			void connectSave();
 			void addTab(Tab &);
 			void hackWindow();
 	};
