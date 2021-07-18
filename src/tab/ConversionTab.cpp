@@ -55,7 +55,11 @@ namespace Game2 {
 	}
 
 	void ConversionTab::sort() {
-		std::cout << "sort\n";
+		auto lock = app.lockGame();
+		app.game->processors.sort([](std::shared_ptr<Processor> &left, std::shared_ptr<Processor> &right) {
+			return left->name < right->name;
+		});
+		reset();
 	}
 
 	void ConversionTab::distribute() {
