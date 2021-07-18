@@ -169,7 +169,8 @@ void ProcessorWidget::addResource() {
 }
 
 void ProcessorWidget::toggleAutoExtract() {
-	std::cout << "toggleAutoExtract(" << processor.name << ")\n";
+	processor.setAutoExtract(!processor.autoExtract);
+	autoExtractButton.set_active(processor.autoExtract);
 }
 
 void ProcessorWidget::rename() {
