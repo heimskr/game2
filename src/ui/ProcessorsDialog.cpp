@@ -2,8 +2,8 @@
 #include "ui/ProcessorsDialog.h"
 
 namespace Game2 {
-	ProcessorsDialog::ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, App &app__, bool modal):
-	Dialog(title, parent, modal), app_(app__) {
+	ProcessorsDialog::ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, App &app_, bool modal):
+	Dialog(title, parent, modal), app(app_) {
 		set_default_size(300, -1);
 		auto &area = *get_content_area();
 		area.set_orientation(Gtk::Orientation::VERTICAL);
@@ -20,7 +20,7 @@ namespace Game2 {
 		for (Processor::Type type: Processor::TYPES) {
 			auto &label = labels.emplace_back(Processor::typeName(type), Gtk::Align::START);
 			std::vector<std::string> pieces;
-			for (const auto &[name, amount]: app_.game->processorCosts.at(type))
+			for (const auto &[name, amount]: app.game->processorCosts.at(type))
 				pieces.push_back(name + " x " + niceDouble(amount));
 			label.set_tooltip_text(join(pieces, "\n"));
 			auto &gesture = gestures.emplace_back(Gtk::GestureClick::create());
@@ -45,7 +45,4 @@ namespace Game2 {
 		area.append(scrolled);
 		area.append(cancel);
 	}
-
-	ProcessorsDialog::ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, bool modal):
-		ProcessorsDialog(title, parent, *app, modal) {}
 }

@@ -22,14 +22,34 @@ namespace Game2 {
 	}
 
 	void ConversionTab::add() {
-		auto *dialog = new ProcessorsDialog("Processors", *app.mainWindow);
+		auto *dialog = new ProcessorsDialog("Processors", *app.mainWindow, app);
 		app.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](std::optional<Processor::Type> type) {
-			if (type.has_value()) {
-				std::cout << "Type: " << Processor::typeName(*type) << "\n";
-			} else {
-				std::cout << "No type.\n";
-			}
+			if (!type.has_value())
+				return;
+			app.delay([this, type] {
+				auto lock = app.lockGame();
+				const auto &cost = app.game->processorCosts.at(*type);
+				if (!contains(app.game->inventory, cost)) {
+					app.error("You don't have enough resources to make that.");
+					return;
+				}
+				for (const auto &[name, amount]: cost)
+					app.game->inventory[name] -= amount;
+				shrink(app.game->inventory);
+				std::shared_ptr<Processor> new_processor;
+				try {
+					new_processor = std::shared_ptr<Processor>(Processor::ofType(*app.game, *type));
+				} catch (std::invalid_argument &err) {
+					app.error(err.what());
+					return;
+				}
+				new_processor->name = Processor::typeName(*type);
+				app.game->processors.push_back(new_processor);
+				app.game->processorsByID.emplace(new_processor->id, new_processor);
+				reset();
+				app.alert("Added a new " + std::string(Processor::typeName(*type)) + ".");
+			});
 		});
 		app.dialog->show();
 	}

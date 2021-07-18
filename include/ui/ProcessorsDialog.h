@@ -17,11 +17,10 @@ namespace Game2 {
 			Gtk::Box processorsBox {Gtk::Orientation::VERTICAL};
 			sigc::signal<void(std::optional<Processor::Type>)> signal_submit() const { return signal_submit_; }
 
-			ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, bool modal = true);
 			ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, App &, bool modal = true);
 
 		private:
-			App &app_;
+			App &app;
 			bool done = false;
 			std::vector<Gtk::Label> labels;
 			std::vector<Glib::RefPtr<Gtk::GestureClick>> gestures;
