@@ -1,3 +1,4 @@
+#include "UI.h"
 #include "ui/InventoryDialog.h"
 
 namespace Game2 {
@@ -12,8 +13,7 @@ namespace Game2 {
 		get_content_area()->append(cancel);
 		grid.set_row_spacing(5);
 		grid.set_column_spacing(5);
-		grid.set_margin_start(5);
-		grid.set_margin_end(5);
+		setMargins(grid, 5);
 
 		updateContent();
 
