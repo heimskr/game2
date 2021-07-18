@@ -38,6 +38,7 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 		saveButton->set_visible(true);
 		onTravel();
 		inventoryTab->reset();
+		conversionTab->reset();
 	}));
 
 	mainWindow->add_action("open", Gio::ActionMap::ActivateSlot([this] {
@@ -47,6 +48,7 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 		saveButton->set_visible(true);
 		onTravel();
 		inventoryTab->reset();
+		conversionTab->reset();
 	}));
 
 	mainWindow->add_action("save", Gio::ActionMap::ActivateSlot([&] {
