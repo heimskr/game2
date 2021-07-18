@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "UI.h"
+#include "ui/BasicEntry.h"
 #include "ui/EntryDialog.h"
 #include "ui/InventoryDialog.h"
 #include "ui/NumericEntry.h"
@@ -172,7 +173,13 @@ void ProcessorWidget::toggleAutoExtract() {
 }
 
 void ProcessorWidget::rename() {
-	std::cout << "rename(" << processor.name << ")\n";
+	auto *dialog = new EntryDialog<BasicEntry>("Rename", *app.mainWindow, "New processor name:");
+	app.dialog.reset(dialog);
+	dialog->signal_submit().connect([this](const Glib::ustring &new_name) {
+		processor.setName(new_name);
+		nameLabel.set_text(new_name);
+	});
+	app.dialog->show();
 }
 
 bool ProcessorWidget::insert(const std::string &resource_name, double amount) {
