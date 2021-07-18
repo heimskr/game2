@@ -144,6 +144,7 @@ namespace Game2 {
 		regionTab->update();
 		travelTab->update();
 		extractionsTab->reset();
+		marketTab->reset();
 	}
 
 	void App::update() {

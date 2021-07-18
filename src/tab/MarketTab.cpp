@@ -1,9 +1,10 @@
 #include <iostream>
 
 #include "App.h"
+#include "Stonks.h"
 #include "UI.h"
 #include "Util.h"
-#include "Stonks.h"
+#include "area/Housing.h"
 #include "tab/MarketTab.h"
 #include "ui/EntryDialog.h"
 #include "ui/NumericEntry.h"
@@ -43,6 +44,26 @@ namespace Game2 {
 		buyWidgets.clear();
 
 		updateMoney();
+
+		auto lock = app.lockGame();
+		if (!app.game)
+			return;
+
+		std::shared_ptr<HousingArea> housing;
+		if (auto region = app.game->currentRegionPointer())
+			housing = region->getHousing();
+
+		if (!housing) {
+			scrolled.set_child(errorLabel);
+			regionMoneyLabel.hide();
+			regionMoney.hide();
+			return;
+		}
+
+		scrolled.set_child(gridBox);
+		regionMoneyLabel.show();
+		regionMoney.show();
+
 		addSellHeader();
 		addBuyHeader();
 		resetSell();
@@ -249,7 +270,58 @@ namespace Game2 {
 	}
 
 	void MarketTab::sell(const std::string &resource_name) {
-		std::cout << "Sell " << resource_name << "\n";
+		auto *dialog = new EntryDialog<NumericEntry>("Sell", *app.mainWindow, "Amount to sell:");
+		app.dialog.reset(dialog);
+		dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
+			app.delay([this, resource_name, response] {
+				double amount;
+				try {
+					amount = parseDouble(response);
+				} catch (std::invalid_argument &) {
+					app.error("Invalid amount.");
+					return;
+				}
+
+				app.gameMutex.lock();
+				auto region = app.game->currentRegionPointer();
+				double &in_inventory = app.game->inventory[resource_name];
+
+				if (lte(amount, 0) || ltna(in_inventory, amount)) {
+					app.gameMutex.unlock();
+					app.error("Invalid amount.");
+					return;
+				}
+
+				size_t total_price;
+				if (!Stonks::totalSellPrice(*region, resource_name, amount, total_price)) {
+					app.gameMutex.unlock();
+					app.error("Region doesn't have enough money. Price: " + std::to_string(total_price));
+				} else {
+					auto *dialog = new Gtk::MessageDialog(*app.mainWindow, "Price: " + std::to_string(total_price),
+						false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true);
+					app.dialog.reset(dialog);
+					dialog->signal_response().connect([this, resource_name, region, amount, total_price](int response) {
+						if (response == Gtk::ResponseType::OK) {
+							Region &region = app.game->currentRegion();
+							auto housing = region.getHousing();
+							if (!housing) {
+								app.error("Region has no market.");
+							} else {
+								housing->resources[resource_name] += amount;
+								app.game->inventory[resource_name] -= amount;
+								region.setMoney(region.money - total_price);
+								app.game->setMoney(app.game->money + total_price);
+								shrink(app.game->inventory, resource_name);
+							}
+						}
+						app.gameMutex.unlock();
+						app.dialog->hide();
+					});
+					app.dialog->show();
+				}
+			});
+		});
+		app.dialog->show();
 	}
 
 	void MarketTab::buy(const std::string &resource_name) {
