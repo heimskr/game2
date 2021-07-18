@@ -26,6 +26,7 @@ namespace Game2 {
 			Glib::ustring getName() override { return "Market"; }
 
 			void reset();
+			void updateMoney();
 
 		private:
 			Gtk::Box box {Gtk::Orientation::VERTICAL};

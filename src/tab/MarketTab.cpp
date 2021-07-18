@@ -7,12 +7,14 @@ namespace Game2 {
 	MarketTab::MarketTab(App &app_): app(app_) {
 		regionMoneyLabel.set_halign(Gtk::Align::END);
 		topGrid.attach(regionMoneyLabel, 0, 0);
+		regionMoney.set_halign(Gtk::Align::START);
 		topGrid.attach(regionMoney, 1, 0);
 		yourMoneyLabel.set_halign(Gtk::Align::END);
 		topGrid.attach(yourMoneyLabel, 0, 1);
+		yourMoney.set_halign(Gtk::Align::START);
 		topGrid.attach(yourMoney, 1, 1);
 		topGrid.set_row_spacing(5);
-		topGrid.set_column_spacing(5);
+		topGrid.set_column_spacing(10);
 		box.append(topGrid);
 		mainGrid.set_row_spacing(5);
 		mainGrid.set_column_spacing(5);
@@ -27,7 +29,20 @@ namespace Game2 {
 		removeChildren(mainGrid);
 		widgets.clear();
 
+		updateMoney();
 		addHeader();
+	}
+
+	void MarketTab::updateMoney() {
+		auto lock = app.lockGame();
+		if (!app.game)
+			return;
+
+		auto region = app.game->currentRegionPointer();
+		if (region)
+			regionMoney.set_label(niceDouble(region->money));
+
+		yourMoney.set_label(niceDouble(app.game->money));
 	}
 
 	void MarketTab::addHeader() {

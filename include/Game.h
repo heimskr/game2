@@ -12,10 +12,12 @@
 #include "Util.h"
 
 namespace Game2 {
+	class App;
 	class Processor;
 
 	class Game {
 		public:
+			App &app;
 			bool ready = false;
 			std::map<std::string, Resource> resources;
 			std::map<Processor::Type, Resource::Map> processorCosts;
@@ -33,7 +35,8 @@ namespace Game2 {
 
 			bool craftingOutputReady = false;
 
-			Game();
+			Game() = delete;
+			Game(App &);
 
 			void add(const Resource &);
 			void addResources();
@@ -50,17 +53,18 @@ namespace Game2 {
 			std::shared_ptr<Region> currentRegionPointer();
 			bool erase(Region &);
 			void eraseExtractions(const Area &);
+			void setMoney(size_t);
 
 			void tick(double delta);
 
-			static std::shared_ptr<Game> loadDefaults();
+			static std::shared_ptr<Game> loadDefaults(App &);
 
 			void extract(Area &, const std::string &name, double amount);
 			void extract(Area &, const std::string &name, double amount, double rate);
 
 			std::string toString() const;
-			static std::shared_ptr<Game> fromString(const std::string &);
-			static std::shared_ptr<Game> load();
+			static std::shared_ptr<Game> fromString(App &, const std::string &);
+			static std::shared_ptr<Game> load(App &);
 			void save();
 
 			Game & operator+=(std::unique_ptr<Region> &&);

@@ -4,6 +4,7 @@
 #include <utility>
 #include "platform.h"
 
+#include "App.h"
 #include "FS.h"
 #include "Game.h"
 #include "NameGen.h"
@@ -13,7 +14,7 @@
 #include "processor/Processors.h"
 
 namespace Game2 {
-	Game::Game() {
+	Game::Game(App &app_): app(app_) {
 		addAll();
 	}
 
@@ -200,6 +201,13 @@ namespace Game2 {
 		}
 	}
 
+	void Game::setMoney(size_t new_money) {
+		if (money != new_money) {
+			money = new_money;
+			app.moneyDispatcher.emit();
+		}
+	}
+
 	void Game::tick(double delta) {
 		for (auto &pair: regions)
 			pair.second->tick(delta);
@@ -241,8 +249,8 @@ namespace Game2 {
 			link.tick();
 	}
 
-	std::shared_ptr<Game> Game::loadDefaults() {
-		std::shared_ptr<Game> game = std::make_shared<Game>();
+	std::shared_ptr<Game> Game::loadDefaults(App &app) {
+		std::shared_ptr<Game> game = std::make_shared<Game>(app);
 		game->regions.clear();
 		Region &home = *game->regions.insert({Region::Position(0, 0), std::make_unique<Region>(*game, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
 		home.greed = 0.25;
@@ -302,13 +310,13 @@ namespace Game2 {
 		return out.str();
 	}
 
-	std::shared_ptr<Game> Game::fromString(const std::string &str) {
+	std::shared_ptr<Game> Game::fromString(App &app, const std::string &str) {
 		std::vector<std::string> lines = split(str, "\n", true);
 		/** Compliant saves must follow this order beginning at Regions. */
 		enum class Mode {None, Regions, Inventory, CraftingInventory, Position, Extractions, Processors, Automations};
 		Mode mode = Mode::None;
 
-		std::shared_ptr<Game> out = std::make_shared<Game>();
+		std::shared_ptr<Game> out = std::make_shared<Game>(app);
 
 		for (std::string &line: lines) {
 			if (line.empty() || line == "\r")
@@ -384,10 +392,10 @@ namespace Game2 {
 		return out;
 	}
 
-	std::shared_ptr<Game> Game::load() {
+	std::shared_ptr<Game> Game::load(App &app) {
 		if (!FS::fileExists("save.txt"))
 			throw std::runtime_error("Save data doesn't exist");
-		return fromString(FS::readFile("save.txt"));
+		return fromString(app, FS::readFile("save.txt"));
 	}
 
 	void Game::save() {

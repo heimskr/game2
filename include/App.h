@@ -25,7 +25,7 @@ namespace Game2 {
 			std::unique_ptr<Gtk::Notebook> notebook;
 			Gtk::Button *saveButton = nullptr;
 
-			Glib::Dispatcher updateDispatcher;
+			Glib::Dispatcher updateDispatcher, moneyDispatcher;
 			std::shared_ptr<Game> game;
 			std::unique_ptr<Gtk::Dialog> dialog;
 			std::recursive_mutex gameMutex;
