@@ -25,6 +25,7 @@ namespace Game2 {
 			Gtk::Widget & getWidget() override { return scrolled; }
 			Glib::ustring getName() override { return "Conversion"; }
 			void onFocus() override;
+			void onBlur() override;
 
 			void reset();
 			void update();
@@ -34,8 +35,11 @@ namespace Game2 {
 			Gtk::Box buttonBox {Gtk::Orientation::HORIZONTAL};
 			Gtk::ScrolledWindow scrolled;
 			Gtk::Box vbox {Gtk::Orientation::VERTICAL};
-			Gtk::Button addButton, sortButton, distributeButton;
-
+			std::unique_ptr<Gtk::Button> addButton, sortButton, distributeButton;
 			std::vector<std::unique_ptr<ProcessorWidget>> processorWidgets;
+
+			void add();
+			void sort();
+			void distribute();
 	};
 }
