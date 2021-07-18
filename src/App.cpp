@@ -105,6 +105,7 @@ int App::run(int argc, char **argv) {
 void App::onTravel() {
 	regionTab->update();
 	travelTab->update();
+	extractionsTab->reset();
 }
 
 void App::update() {
@@ -114,5 +115,4 @@ void App::update() {
 	travelTab->update();
 	inventoryTab->update();
 	regionTab->update();
-	extractionsTab->reset();
 }

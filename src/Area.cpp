@@ -103,6 +103,6 @@ std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
 		case Type::OilField: area = std::make_shared<OilFieldArea>(&region); break;
 		default: throw std::invalid_argument("Unknown Area type: " + std::to_string(static_cast<unsigned>(type)));
 	}
-	area->setName(std::move(name)).setSize(size).setPlayerOwned(player_owned).setResources(std::move(parseMap(pieces[4])));
+	area->setName(std::move(name)).setSize(size).setPlayerOwned(player_owned).setResources(parseMap(pieces[4]));
 	return area;
 }

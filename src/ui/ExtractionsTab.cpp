@@ -5,9 +5,9 @@
 
 ExtractionsTab::ExtractionsTab(App &app_): app(app_) {
 	scrolled.set_child(grid);
+	setMargins(grid, 5);
 	grid.set_row_spacing(5);
 	grid.set_column_spacing(15);
-	setMargins(grid, 5);
 }
 
 void ExtractionsTab::reset() {
@@ -31,12 +31,11 @@ void ExtractionsTab::reset() {
 		button.set_tooltip_text("Remove extraction");
 		button.set_icon_name("list-remove-symbolic");
 		button.signal_clicked().connect([this, iter] {
-			std::cout << "Clicked.\n";
 			app.game->extractions.erase(iter);
 			reset();
 		});
 		grid.attach(button, 0, row);
-		
+
 		auto *label = new Gtk::Label(extraction.resourceName);
 		widgets.emplace_back(label);
 		label->set_halign(Gtk::Align::START);
