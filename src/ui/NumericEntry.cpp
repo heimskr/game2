@@ -6,10 +6,15 @@ static void (*old_activate)(GtkEntry *);
 static bool old_activate_set = false;
 
 static void new_insert_text(GtkEditable *editable, const char *text, int length, int *position) {
-	Glib::ustring str(text, length);
-	for (auto ch: str)
-		if (!Glib::Unicode::isdigit(ch) && ch != '.')
-			return;
+	if (GtkWidget *parent = gtk_widget_get_parent(GTK_WIDGET(editable)))
+		if (auto parent_mm = Glib::wrap(parent, true))
+			if (dynamic_cast<NumericEntry *>(parent_mm)) {
+				Glib::ustring str(text, length);
+				for (auto ch: str)
+					if (!Glib::Unicode::isdigit(ch) && ch != '.')
+						return;
+			}
+
 	old_insert_text(editable, text, length, position);
 }
 

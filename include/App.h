@@ -46,10 +46,10 @@ class App {
 
 		int run(int argc, char **argv);
 		void onTravel();
+		void update();
 
 	private:
 		static constexpr int ROWS = 5, COLUMNS = 5;
-		void update();
 };
 
 extern std::unique_ptr<App> app;

@@ -1,5 +1,7 @@
 #include "App.h"
+#include "NameGen.h"
 #include "UI.h"
+#include "ui/BasicEntry.h"
 #include "ui/EntryDialog.h"
 #include "ui/InventoryDialog.h"
 #include "ui/NumericEntry.h"
@@ -22,8 +24,10 @@ void RegionTab::Rbox::updateLabel(const std::string &resource_name, double amoun
 RegionTab::RegionTab(App &app_): app(app_) {
 	box.append(nameLabel);
 	renameButton.set_icon_name("document-edit-symbolic");
+	renameButton.set_tooltip_text("Rename region");
 	buttonBox.append(renameButton);
 	deleteButton.set_icon_name("edit-delete-symbolic");
+	deleteButton.set_tooltip_text("Delete region");
 	buttonBox.append(deleteButton);
 	labelBox.append(positionLabel);
 	labelBox.append(sizeLabel);
@@ -39,6 +43,19 @@ RegionTab::RegionTab(App &app_): app(app_) {
 
 	app.gtkApp->signal_activate().connect([this] {
 		update();
+	});
+
+	renameButton.signal_clicked().connect([this] {
+		auto *dialog = new EntryDialog<BasicEntry>("Rename Region", *app.mainWindow, "New region name:");
+		app.dialog.reset(dialog);
+		dialog->set_text(NameGen::makeRandomLanguage().makeName());
+		dialog->signal_submit().connect([&](Glib::ustring str) {
+			auto lock = app.lockGame();
+			app.game->updateName(app.game->currentRegion(), str);
+			app.regionTab->update();
+			app.update();
+		});
+		app.dialog->show();
 	});
 }
 
