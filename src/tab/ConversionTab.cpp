@@ -68,64 +68,22 @@ namespace Game2 {
 			return;
 
 		for (auto &processor: app.game->processors) {
+			ProcessorWidget *widget = nullptr;
 			switch (processor->getType()) {
-				case Processor::Type::Centrifuge: {
-					auto *widget = new CentrifugeWidget(app, *processor);
-					processorWidgets.emplace_back(widget);
-					widget->init();
-					vbox.append(*widget);
-					break;
-				}
-
-				case Processor::Type::Crusher: {
-					auto *widget = new CrusherWidget(app, *processor);
-					processorWidgets.emplace_back(widget);
-					widget->init();
-					vbox.append(*widget);
-					break;
-				}
-
-				case Processor::Type::Electrolyzer: {
-					auto *widget = new ElectrolyzerWidget(app, *processor);
-					processorWidgets.emplace_back(widget);
-					widget->init();
-					vbox.append(*widget);
-					break;
-				}
-
-				case Processor::Type::Fermenter: {
-					auto *widget = new FermenterWidget(app, *processor);
-					processorWidgets.emplace_back(widget);
-					widget->init();
-					vbox.append(*widget);
-					break;
-				}
-
-				case Processor::Type::Furnace: {
-					auto *widget = new FurnaceWidget(app, *processor);
-					processorWidgets.emplace_back(widget);
-					widget->init();
-					vbox.append(*widget);
-					break;
-				}
-
-				case Processor::Type::Refinery: {
-					auto *widget = new RefineryWidget(app, *processor);
-					processorWidgets.emplace_back(widget);
-					widget->init();
-					vbox.append(*widget);
-					break;
-				}
-
-				case Processor::Type::RocketFurnace: {
-					auto *widget = new RocketFurnaceWidget(app, *processor);
-					processorWidgets.emplace_back(widget);
-					widget->init();
-					vbox.append(*widget);
-					break;
-				}
-
+				case Processor::Type::Centrifuge:    widget = new    CentrifugeWidget(app, *processor); break;
+				case Processor::Type::Crusher:       widget = new       CrusherWidget(app, *processor); break;
+				case Processor::Type::Electrolyzer:  widget = new  ElectrolyzerWidget(app, *processor); break;
+				case Processor::Type::Fermenter:     widget = new     FermenterWidget(app, *processor); break;
+				case Processor::Type::Furnace:       widget = new       FurnaceWidget(app, *processor); break;
+				case Processor::Type::Refinery:      widget = new      RefineryWidget(app, *processor); break;
+				case Processor::Type::RocketFurnace: widget = new RocketFurnaceWidget(app, *processor); break;
 				default:;
+			}
+
+			if (widget) {
+				processorWidgets.emplace_back(widget);
+				widget->init();
+				vbox.append(*widget);
 			}
 		}
 	}
