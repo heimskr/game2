@@ -11,6 +11,7 @@
 #include "tab/InventoryTab.h"
 #include "tab/ExtractionsTab.h"
 #include "tab/ConversionTab.h"
+#include "tab/MarketTab.h"
 
 namespace Game2 {
 	class App {
@@ -34,6 +35,7 @@ namespace Game2 {
 			std::unique_ptr<InventoryTab> inventoryTab;
 			std::unique_ptr<ExtractionsTab> extractionsTab;
 			std::unique_ptr<ConversionTab> conversionTab;
+			std::unique_ptr<MarketTab> marketTab;
 			bool alive = true;
 
 			std::vector<Gtk::Button> travelButtons;

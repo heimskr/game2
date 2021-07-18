@@ -64,12 +64,14 @@ namespace Game2 {
 		inventoryTab = std::make_unique<InventoryTab>(*this);
 		extractionsTab = std::make_unique<ExtractionsTab>(*this);
 		conversionTab = std::make_unique<ConversionTab>(*this);
+		marketTab = std::make_unique<MarketTab>(*this);
 
 		addTab(*regionTab);
 		addTab(*travelTab);
 		addTab(*inventoryTab);
 		addTab(*extractionsTab);
 		addTab(*conversionTab);
+		addTab(*marketTab);
 	}
 
 	void App::addTab(Tab &tab) {

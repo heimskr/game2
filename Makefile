@@ -26,7 +26,8 @@ run: $(OUTPUT)
 	./$(OUTPUT)
 
 clean:
-	rm -f *.o **/*.o $(OUTPUT)
+	@ echo rm -f $$\(OBJECTS\) $(OUTPUT)
+	@ rm -f $(OBJECTS) $(OUTPUT)
 
 install: $(OUTPUT)
 	mkdir -p ~/.cache/gnome-builder/install/game2/host/

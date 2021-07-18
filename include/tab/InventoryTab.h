@@ -12,8 +12,6 @@ namespace Game2 {
 	class InventoryTab: public Tab {
 		public:
 			App &app;
-			Gtk::ScrolledWindow scrolled;
-			Gtk::Grid grid;
 
 			InventoryTab() = delete;
 			InventoryTab(const InventoryTab &) = delete;
@@ -29,7 +27,8 @@ namespace Game2 {
 			void update();
 
 		private:
-			// std::vector<std::unique_ptr<Gtk::Widget>> widgets;
+			Gtk::ScrolledWindow scrolled;
+			Gtk::Grid grid;
 			std::map<std::string, Gtk::Button> discardButtons;
 			std::map<std::string, Gtk::Label> nameLabels, amountLabels;
 			void insertRow(const std::string &resource_name, double amount, int row);
