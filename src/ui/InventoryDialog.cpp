@@ -78,7 +78,8 @@ namespace Game2 {
 		grid.attach(*label, 0, row);
 
 		label = &amountLabels.emplace(name, Gtk::Label(niceDouble(amount), Gtk::Align::START)).first->second;
-		label->set_size_request(150, -1);
+		label->set_size_request(100, -1);
+		label->set_xalign(0);
 		grid.attach(*label, 1, row);
 
 		auto *button = &buttons.emplace(name, Gtk::Button("Select")).first->second;
