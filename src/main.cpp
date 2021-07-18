@@ -11,8 +11,8 @@
 #include "ui/UpdatingDialog.h"
 
 int main(int argc, char *argv[]) {
-	app = std::make_unique<App>(Gtk::Application::create("com.heimskr.game2"));
 	srand(time(nullptr));
+	app = std::make_unique<App>(Gtk::Application::create("com.heimskr.game2"));
 
 	app->tickThread = std::thread([&] {
 		while (app->alive) {

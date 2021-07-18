@@ -41,9 +41,7 @@ RegionTab::RegionTab(App &app_): app(app_) {
 	sizeLabel.set_halign(Gtk::Align::START);
 	nameLabel.add_css_class("big");
 
-	app.gtkApp->signal_activate().connect([this] {
-		update();
-	});
+	app.gtkApp->signal_activate().connect(sigc::mem_fun(*this, &RegionTab::update));
 
 	renameButton.signal_clicked().connect([this] {
 		auto *dialog = new EntryDialog<BasicEntry>("Rename Region", *app.mainWindow, "New region name:");
@@ -124,7 +122,9 @@ void RegionTab::update() {
 			widgets.emplace_back(bbox);
 			ebox->append(*bbox);
 
-			Gtk::Button *button = new Gtk::Button("Move");
+			Gtk::Button *button = new Gtk::Button;
+			button->set_icon_name("list-add-symbolic");
+			button->set_tooltip_text("Move a resource into the area");
 			widgets.emplace_back(button);
 			button->set_tooltip_text("Move a resource from your inventory into the area");
 			bbox->append(*button);
@@ -153,7 +153,9 @@ void RegionTab::update() {
 				app.dialog->show();
 			});
 
-			button = new Gtk::Button("Resize");
+			button = new Gtk::Button;
+			button->set_icon_name("object-flip-horizontal-symbolic");
+			button->set_tooltip_text("Resize the area");
 			widgets.emplace_back(button);
 			bbox->append(*button);
 			button->set_halign(Gtk::Align::START);
