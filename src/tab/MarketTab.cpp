@@ -267,12 +267,21 @@ namespace Game2 {
 
 				app.gameMutex.lock();
 				auto region = app.game->currentRegionPointer();
+				double in_region = region->allNonOwnedResources()[resource_name];
+
+				if (lte(amount, 0) || ltna(in_region, amount)) {
+					app.gameMutex.unlock();
+					app.error("Invalid amount.");
+					return;
+				}
+
 				const size_t total_price = Stonks::totalBuyPrice(*region, resource_name, amount);
 				if (app.game->money < total_price) {
 					app.error("You don't have enough money.");
 					app.gameMutex.unlock();
 					return;
 				}
+
 				auto *dialog = new Gtk::MessageDialog(*app.mainWindow, "Amount: " + std::to_string(total_price), false,
 					Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true);
 				app.dialog.reset(dialog);
