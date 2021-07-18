@@ -1,10 +1,14 @@
 #pragma once
 
 #include <gtkmm-4.0/gtkmm.h>
+#include <map>
+#include <string>
+
+#include "ui/Tab.h"
 
 class App;
 
-class InventoryTab {
+class InventoryTab: public Tab {
 	public:
 		App &app;
 		Gtk::ScrolledWindow scrolled;
@@ -18,6 +22,7 @@ class InventoryTab {
 		InventoryTab & operator=(const InventoryTab &) = delete;
 		InventoryTab & operator=(InventoryTab &&) = delete;
 
+		Gtk::Widget & getWidget() override { return scrolled; }
 		void reset();
 		void update();
 

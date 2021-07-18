@@ -34,8 +34,11 @@ RegionTab::RegionTab(App &app_): app(app_) {
 	buttonBox.append(labelBox);
 	buttonBox.set_spacing(5);
 	box.append(buttonBox);
-	box.set_spacing(5);
 	setMargins(box, 5);
+	scrolled.set_child(expandersBox);
+	scrolled.set_vexpand(true);
+	box.append(scrolled);
+	box.set_spacing(5);
 
 	positionLabel.set_halign(Gtk::Align::START);
 	sizeLabel.set_halign(Gtk::Align::START);
@@ -101,7 +104,7 @@ void RegionTab::update() {
 		lastRegion = region_ptr;
 
 		for (Gtk::Expander &expander: expanders)
-			box.remove(expander);
+			expandersBox.remove(expander);
 		expanders.clear();
 
 		widgets.clear();
@@ -110,7 +113,7 @@ void RegionTab::update() {
 			const std::string &area_name = pair.first;
 			std::shared_ptr<Area> area = pair.second;
 			Gtk::Expander &expander = expanders.emplace_back(area->name);
-			box.append(expander);
+			expandersBox.append(expander);
 			expander.set_margin_bottom(10);
 
 			auto ebox = std::make_shared<Gtk::Box>(Gtk::Orientation::VERTICAL, 5);

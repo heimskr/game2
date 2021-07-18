@@ -2,9 +2,12 @@
 
 #include <gtkmm-4.0/gtkmm.h>
 
-class App;
+#include "ui/Tab.h"
 
-class TravelTab {
+class App;
+class Region;
+
+class TravelTab: public Tab {
 	public:
 		static constexpr int ROWS = 5, COLUMNS = 5;
 		static constexpr int BUTTON_COUNT = ROWS * COLUMNS;
@@ -21,6 +24,7 @@ class TravelTab {
 		TravelTab & operator=(const TravelTab &) = delete;
 		TravelTab & operator=(TravelTab &&) = delete;
 
+		Gtk::Widget & getWidget() override { return grid; }
 		void update();
 
 	private:

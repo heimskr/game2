@@ -9,10 +9,12 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ui/Tab.h"
+
 class App;
 class Region;
 
-class RegionTab {
+class RegionTab: public Tab {
 	public:
 		struct Rbox: public Gtk::Box {
 			Gtk::Button extractButton {"Extract"};
@@ -24,7 +26,8 @@ class RegionTab {
 		};
 
 		App &app;
-		Gtk::Box box {Gtk::Orientation::VERTICAL};
+		Gtk::ScrolledWindow scrolled;
+		Gtk::Box box {Gtk::Orientation::VERTICAL}, expandersBox {Gtk::Orientation::VERTICAL};
 		Gtk::Box buttonBox {Gtk::Orientation::HORIZONTAL}, labelBox {Gtk::Orientation::VERTICAL};
 		Gtk::Button renameButton, deleteButton;
 		Gtk::Label nameLabel, positionLabel, sizeLabel;
@@ -47,6 +50,8 @@ class RegionTab {
 
 		RegionTab & operator=(const RegionTab &) = delete;
 		RegionTab & operator=(RegionTab &&) = delete;
+
+		Gtk::Widget & getWidget() override { return box; }
 
 		void update();
 		void reset();

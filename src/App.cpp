@@ -60,9 +60,9 @@ App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
 	travelTab = std::make_unique<TravelTab>(*this);
 	inventoryTab = std::make_unique<InventoryTab>(*this);
 
-	notebook->append_page(regionTab->box, "Region");
-	notebook->append_page(travelTab->grid, "Travel");
-	notebook->append_page(inventoryTab->scrolled, "Inventory");
+	notebook->append_page(regionTab->getWidget(), "Region");
+	notebook->append_page(travelTab->getWidget(), "Travel");
+	notebook->append_page(inventoryTab->getWidget(), "Inventory");
 }
 
 void App::quit() {
