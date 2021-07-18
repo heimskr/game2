@@ -96,6 +96,12 @@ namespace Game2 {
 		if (!app.game)
 			return;
 
+		removeChildren(sellGrid);
+		sellWidgets.clear();
+		sellAmountLabels.clear();
+		sellPriceLabels.clear();
+		addSellHeader();
+
 		Region &region = app.game->currentRegion();
 		auto non_owned = region.allNonOwnedResources();
 		double money = app.game->money;
@@ -133,10 +139,15 @@ namespace Game2 {
 		if (!app.game)
 			return;
 
+		removeChildren(buyGrid);
+		buyWidgets.clear();
+		buyAmountLabels.clear();
+		buyPriceLabels.clear();
+		addBuyHeader();
+
 		Region &region = app.game->currentRegion();
 		auto non_owned = region.allNonOwnedResources();
 		double money = app.game->money;
-		double greed = region.greed;
 		previousNonOwned.clear();
 
 		int row = 1;
@@ -205,7 +216,6 @@ namespace Game2 {
 		Region &region = app.game->currentRegion();
 		auto non_owned = region.allNonOwnedResources();
 		double money = app.game->money;
-		double greed = region.greed;
 
 		if (!compare(previousNonOwned, non_owned)) {
 			resetBuy();
