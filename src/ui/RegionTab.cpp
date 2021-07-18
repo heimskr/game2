@@ -21,8 +21,15 @@ void RegionTab::Rbox::updateLabel(const std::string &resource_name, double amoun
 
 RegionTab::RegionTab(App &app_): app(app_) {
 	box.append(nameLabel);
-	box.append(positionLabel);
-	box.append(sizeLabel);
+	renameButton.set_icon_name("document-edit-symbolic");
+	buttonBox.append(renameButton);
+	deleteButton.set_icon_name("edit-delete-symbolic");
+	buttonBox.append(deleteButton);
+	labelBox.append(positionLabel);
+	labelBox.append(sizeLabel);
+	buttonBox.append(labelBox);
+	buttonBox.set_spacing(5);
+	box.append(buttonBox);
 	box.set_spacing(5);
 	setMargins(box, 5);
 

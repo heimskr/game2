@@ -25,6 +25,8 @@ class RegionTab {
 
 		App &app;
 		Gtk::Box box {Gtk::Orientation::VERTICAL};
+		Gtk::Box buttonBox {Gtk::Orientation::HORIZONTAL}, labelBox {Gtk::Orientation::VERTICAL};
+		Gtk::Button renameButton, deleteButton;
 		Gtk::Label nameLabel, positionLabel, sizeLabel;
 		std::shared_ptr<Region> lastRegion;
 		std::vector<std::shared_ptr<Gtk::Widget>> widgets;
