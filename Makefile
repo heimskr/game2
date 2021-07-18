@@ -12,10 +12,12 @@ OBJECTS  := $(SOURCES:.cpp=.o)
 all: $(OUTPUT)
 
 %.o: %.cpp
-	$(CPP) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
+	@ echo "\e[2m[\e[22;32mCC\e[39;2m]\e[22m $<"
+	@ $(CPP) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT): $(OBJECTS)
-	$(CPP) $^ -o $@ $(LIBS) $(LDFLAGS)
+	@ echo "\e[2m[\e[22;36mLD\e[39;2m]\e[22m $@"
+	@ $(CPP) $^ -o $@ $(LIBS) $(LDFLAGS)
 
 test: $(OUTPUT)
 	./$(OUTPUT)
