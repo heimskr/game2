@@ -16,9 +16,15 @@ namespace Game2 {
 		topGrid.set_row_spacing(5);
 		topGrid.set_column_spacing(10);
 		box.append(topGrid);
-		mainGrid.set_row_spacing(5);
-		mainGrid.set_column_spacing(5);
-		scrolled.set_child(mainGrid);
+		gridBox.set_homogeneous(true);
+		gridBox.set_spacing(10);
+		scrolled.set_child(gridBox);
+		leftGrid.set_row_spacing(5);
+		leftGrid.set_column_spacing(5);
+		gridBox.append(leftGrid);
+		rightGrid.set_row_spacing(5);
+		rightGrid.set_column_spacing(5);
+		gridBox.append(rightGrid);
 		scrolled.set_vexpand(true);
 		box.append(scrolled);
 		setMargins(box, 5);
@@ -26,7 +32,8 @@ namespace Game2 {
 	}
 
 	void MarketTab::reset() {
-		removeChildren(mainGrid);
+		removeChildren(leftGrid);
+		removeChildren(rightGrid);
 		widgets.clear();
 
 		updateMoney();
@@ -50,27 +57,27 @@ namespace Game2 {
 		widgets.emplace_back(label);
 		label->add_css_class("table-header");
 		label->set_hexpand(true);
-		mainGrid.attach(*label, 1, 0);
+		leftGrid.attach(*label, 1, 0);
 		label = new Gtk::Label("Amount", Gtk::Align::START);
 		widgets.emplace_back(label);
 		label->add_css_class("table-header");
-		mainGrid.attach(*label, 2, 0);
+		leftGrid.attach(*label, 2, 0);
 		label = new Gtk::Label("Price", Gtk::Align::START);
 		widgets.emplace_back(label);
 		label->add_css_class("table-header");
-		mainGrid.attach(*label, 3, 0);
+		leftGrid.attach(*label, 3, 0);
 		label = new Gtk::Label("Region Resources", Gtk::Align::START);
 		widgets.emplace_back(label);
 		label->add_css_class("table-header");
 		label->set_hexpand(true);
-		mainGrid.attach(*label, 4, 0);
+		rightGrid.attach(*label, 0, 0);
 		label = new Gtk::Label("Amount", Gtk::Align::START);
 		widgets.emplace_back(label);
 		label->add_css_class("table-header");
-		mainGrid.attach(*label, 5, 0);
+		rightGrid.attach(*label, 1, 0);
 		label = new Gtk::Label("Price", Gtk::Align::START);
 		widgets.emplace_back(label);
 		label->add_css_class("table-header");
-		mainGrid.attach(*label, 6, 0);
+		rightGrid.attach(*label, 2, 0);
 	}
 }

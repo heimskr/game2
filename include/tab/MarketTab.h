@@ -29,9 +29,9 @@ namespace Game2 {
 			void updateMoney();
 
 		private:
-			Gtk::Box box {Gtk::Orientation::VERTICAL};
+			Gtk::Box box {Gtk::Orientation::VERTICAL}, gridBox {Gtk::Orientation::HORIZONTAL};
 			Gtk::ScrolledWindow scrolled;
-			Gtk::Grid topGrid, mainGrid;
+			Gtk::Grid topGrid, leftGrid, rightGrid;
 			Gtk::Label regionMoneyLabel {"Region money"}, yourMoneyLabel {"Your money"}, regionMoney, yourMoney;
 			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 
