@@ -6,6 +6,8 @@
 
 #include "recipe/RandomRecipe.h"
 
-struct CentrifugeRecipe: public RandomRecipe {
-	using RandomRecipe::RandomRecipe;
-};
+namespace Game2 {
+	struct CentrifugeRecipe: public RandomRecipe {
+		using RandomRecipe::RandomRecipe;
+	};
+}

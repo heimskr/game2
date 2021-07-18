@@ -1,15 +1,17 @@
 #include "Processor.h"
 
-class RocketFurnace: public Processor {
-	public:
-		double hydrogen = 0., oxygen = 0.;
+namespace Game2 {
+	class RocketFurnace: public Processor {
+		public:
+			double hydrogen = 0., oxygen = 0.;
 
-		using Processor::Processor;
+			using Processor::Processor;
 
-		RocketFurnace & setHydrogen(double);
-		RocketFurnace & setOxygen(double);
+			RocketFurnace & setHydrogen(double);
+			RocketFurnace & setOxygen(double);
 
-		std::string toString() const override;
-		double tick(double delta) override;
-		Type getType() const override { return Type::RocketFurnace; }
-};
+			std::string toString() const override;
+			double tick(double delta) override;
+			Type getType() const override { return Type::RocketFurnace; }
+	};
+}

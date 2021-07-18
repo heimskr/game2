@@ -8,18 +8,20 @@
 #include "recipe/CraftingRecipe.h"
 #include "recipe/ElectrolyzerRecipe.h"
 
-class Game;
+namespace Game2 {
+	class Game;
 
-struct RecipeManager {
-	Game *game;
-	std::map<std::string, CentrifugeRecipe> centrifuge;
-	std::map<std::string, CrusherRecipe> crusher;
-	std::vector<RefineryRecipe> refinery;
-	std::vector<CraftingRecipe> crafting;
-	std::map<std::string, ElectrolyzerRecipe> electrolyzer;
+	struct RecipeManager {
+		Game *game;
+		std::map<std::string, CentrifugeRecipe> centrifuge;
+		std::map<std::string, CrusherRecipe> crusher;
+		std::vector<RefineryRecipe> refinery;
+		std::vector<CraftingRecipe> crafting;
+		std::map<std::string, ElectrolyzerRecipe> electrolyzer;
 
-	RecipeManager() = delete;
-	RecipeManager(Game &);
+		RecipeManager() = delete;
+		RecipeManager(Game &);
 
-	void addAll();
-};
+		void addAll();
+	};
+}

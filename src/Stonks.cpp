@@ -4,7 +4,7 @@
 #include "Region.h"
 #include "Stonks.h"
 
-namespace Stonks {
+namespace Game2::Stonks {
 	double buyPriceToSellPrice(double buy_price, double greed) {
 		return buy_price / (1. + greed);
 	}

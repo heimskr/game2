@@ -2,13 +2,15 @@
 
 #include "ui/ProcessorWidget.h"
 
-class FurnaceWidget: public ProcessorWidget {
-	public:
-		using ProcessorWidget::ProcessorWidget;
+namespace Game2 {
+	class FurnaceWidget: public ProcessorWidget {
+		public:
+			using ProcessorWidget::ProcessorWidget;
 
-	protected:
-		void addExtraButtons() override;
+		protected:
+			void addExtraButtons() override;
 
-	private:
-		Gtk::Button fillButton;
-};
+		private:
+			Gtk::Button fillButton;
+	};
+}

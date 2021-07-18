@@ -3,10 +3,6 @@
 #include <string>
 #include "platform.h"
 
-#ifdef __SWITCH__
-extern FsFileSystem fs;
-#endif
-
 namespace FS {
 	void init();
 	bool fileExists(const char *);

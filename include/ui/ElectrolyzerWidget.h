@@ -2,10 +2,12 @@
 
 #include "ui/ProcessorWidget.h"
 
-class ElectrolyzerWidget: public ProcessorWidget {
-	public:
-		using ProcessorWidget::ProcessorWidget;
+namespace Game2 {
+	class ElectrolyzerWidget: public ProcessorWidget {
+		public:
+			using ProcessorWidget::ProcessorWidget;
 
-	protected:
-		void addExtraButtons() override;
-};
+		protected:
+			void addExtraButtons() override;
+	};
+}

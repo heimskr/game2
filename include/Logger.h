@@ -1,9 +1,9 @@
 #pragma once
 
 #include <stdio.h>
-#ifdef __SWITCH__
-#include <switch/runtime/devices/console.h>
-#endif
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
 
 namespace Logger {
 	template <typename ...Args>
@@ -12,9 +12,6 @@ namespace Logger {
 		fprintf(stderr, std::forward<Args>(args)...);
 		fprintf(stderr, "\n");
 		fflush(stderr);
-#ifdef __SWITCH__
-		consoleUpdate(nullptr);
-#endif
 	}
 
 	template <typename ...Args>
@@ -23,9 +20,6 @@ namespace Logger {
 		fprintf(stderr, std::forward<Args>(args)...);
 		fprintf(stderr, "\n");
 		fflush(stderr);
-#ifdef __SWITCH__
-		consoleUpdate(nullptr);
-#endif
 	}
 
 	template <typename ...Args>
@@ -34,9 +28,6 @@ namespace Logger {
 		fprintf(stderr, std::forward<Args>(args)...);
 		fprintf(stderr, "\n");
 		fflush(stderr);
-#ifdef __SWITCH__
-		consoleUpdate(nullptr);
-#endif
 	}
 
 	template <typename ...Args>
@@ -45,8 +36,7 @@ namespace Logger {
 		fprintf(stderr, std::forward<Args>(args)...);
 		fprintf(stderr, "\n");
 		fflush(stderr);
-#ifdef __SWITCH__
-		consoleUpdate(nullptr);
-#endif
 	}
 }
+
+#pragma GCC diagnostic pop

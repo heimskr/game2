@@ -2,4 +2,6 @@
 
 #include "ui/ElectrolyzerWidget.h"
 
-void ElectrolyzerWidget::addExtraButtons() {}
+namespace Game2 {
+	void ElectrolyzerWidget::addExtraButtons() {}
+}

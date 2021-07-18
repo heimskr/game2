@@ -6,29 +6,30 @@
 
 #include "ui/Tab.h"
 
-class App;
+namespace Game2 {
+	class App;
 
-class ExtractionsTab: public Tab {
-	public:
-		App &app;
+	class ExtractionsTab: public Tab {
+		public:
+			App &app;
 
-		ExtractionsTab() = delete;
-		ExtractionsTab(const ExtractionsTab &) = delete;
-		ExtractionsTab(ExtractionsTab &&) = delete;
-		ExtractionsTab(App &);
+			ExtractionsTab() = delete;
+			ExtractionsTab(const ExtractionsTab &) = delete;
+			ExtractionsTab(ExtractionsTab &&) = delete;
+			ExtractionsTab(App &);
 
-		ExtractionsTab & operator=(const ExtractionsTab &) = delete;
-		ExtractionsTab & operator=(ExtractionsTab &&) = delete;
+			ExtractionsTab & operator=(const ExtractionsTab &) = delete;
+			ExtractionsTab & operator=(ExtractionsTab &&) = delete;
 
-		void reset();
+			void reset();
 
-	private:
-		Gtk::ScrolledWindow scrolled;
-		Gtk::Grid grid;
+		private:
+			Gtk::ScrolledWindow scrolled;
+			Gtk::Grid grid;
 
-		std::vector<std::unique_ptr<Gtk::Widget>> widgets;
+			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 
-		Gtk::Widget & getWidget() override { return scrolled; }
-		Glib::ustring getName() override { return "Extractions"; }
-};
-
+			Gtk::Widget & getWidget() override { return scrolled; }
+			Glib::ustring getName() override { return "Extractions"; }
+	};
+}

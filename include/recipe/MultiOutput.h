@@ -2,7 +2,9 @@
 
 #include <string>
 
-struct MultiOutput {
-	std::string output;
-	double amount;
-};
+namespace Game2 {
+	struct MultiOutput {
+		std::string output;
+		double amount;
+	};
+}
