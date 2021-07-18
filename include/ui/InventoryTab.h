@@ -31,4 +31,5 @@ class InventoryTab: public Tab {
 		std::map<std::string, Gtk::Button> discardButtons;
 		std::map<std::string, Gtk::Label> nameLabels, amountLabels;
 		void insertRow(const std::string &resource_name, double amount, int row);
+		bool discard(const std::string &resource_name, double amount);
 };

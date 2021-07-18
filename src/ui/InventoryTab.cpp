@@ -2,7 +2,10 @@
 
 #include "App.h"
 #include "UI.h"
+#include "Util.h"
 #include "ui/InventoryTab.h"
+#include "ui/EntryDialog.h"
+#include "ui/NumericEntry.h"
 
 InventoryTab::InventoryTab(App &app_): app(app_) {
 	scrolled.set_child(grid);
@@ -57,6 +60,23 @@ void InventoryTab::insertRow(const std::string &resource_name, double amount, in
 	auto &button = discardButtons.emplace(resource_name, Gtk::Button()).first->second;
 	button.set_tooltip_text("Discard resource");
 	button.set_icon_name("list-remove-symbolic");
+	button.signal_clicked().connect([this, resource_name] {
+		auto *dialog = new EntryDialog<NumericEntry>("Discard Resource", *app.mainWindow, "Amount to discard:");
+		app.dialog.reset(dialog);
+		dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
+			app.delay([this, resource_name, response] {
+				double amount;
+				try {
+					amount = parseDouble(response);
+				} catch (std::invalid_argument &) {
+					app.error("Invalid amount.");
+					return;
+				}
+				discard(resource_name, amount);
+			});
+		});
+		app.dialog->show();
+	});
 	grid.attach(button, 0, row);
 
 	auto &name_label = nameLabels.emplace(resource_name, resource_name).first->second;
@@ -69,4 +89,27 @@ void InventoryTab::insertRow(const std::string &resource_name, double amount, in
 	auto &amount_label = amountLabels.emplace(resource_name, std::to_string(amount)).first->second;
 	amount_label.set_halign(Gtk::Align::START);
 	grid.attach(amount_label, 2, row);
+}
+
+bool InventoryTab::discard(const std::string &resource_name, double amount) {
+	if (lte(amount, 0.)) {
+		app.error("Invalid amount.");
+		return false;
+	}
+
+	try {
+		double &in_inventory = app.game->inventory.at(resource_name);
+		if (ltna(in_inventory, amount)) {
+			app.error("You don't have enough of that resource.");
+			return false;
+		}
+
+		if ((in_inventory -= amount) < Resource::MIN_AMOUNT)
+			app.game->inventory.erase(resource_name);
+	} catch (std::out_of_range &) {
+		app.error("Resource not in inventory.");
+		return false;
+	}
+
+	return true;
 }

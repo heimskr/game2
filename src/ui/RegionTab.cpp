@@ -220,18 +220,18 @@ void RegionTab::update() {
 bool RegionTab::insert(std::shared_ptr<Area> area, const Glib::ustring &resource_name, double amount) {
 	try {
 		if (amount <= 0) {
-			app.alert("Error: Invalid amount.");
+			app.error("Invalid amount.");
 			return false;
 		}
 
 		if (app.game->inventory.count(resource_name) == 0) {
-			app.alert("Error: You don't have any of that resource.");
+			app.error("You don't have any of that resource.");
 			return false;
 		}
 
 		double &in_inventory = app.game->inventory.at(resource_name);
 		if (ltna(in_inventory, amount)) {
-			app.alert("Error: You don't have enough of that resource.");
+			app.error("You don't have enough of that resource.");
 			return false;
 		}
 
