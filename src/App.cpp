@@ -16,9 +16,6 @@ namespace Game2 {
 		builder = Gtk::Builder::create();
 		builder->add_from_file("main.ui");
 
-		saveButton = builder->get_widget<Gtk::Button>("save_button");
-		saveButton->set_visible(false);
-
 		cssProvider = Gtk::CssProvider::create();
 		cssProvider->load_from_path("style.css");
 		Gtk::StyleContext::add_provider_for_display(Gdk::Display::get_default(), cssProvider,
@@ -36,7 +33,6 @@ namespace Game2 {
 			notebook->show();
 			auto lock = lockGame();
 			game = Game::loadDefaults(*this);
-			saveButton->set_visible(true);
 			onTravel();
 			inventoryTab->reset();
 			conversionTab->reset();
@@ -48,7 +44,6 @@ namespace Game2 {
 			notebook->show();
 			auto lock = lockGame();
 			game = Game::load(*this);
-			saveButton->set_visible(true);
 			onTravel();
 			inventoryTab->reset();
 			conversionTab->reset();
@@ -86,7 +81,7 @@ namespace Game2 {
 	}
 
 	void App::addTab(Tab &tab) {
-	notebook->append_page(tab.getWidget(), tab.getName());
+		notebook->append_page(tab.getWidget(), tab.getName());
 	}
 
 	void App::quit() {

@@ -29,27 +29,6 @@
 				</style>
 			</object>
 		</property>
-		<child>
-			<object class="GtkButton">
-				<property name="action-name">win.new</property>
-				<property name="icon-name">document-new-symbolic</property>
-				<property name="tooltip-text" translatable="yes">New</property>
-			</object>
-		</child>
-		<child>
-			<object class="GtkButton">
-				<property name="action-name">win.open</property>
-				<property name="icon-name">document-open-symbolic</property>
-				<property name="tooltip-text" translatable="yes">Open</property>
-			</object>
-		</child>
-		<child>
-			<object class="GtkButton" id="save_button">
-				<property name="action-name">win.save</property>
-				<property name="icon-name">document-save-symbolic</property>
-				<property name="tooltip-text" translatable="yes">Save</property>
-			</object>
-		</child>
 		<child type="end">
 			<object class="GtkMenuButton" id="gear_menu_button">
 				<property name="valign">center</property>
@@ -61,12 +40,5 @@
 				</accessibility>
 			</object>
 		</child>
-		<!-- <child>
-			<object class="GtkButton">
-				<property name="action-name">win.save_as</property>
-				<property name="icon-name">document-save-as-symbolic</property>
-				<property name="tooltip-text" translatable="yes">Save As</property>
-			</object>
-		</child> -->
 	</object>
 </interface>
