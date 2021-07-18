@@ -134,6 +134,7 @@ namespace Game2 {
 		inventoryTab->update();
 		regionTab->update();
 		conversionTab->update();
+		marketTab->update();
 	}
 
 	void App::hackWindow() {

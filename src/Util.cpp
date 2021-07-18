@@ -130,6 +130,17 @@ namespace Game2 {
 		return true;
 	}
 
+	bool compare(const std::unordered_set<std::string> &set, const std::map<std::string, double> &map) {
+		if (set.size() != map.size())
+			return false;
+
+		for (const auto &[key, value]: map)
+			if (!set.contains(key))
+				return false;
+
+		return true;
+	}
+
 	void shrink(Game2::Resource::Map &map) {
 		std::list<const std::string *> to_remove;
 		for (const auto &[name, amount]: map)

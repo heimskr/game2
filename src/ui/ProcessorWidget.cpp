@@ -8,17 +8,6 @@
 #include "ui/ProcessorWidget.h"
 
 namespace Game2 {
-	static bool compare(const std::unordered_set<std::string> &set, const Resource::Map &map) {
-		if (set.size() != map.size())
-			return false;
-
-		for (const auto &[resource_name, amount]: map)
-			if (!set.contains(resource_name))
-				return false;
-		
-		return true;
-	}
-
 	ProcessorWidget::ProcessorWidget(App &app_, Processor &processor_):
 	Gtk::Box(Gtk::Orientation::VERTICAL), app(app_), processor(processor_) {
 		addResourceButton.set_tooltip_text("Add resource to processor");

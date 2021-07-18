@@ -3,6 +3,8 @@
 #include <gtkmm-4.0/gtkmm.h>
 #include <map>
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "tab/Tab.h"
@@ -27,16 +29,24 @@ namespace Game2 {
 
 			void reset();
 			void updateMoney();
+			void updateSell();
+			void updateBuy();
+			void update();
 
 		private:
 			Gtk::Box box {Gtk::Orientation::VERTICAL}, gridBox {Gtk::Orientation::HORIZONTAL};
 			Gtk::ScrolledWindow scrolled;
-			Gtk::Grid topGrid, leftGrid, rightGrid;
+			Gtk::Grid topGrid, sellGrid, buyGrid;
 			Gtk::Label regionMoneyLabel {"Region money"}, yourMoneyLabel {"Your money"}, regionMoney, yourMoney;
-			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
+			std::vector<std::unique_ptr<Gtk::Widget>> sellWidgets, buyWidgets;
+			std::unordered_map<std::string, Gtk::Label> sellAmountLabels, sellPriceLabels;
+			std::unordered_map<std::string, Gtk::Label> buyAmountLabels,  buyPriceLabels;
+			std::unordered_set<std::string> previousInventory, previousNonOwned;
 
-			void addHeader();
-			void resetGrids();
+			void addSellHeader();
+			void addBuyHeader();
+			void resetSell();
+			void resetBuy();
 			void sell(const std::string &resource_name);
 			void buy(const std::string &resource_name);
 	};

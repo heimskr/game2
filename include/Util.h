@@ -47,6 +47,7 @@ namespace Game2 {
 	std::string stringify(const std::map<std::string, double> &);
 	std::map<std::string, double> parseMap(const std::string &);
 	bool contains(const std::map<std::string, double> &, const std::map<std::string, double> &);
+	bool compare(const std::unordered_set<std::string> &, const std::map<std::string, double> &);
 	void shrink(std::map<std::string, double> &);
 	void shrink(std::map<std::string, double> &, const std::string &);
 	bool approx(double, double);
