@@ -3,6 +3,7 @@
 #include "ui/ConversionTab.h"
 #include "ui/CentrifugeWidget.h"
 #include "ui/CrusherWidget.h"
+#include "ui/ElectrolyzerWidget.h"
 #include "ui/FermenterWidget.h"
 
 ConversionTab::ConversionTab(App &app_): app(app_) {
@@ -44,6 +45,14 @@ void ConversionTab::reset() {
 
 			case Processor::Type::Crusher: {
 				auto *widget = new CrusherWidget(app, *processor);
+				widgets.emplace_back(widget);
+				widget->init();
+				vbox.append(*widget);
+				break;
+			}
+
+			case Processor::Type::Electrolyzer: {
+				auto *widget = new ElectrolyzerWidget(app, *processor);
 				widgets.emplace_back(widget);
 				widget->init();
 				vbox.append(*widget);
