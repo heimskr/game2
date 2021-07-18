@@ -38,7 +38,8 @@ namespace Game2 {
 			bool alive = true;
 
 			std::vector<Gtk::Button> travelButtons;
-			std::vector<std::unique_ptr<Gtk::Widget>> areaWidgets, titleWidgets;
+			std::vector<std::unique_ptr<Gtk::Widget>> areaWidgets;
+			std::vector<Gtk::Widget *> titleWidgets;
 
 			App(Glib::RefPtr<Gtk::Application>);
 

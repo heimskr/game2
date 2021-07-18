@@ -17,18 +17,20 @@ namespace Game2 {
 		sortButton.set_tooltip_text("Sort processors");
 		distributeButton.set_icon_name("emblem-shared-symbolic");
 		distributeButton.set_tooltip_text("Distribute resource among all processors of a given type");
-		buttonBox.append(addButton);
-		buttonBox.append(sortButton);
-		buttonBox.append(distributeButton);
-		buttonBox.set_spacing(5);
-		mainBox.append(buttonBox);
 		vbox.set_spacing(5);
+		setMargins(vbox, 5);
 		scrolled.set_child(vbox);
 		scrolled.set_vexpand(true);
-		mainBox.append(scrolled);
-		mainBox.set_spacing(5);
-		setMargins(mainBox, 5);
 		reset();
+	}
+
+	void ConversionTab::onFocus() {
+		app.header->pack_start(addButton);
+		app.header->pack_start(sortButton);
+		app.header->pack_start(distributeButton);
+		app.titleWidgets.push_back(&addButton);
+		app.titleWidgets.push_back(&sortButton);
+		app.titleWidgets.push_back(&distributeButton);
 	}
 
 	void ConversionTab::reset() {

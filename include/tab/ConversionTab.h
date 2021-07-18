@@ -22,8 +22,9 @@ namespace Game2 {
 			ConversionTab & operator=(const ConversionTab &) = delete;
 			ConversionTab & operator=(ConversionTab &&) = delete;
 
-			Gtk::Widget & getWidget() override { return mainBox; }
+			Gtk::Widget & getWidget() override { return scrolled; }
 			Glib::ustring getName() override { return "Conversion"; }
+			void onFocus() override;
 
 			void reset();
 			void update();
