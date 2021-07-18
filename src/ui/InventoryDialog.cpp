@@ -73,13 +73,12 @@ namespace Game2 {
 	}
 
 	void InventoryDialog::insertRow(const std::string &name, double amount, unsigned row) {
-		auto *label = &nameLabels.emplace(name, Gtk::Label(name)).first->second;
+		auto *label = &nameLabels.emplace(name, Gtk::Label(name, Gtk::Align::START)).first->second;
 		label->set_hexpand(true);
-		label->set_halign(Gtk::Align::START);
 		grid.attach(*label, 0, row);
 
-		label = &amountLabels.emplace(name, Gtk::Label(niceDouble(amount))).first->second;
-		label->set_halign(Gtk::Align::START);
+		label = &amountLabels.emplace(name, Gtk::Label(niceDouble(amount), Gtk::Align::START)).first->second;
+		label->set_size_request(150, -1);
 		grid.attach(*label, 1, row);
 
 		auto *button = &buttons.emplace(name, Gtk::Button("Select")).first->second;
