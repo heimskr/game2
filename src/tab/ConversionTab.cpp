@@ -6,8 +6,11 @@
 #include "ui/CentrifugeWidget.h"
 #include "ui/CrusherWidget.h"
 #include "ui/ElectrolyzerWidget.h"
+#include "ui/EntryDialog.h"
 #include "ui/FermenterWidget.h"
 #include "ui/FurnaceWidget.h"
+#include "ui/InventoryDialog.h"
+#include "ui/NumericEntry.h"
 #include "ui/ProcessorsDialog.h"
 #include "ui/RefineryWidget.h"
 #include "ui/RocketFurnaceWidget.h"
@@ -63,7 +66,71 @@ namespace Game2 {
 	}
 
 	void ConversionTab::distribute() {
-		std::cout << "distribute\n";
+
+		auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
+		app.dialog.reset(dialog);
+		dialog->signal_submit().connect([this](const Glib::ustring &resource_name) {
+			app.delay([this, resource_name]() {
+				auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow,
+					"Amount of " + resource_name + " to distribute:");
+				dialog->signal_submit().connect([this, resource_name](const Glib::ustring &amount_text) {
+					app.delay([this, resource_name, amount_text] {
+						double amount;
+						try {
+							amount = parseDouble(amount_text);
+						} catch (std::invalid_argument &) {
+							app.error("Invalid amount.");
+							return;
+						}
+						app.gameMutex.lock();
+						if (app.game->inventory.count(resource_name) == 0) {
+							app.gameMutex.unlock();
+							app.error("You don't have any of that resource.");
+							return;
+						}
+						double &in_inventory = app.game->inventory.at(resource_name);
+						if (lte(amount, 0) || ltna(in_inventory, amount)) {
+							app.gameMutex.unlock();
+							app.error("You don't have enough of that resource.");
+							return;
+						}
+						auto *dialog = new ProcessorsDialog("Procesors", *app.mainWindow, app);
+						app.dialog.reset(dialog);
+						dialog->signal_submit().connect([this, resource_name, amount, &in_inventory](auto type) {
+							if (!type.has_value()) {
+								app.gameMutex.unlock();
+								return;
+							}
+
+							app.delay([this, resource_name, amount, &in_inventory, type] {
+								size_t count = 0;
+								for (const auto &processor: app.game->processors)
+									if (processor->getType() == *type)
+										++count;
+
+								if (count == 0) {
+									app.gameMutex.unlock();
+									app.error("You don't have any " + std::string(Processor::typeName(*type))
+										+ " processors.");
+									return;
+								}
+
+								for (auto &processor: app.game->processors)
+									if (processor->getType() == *type)
+										processor->input[resource_name] += amount / count;
+								in_inventory -= amount;
+								shrink(app.game->inventory);
+								app.gameMutex.unlock();
+							});
+						});
+						app.dialog->show();
+					});
+				});
+				app.dialog.reset(dialog);
+				app.dialog->show();
+			});
+		});
+		app.dialog->show();
 	}
 
 	void ConversionTab::onBlur() {
