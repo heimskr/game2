@@ -150,7 +150,7 @@ bool ProcessorWidget::insert(const std::string &resource_name, double amount) {
 		processor.input[resource_name] += amount;
 		return true;
 	} catch (const std::exception &err) {
-		std::cout << "??? " << err.what() << "\n";
+		std::cerr << "??? " << err.what() << "\n";
 		app.error("??? " + std::string(err.what()));
 		return false;
 	}

@@ -241,7 +241,7 @@ bool RegionTab::insert(std::shared_ptr<Area> area, const Glib::ustring &resource
 		area->resources[resource_name] += amount;
 		return true;
 	} catch (const std::exception &err) {
-		std::cout << "??? " << err.what() << "\n";
+		std::cerr << "??? " << err.what() << "\n";
 		app.error("??? " + std::string(err.what()));
 		return false;
 	}

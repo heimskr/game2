@@ -2,6 +2,7 @@
 #include "UI.h"
 #include "ui/ConversionTab.h"
 #include "ui/CentrifugeWidget.h"
+#include "ui/FermenterWidget.h"
 
 ConversionTab::ConversionTab(App &app_): app(app_) {
 	addButton.set_icon_name("list-add-symbolic");
@@ -34,6 +35,14 @@ void ConversionTab::reset() {
 		switch (processor->getType()) {
 			case Processor::Type::Centrifuge: {
 				auto *widget = new CentrifugeWidget(app, *processor);
+				widgets.emplace_back(widget);
+				widget->init();
+				vbox.append(*widget);
+				break;
+			}
+
+			case Processor::Type::Fermenter: {
+				auto *widget = new FermenterWidget(app, *processor);
 				widgets.emplace_back(widget);
 				widget->init();
 				vbox.append(*widget);
