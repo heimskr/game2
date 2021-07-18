@@ -53,6 +53,7 @@ namespace Game2 {
 	bool lte(double, double);
 	/** Less than and not approximate */
 	bool ltna(double, double);
+	std::string niceDouble(double);
 	std::string makeUUID();
 
 	template <typename T>

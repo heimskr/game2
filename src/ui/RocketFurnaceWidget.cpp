@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 
+#include "Util.h"
 #include "processor/RocketFurnace.h"
 #include "ui/RocketFurnaceWidget.h"
 
@@ -19,6 +20,6 @@ namespace Game2 {
 	void RocketFurnaceWidget::update() {
 		RocketFurnace *furnace = dynamic_cast<RocketFurnace *>(&processor);
 		assert(furnace);
-		fuelLabel.set_text("(" + std::to_string(furnace->hydrogen) + " H, " + std::to_string(furnace->oxygen) + " O)");
+		fuelLabel.set_text("(" + niceDouble(furnace->hydrogen) + " H, " + niceDouble(furnace->oxygen) + " O)");
 	}
 }

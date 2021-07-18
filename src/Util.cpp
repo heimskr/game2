@@ -156,6 +156,17 @@ namespace Game2 {
 		return (left < right) && !approx(left, right);
 	}
 
+	std::string niceDouble(double n) {
+		std::string str = std::to_string(n);
+		if (str.empty() || str.find('.') == std::string::npos)
+			return str;
+		while (!str.empty() && str.back() == '0')
+			str.pop_back();
+		if (!str.empty() && str.back() == '.')
+			str.pop_back();
+		return str;
+	}
+
 	std::string makeUUID() {
 		// https://stackoverflow.com/a/58467162/227663
 		static std::random_device dev;

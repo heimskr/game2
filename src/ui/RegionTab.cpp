@@ -19,7 +19,7 @@ namespace Game2 {
 	}
 
 	void RegionTab::Rbox::updateLabel(const std::string &resource_name, double amount) {
-		label.set_text(resource_name + " x " + std::to_string(amount));
+		label.set_text(resource_name + " x " + niceDouble(amount));
 	}
 
 	RegionTab::RegionTab(App &app_): app(app_) {

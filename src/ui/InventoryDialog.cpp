@@ -66,7 +66,7 @@ namespace Game2 {
 				grid.insert_row(row);
 				insertRow(name, amount, row);
 			} else {
-				amountLabels.at(name).set_label(std::to_string(amount));
+				amountLabels.at(name).set_label(niceDouble(amount));
 			}
 			++row;
 		}
@@ -78,7 +78,7 @@ namespace Game2 {
 		label->set_halign(Gtk::Align::START);
 		grid.attach(*label, 0, row);
 
-		label = &amountLabels.emplace(name, Gtk::Label(std::to_string(amount))).first->second;
+		label = &amountLabels.emplace(name, Gtk::Label(niceDouble(amount))).first->second;
 		label->set_halign(Gtk::Align::START);
 		grid.attach(*label, 1, row);
 

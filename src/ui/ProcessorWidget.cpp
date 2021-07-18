@@ -103,7 +103,7 @@ namespace Game2 {
 			auto &nlabel = inputNames.emplace(name, Gtk::Label(name, Gtk::Align::START)).first->second;
 			grid.attach(nlabel, 0, row);
 
-			auto &alabel = inputAmounts.emplace(name, Gtk::Label(std::to_string(amount), Gtk::Align::START)).first->second;
+			auto &alabel = inputAmounts.emplace(name, Gtk::Label(niceDouble(amount), Gtk::Align::START)).first->second;
 			grid.attach(alabel, 1, row);
 
 			++row;
@@ -117,7 +117,7 @@ namespace Game2 {
 			auto &nlabel = outputNames.emplace(name, Gtk::Label(name, Gtk::Align::START)).first->second;
 			grid.attach(nlabel, 2, row);
 
-			auto &alabel = outputAmounts.emplace(name, Gtk::Label(std::to_string(amount), Gtk::Align::START)).first->second;
+			auto &alabel = outputAmounts.emplace(name, Gtk::Label(niceDouble(amount), Gtk::Align::START)).first->second;
 			grid.attach(alabel, 3, row);
 
 			++row;
@@ -129,14 +129,14 @@ namespace Game2 {
 			resetGrid();
 		} else {
 			for (const auto &[resource_name, amount]: processor.input) {
-				const Glib::ustring amount_string = std::to_string(amount);
+				const Glib::ustring amount_string = niceDouble(amount);
 				Gtk::Label &label = inputAmounts.at(resource_name);
 				if (label.get_text() != amount_string)
 					label.set_text(amount_string);
 			}
 
 			for (const auto &[resource_name, amount]: processor.output) {
-				const Glib::ustring amount_string = std::to_string(amount);
+				const Glib::ustring amount_string = niceDouble(amount);
 				Gtk::Label &label = outputAmounts.at(resource_name);
 				if (label.get_text() != amount_string)
 					label.set_text(amount_string);

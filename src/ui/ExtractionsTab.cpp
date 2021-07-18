@@ -47,7 +47,7 @@ namespace Game2 {
 			label->set_halign(Gtk::Align::START);
 			grid.attach(*label, 2, row);
 
-			label = new Gtk::Label(std::to_string(extraction.rate) + "/s");
+			label = new Gtk::Label(niceDouble(extraction.rate) + "/s");
 			widgets.emplace_back(label);
 			label->set_halign(Gtk::Align::START);
 			grid.attach(*label, 3, row);
