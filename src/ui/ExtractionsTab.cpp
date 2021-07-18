@@ -1,3 +1,4 @@
+#include <iostream>
 #include "App.h"
 #include "UI.h"
 #include "ui/ExtractionsTab.h"
@@ -18,16 +19,23 @@ void ExtractionsTab::reset() {
 		return;
 
 	auto region = app.game->currentRegionPointer();
-	
 	int row = 0;
-	for (const Extraction &extraction: app.game->extractions) {
+
+	for (auto iter = app.game->extractions.begin(), end = app.game->extractions.end(); iter != end; ++iter) {
+		const Extraction &extraction = *iter;
+
 		if (extraction.area->parent != region.get())
 			continue;
 
-		auto *button = new Gtk::Button;
-		widgets.emplace_back(button);
-		button->set_icon_name("list-remove-symbolic");
-		grid.attach(*button, 0, row);
+		auto &button = static_cast<Gtk::Button &>(*widgets.emplace_back(new Gtk::Button));
+		button.set_tooltip_text("Remove extraction");
+		button.set_icon_name("list-remove-symbolic");
+		button.signal_clicked().connect([this, iter] {
+			std::cout << "Clicked.\n";
+			app.game->extractions.erase(iter);
+			reset();
+		});
+		grid.attach(button, 0, row);
 		
 		auto *label = new Gtk::Label(extraction.resourceName);
 		widgets.emplace_back(label);
