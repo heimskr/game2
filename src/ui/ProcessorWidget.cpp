@@ -45,23 +45,29 @@ ProcessorWidget & ProcessorWidget::init() {
 void ProcessorWidget::resetGrid() {
 	removeChildren(grid);
 	gridWidgets.clear();
+	grid.set_margin_bottom(0);
 
 	if (processor.input.empty() && processor.output.empty())
 		return;
 
+	grid.set_margin_bottom(20);
 	auto *label = new Gtk::Label("Input Resource", Gtk::Align::START);
+	label->add_css_class("table-header");
 	gridWidgets.emplace_back(label);
 	grid.attach(*label, 0, 0);
 
 	label = new Gtk::Label("Amount", Gtk::Align::START);
+	label->add_css_class("table-header");
 	gridWidgets.emplace_back(label);
 	grid.attach(*label, 1, 0);
 
 	label = new Gtk::Label("Output Resource", Gtk::Align::START);
+	label->add_css_class("table-header");
 	gridWidgets.emplace_back(label);
 	grid.attach(*label, 2, 0);
 
 	label = new Gtk::Label("Amount", Gtk::Align::START);
+	label->add_css_class("table-header");
 	gridWidgets.emplace_back(label);
 	grid.attach(*label, 3, 0);
 

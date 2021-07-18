@@ -1,3 +1,9 @@
 .big {
 	font-size: 2em;
 }
+
+.table-header {
+	text-decoration: underline;
+	font-weight: bold;
+	padding-top: 10px;
+}
