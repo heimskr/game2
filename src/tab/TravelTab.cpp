@@ -1,6 +1,6 @@
 #include "App.h"
 #include "UI.h"
-#include "ui/TravelTab.h"
+#include "tab/TravelTab.h"
 
 namespace Game2 {
 	TravelTab::TravelTab(App &app_): app(app_) {

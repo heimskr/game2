@@ -2,7 +2,7 @@
 
 #include <gtkmm-4.0/gtkmm.h>
 
-#include "ui/Tab.h"
+#include "tab/Tab.h"
 
 namespace Game2 {
 	class App;

@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-#include "ui/Tab.h"
+#include "tab/Tab.h"
 
 namespace Game2 {
 	class App;

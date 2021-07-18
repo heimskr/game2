@@ -6,11 +6,11 @@
 #include <thread>
 
 #include "Game.h"
-#include "ui/RegionTab.h"
-#include "ui/TravelTab.h"
-#include "ui/InventoryTab.h"
-#include "ui/ExtractionsTab.h"
-#include "ui/ConversionTab.h"
+#include "tab/RegionTab.h"
+#include "tab/TravelTab.h"
+#include "tab/InventoryTab.h"
+#include "tab/ExtractionsTab.h"
+#include "tab/ConversionTab.h"
 
 namespace Game2 {
 	class App {

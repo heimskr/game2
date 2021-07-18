@@ -3,8 +3,6 @@
 #include "App.h"
 #include "UI.h"
 #include "ui/InventoryDialog.h"
-#include "ui/RegionTab.h"
-#include "ui/TravelTab.h"
 
 #include <gtk-4.0/gdk/x11/gdkx.h>
 

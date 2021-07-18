@@ -1,11 +1,11 @@
 #include "App.h"
 #include "NameGen.h"
 #include "UI.h"
+#include "tab/RegionTab.h"
 #include "ui/BasicEntry.h"
 #include "ui/EntryDialog.h"
 #include "ui/InventoryDialog.h"
 #include "ui/NumericEntry.h"
-#include "ui/RegionTab.h"
 
 namespace Game2 {
 	RegionTab::Rbox::Rbox(const std::string &resource_name, double amount, std::function<void()> on_click):

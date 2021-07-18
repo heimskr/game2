@@ -3,7 +3,7 @@
 #include "App.h"
 #include "UI.h"
 #include "Util.h"
-#include "ui/InventoryTab.h"
+#include "tab/InventoryTab.h"
 #include "ui/EntryDialog.h"
 #include "ui/NumericEntry.h"
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "App.h"
 #include "UI.h"
-#include "ui/ExtractionsTab.h"
+#include "tab/ExtractionsTab.h"
 
 namespace Game2 {
 	ExtractionsTab::ExtractionsTab(App &app_): app(app_) {

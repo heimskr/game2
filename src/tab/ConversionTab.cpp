@@ -1,6 +1,6 @@
 #include "App.h"
 #include "UI.h"
-#include "ui/ConversionTab.h"
+#include "tab/ConversionTab.h"
 #include "ui/CentrifugeWidget.h"
 #include "ui/CrusherWidget.h"
 #include "ui/ElectrolyzerWidget.h"

@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "ui/Tab.h"
+#include "tab/Tab.h"
 
 namespace Game2 {
 	class App;
