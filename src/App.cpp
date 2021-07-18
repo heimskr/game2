@@ -6,6 +6,8 @@
 #include "ui/RegionTab.h"
 #include "ui/TravelTab.h"
 
+#include <gtk-4.0/gdk/x11/gdkx.h>
+
 namespace Game2 {
 	std::unique_ptr<App> app;
 
@@ -102,6 +104,11 @@ namespace Game2 {
 	int App::run(int argc, char **argv) {
 		gtkApp->signal_activate().connect([this] {
 			gtkApp->add_window(*mainWindow);
+
+			mainWindow->signal_show().connect([this] {
+				delay(sigc::mem_fun(*this, &App::hackWindow));
+			});
+
 			mainWindow->show();
 		});
 		return gtkApp->run(argc, argv);
@@ -121,5 +128,26 @@ namespace Game2 {
 		inventoryTab->update();
 		regionTab->update();
 		conversionTab->update();
+	}
+
+	void App::hackWindow() {
+		if (mainWindow->get_width() == 0 && mainWindow->get_height() == 0) {
+			delay(sigc::mem_fun(*this, &App::hackWindow));
+		} else {
+			Display *display = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+			Window window = gdk_x11_surface_get_xid(mainWindow->get_surface()->gobj());
+			XWindowAttributes attrs;
+			int status = XGetWindowAttributes(display, window, &attrs);
+			if (status == 0) {
+				std::cerr << "XGetWindowAttributes failed\n";
+			} else {
+				const int screen = DefaultScreen(display);
+				const int window_width = attrs.width;
+				const int window_height = attrs.height;
+				const int display_width = DisplayWidth(display, screen);
+				const int display_height = DisplayHeight(display, screen);
+				XMoveWindow(display, window, (display_width - window_width) / 2, (display_height - window_height) / 2);
+			}
+		}
 	}
 }

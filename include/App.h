@@ -57,6 +57,7 @@ namespace Game2 {
 			static constexpr int ROWS = 5, COLUMNS = 5;
 
 			void addTab(Tab &);
+			void hackWindow();
 	};
 
 	extern std::unique_ptr<App> app;
