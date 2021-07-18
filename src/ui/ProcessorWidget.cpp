@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "UI.h"
 #include "ui/ProcessorWidget.h"
 
 ProcessorWidget::ProcessorWidget(Processor &processor_): Gtk::Box(Gtk::Orientation::VERTICAL), processor(processor_) {
@@ -24,11 +25,68 @@ ProcessorWidget::ProcessorWidget(Processor &processor_): Gtk::Box(Gtk::Orientati
 
 	topBox.set_spacing(5);
 	append(topBox);
+
+	grid.set_row_spacing(5);
+	grid.set_column_spacing(5);
+	grid.set_column_homogeneous(true);
+	append(grid);
 }
 
 ProcessorWidget & ProcessorWidget::init() {
 	addExtraButtons();
+	resetGrid();
 	return *this;
+}
+
+void ProcessorWidget::resetGrid() {
+	removeChildren(grid);
+	gridWidgets.clear();
+
+	if (processor.input.empty() && processor.output.empty())
+		return;
+
+	auto *label = new Gtk::Label("Input Resource", Gtk::Align::START);
+	gridWidgets.emplace_back(label);
+	grid.attach(*label, 0, 0);
+
+	label = new Gtk::Label("Amount", Gtk::Align::START);
+	gridWidgets.emplace_back(label);
+	grid.attach(*label, 1, 0);
+
+	label = new Gtk::Label("Output Resource", Gtk::Align::START);
+	gridWidgets.emplace_back(label);
+	grid.attach(*label, 2, 0);
+
+	label = new Gtk::Label("Amount", Gtk::Align::START);
+	gridWidgets.emplace_back(label);
+	grid.attach(*label, 3, 0);
+
+	int row = 1;
+	for (const auto &[name, amount]: processor.input) {
+		label = new Gtk::Label(name, Gtk::Align::START);
+		gridWidgets.emplace_back(label);
+		grid.attach(*label, 0, row);
+
+		label = new Gtk::Label(std::to_string(amount), Gtk::Align::START);
+		gridWidgets.emplace_back(label);
+		grid.attach(*label, 1, row);
+
+		++row;
+	}
+
+	row = 1;
+
+	for (const auto &[name, amount]: processor.output) {
+		label = new Gtk::Label(name, Gtk::Align::START);
+		gridWidgets.emplace_back(label);
+		grid.attach(*label, 2, row);
+
+		label = new Gtk::Label(std::to_string(amount), Gtk::Align::START);
+		gridWidgets.emplace_back(label);
+		grid.attach(*label, 3, row);
+
+		++row;
+	}
 }
 
 void ProcessorWidget::addResource() {
