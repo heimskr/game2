@@ -6,14 +6,17 @@
 
 #include "Processor.h"
 
+class App;
+
 class ProcessorWidget: public Gtk::Box {
 	public:
-		ProcessorWidget(Processor &);
+		ProcessorWidget(App &, Processor &);
 
 		ProcessorWidget & init();
 		void resetGrid();
 
 	protected:
+		App &app;
 		Processor &processor;
 		Gtk::Box topBox {Gtk::Orientation::HORIZONTAL};
 		Gtk::Grid grid;
@@ -26,8 +29,10 @@ class ProcessorWidget: public Gtk::Box {
 
 	private:
 		std::vector<std::unique_ptr<Gtk::Widget>> gridWidgets;
+		std::vector<std::string> previousInputs, previousOutputs;
 
 		void addResource();
 		void toggleAutoExtract();
 		void rename();
+		bool insert(const std::string &resouce_name, double amount);
 };

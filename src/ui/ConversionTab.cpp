@@ -33,7 +33,7 @@ void ConversionTab::reset() {
 	for (auto &processor: app.game->processors) {
 		switch (processor->getType()) {
 			case Processor::Type::Centrifuge: {
-				auto *widget = new CentrifugeWidget(*processor);
+				auto *widget = new CentrifugeWidget(app, *processor);
 				widgets.emplace_back(widget);
 				widget->init();
 				vbox.append(*widget);

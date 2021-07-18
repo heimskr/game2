@@ -1,9 +1,13 @@
 #include <iostream>
 
 #include "UI.h"
+#include "ui/EntryDialog.h"
+#include "ui/InventoryDialog.h"
+#include "ui/NumericEntry.h"
 #include "ui/ProcessorWidget.h"
 
-ProcessorWidget::ProcessorWidget(Processor &processor_): Gtk::Box(Gtk::Orientation::VERTICAL), processor(processor_) {
+ProcessorWidget::ProcessorWidget(App &app_, Processor &processor_):
+Gtk::Box(Gtk::Orientation::VERTICAL), app(app_), processor(processor_) {
 	addResourceButton.set_tooltip_text("Add resource to processor");
 	addResourceButton.set_icon_name("list-add-symbolic");
 	addResourceButton.signal_clicked().connect(sigc::mem_fun(*this, &ProcessorWidget::addResource));
@@ -90,7 +94,28 @@ void ProcessorWidget::resetGrid() {
 }
 
 void ProcessorWidget::addResource() {
-	std::cout << "addResource(" << processor.name << ")\n";
+	auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
+	app.dialog.reset(dialog);
+	dialog->signal_submit().connect([this](const Glib::ustring &resource_name) {
+		app.delay([this, resource_name]() {
+			auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow,
+				"Amount of " + resource_name + " to transfer:");
+			dialog->signal_submit().connect([this, resource_name](const Glib::ustring &amount_text) {
+				double amount;
+				try {
+					amount = parseDouble(amount_text);
+				} catch (std::invalid_argument &) {
+					app.delay([this] { app.error("Invalid amount."); });
+					return;
+				}
+				if (insert(resource_name, amount))
+					resetGrid();
+			});
+			app.dialog.reset(dialog);
+			app.dialog->show();
+		});
+	});
+	app.dialog->show();
 }
 
 void ProcessorWidget::toggleAutoExtract() {
@@ -99,4 +124,34 @@ void ProcessorWidget::toggleAutoExtract() {
 
 void ProcessorWidget::rename() {
 	std::cout << "rename(" << processor.name << ")\n";
+}
+
+bool ProcessorWidget::insert(const std::string &resource_name, double amount) {
+	try {
+		if (amount <= 0) {
+			app.error("Invalid amount.");
+			return false;
+		}
+
+		if (app.game->inventory.count(resource_name) == 0) {
+			app.error("You don't have any of that resource.");
+			return false;
+		}
+
+		double &in_inventory = app.game->inventory.at(resource_name);
+		if (ltna(in_inventory, amount)) {
+			app.error("You don't have enough of that resource.");
+			return false;
+		}
+
+		if ((in_inventory -= amount) < Resource::MIN_AMOUNT)
+			app.game->inventory.erase(resource_name);
+
+		processor.input[resource_name] += amount;
+		return true;
+	} catch (const std::exception &err) {
+		std::cout << "??? " << err.what() << "\n";
+		app.error("??? " + std::string(err.what()));
+		return false;
+	}
 }
