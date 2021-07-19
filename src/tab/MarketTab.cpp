@@ -90,6 +90,7 @@ namespace Game2 {
 		sellGrid.attach(*label, 1, 0);
 		label = new Gtk::Label("Amount", Gtk::Align::START);
 		sellWidgets.emplace_back(label);
+		label->set_xalign(0);
 		label->set_size_request(100, -1);
 		label->add_css_class("table-header");
 		sellGrid.attach(*label, 2, 0);
@@ -107,6 +108,7 @@ namespace Game2 {
 		buyGrid.attach(*label, 0, 0);
 		label = new Gtk::Label("Amount", Gtk::Align::START);
 		buyWidgets.emplace_back(label);
+		label->set_xalign(0);
 		label->set_size_request(100, -1);
 		label->add_css_class("table-header");
 		buyGrid.attach(*label, 1, 0);
