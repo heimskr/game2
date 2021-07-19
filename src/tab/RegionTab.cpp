@@ -24,17 +24,9 @@ namespace Game2 {
 
 	RegionTab::RegionTab(App &app_): app(app_) {
 		box.append(nameLabel);
-		renameButton.set_icon_name("document-edit-symbolic");
-		renameButton.set_tooltip_text("Rename region");
-		buttonBox.append(renameButton);
-		deleteButton.set_icon_name("edit-delete-symbolic");
-		deleteButton.set_tooltip_text("Delete region");
-		buttonBox.append(deleteButton);
 		labelBox.append(positionLabel);
 		labelBox.append(sizeLabel);
-		buttonBox.append(labelBox);
-		buttonBox.set_spacing(5);
-		box.append(buttonBox);
+		box.append(labelBox);
 		setMargins(box, 5);
 		scrolled.set_child(expandersBox);
 		scrolled.set_vexpand(true);
@@ -47,7 +39,21 @@ namespace Game2 {
 
 		app.gtkApp->signal_activate().connect(sigc::mem_fun(*this, &RegionTab::update));
 
-		renameButton.signal_clicked().connect([this] {
+	}
+
+	void RegionTab::onFocus() {
+		if (!app.game)
+			return;
+
+		renameButton = std::make_unique<Gtk::Button>();
+		renameButton->set_icon_name("document-edit-symbolic");
+		renameButton->set_tooltip_text("Rename region");
+
+		deleteButton = std::make_unique<Gtk::Button>();
+		deleteButton->set_icon_name("edit-delete-symbolic");
+		deleteButton->set_tooltip_text("Delete region");
+
+		renameButton->signal_clicked().connect([this] {
 			auto *dialog = new EntryDialog<BasicEntry>("Rename Region", *app.mainWindow, "New region name:");
 			app.dialog.reset(dialog);
 			dialog->set_text(NameGen::makeRandomLanguage().makeName());
@@ -60,7 +66,7 @@ namespace Game2 {
 			app.dialog->show();
 		});
 
-		deleteButton.signal_clicked().connect([this] {
+		deleteButton->signal_clicked().connect([this] {
 			auto lock = app.lockGame();
 			Game &game = *app.game;
 			if (1 < game.regions.size()) {
@@ -81,6 +87,16 @@ namespace Game2 {
 				app.error("Can't delete region: no other region exists");
 			}
 		});
+
+		app.header->pack_start(*renameButton);
+		app.header->pack_start(*deleteButton);
+		app.titleWidgets.push_back(renameButton.get());
+		app.titleWidgets.push_back(deleteButton.get());
+	}
+
+	void RegionTab::onBlur() {
+		renameButton.reset();
+		deleteButton.reset();
 	}
 
 	void RegionTab::update() {

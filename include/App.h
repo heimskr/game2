@@ -61,8 +61,9 @@ namespace Game2 {
 
 			std::vector<std::shared_ptr<Tab>> tabs;
 			std::shared_ptr<Tab> activeTab;
-
 			sigc::connection notebookConnection;
+
+			void init();
 			void connectSave();
 			void addTab(std::shared_ptr<Tab>);
 			void hackWindow();

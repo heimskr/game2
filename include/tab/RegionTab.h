@@ -29,8 +29,7 @@ namespace Game2 {
 			App &app;
 			Gtk::ScrolledWindow scrolled;
 			Gtk::Box box {Gtk::Orientation::VERTICAL}, expandersBox {Gtk::Orientation::VERTICAL};
-			Gtk::Box buttonBox {Gtk::Orientation::HORIZONTAL}, labelBox {Gtk::Orientation::VERTICAL};
-			Gtk::Button renameButton, deleteButton;
+			Gtk::Box labelBox {Gtk::Orientation::VERTICAL};
 			Gtk::Label nameLabel, positionLabel, sizeLabel;
 			std::shared_ptr<Region> lastRegion;
 			std::vector<std::shared_ptr<Gtk::Widget>> widgets;
@@ -54,11 +53,14 @@ namespace Game2 {
 
 			Gtk::Widget & getWidget() override { return box; }
 			Glib::ustring getName() override { return "Region"; }
+			void onFocus() override;
+			void onBlur() override;
 
 			void update();
 			void reset();
 
 		private:
+			std::unique_ptr<Gtk::Button> renameButton, deleteButton;
 			bool insert(std::shared_ptr<Area>, const Glib::ustring &resource_name, double amount);
 	};
 }

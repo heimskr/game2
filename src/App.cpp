@@ -33,22 +33,14 @@ namespace Game2 {
 			notebook->show();
 			auto lock = lockGame();
 			game = Game::loadDefaults(*this);
-			onTravel();
-			inventoryTab->reset();
-			conversionTab->reset();
-			marketTab->reset();
-			connectSave();
+			init();
 		}));
 
 		mainWindow->add_action("open", Gio::ActionMap::ActivateSlot([this] {
 			notebook->show();
 			auto lock = lockGame();
 			game = Game::load(*this);
-			onTravel();
-			inventoryTab->reset();
-			conversionTab->reset();
-			marketTab->reset();
-			connectSave();
+			init();
 		}));
 
 		// mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
@@ -83,6 +75,15 @@ namespace Game2 {
 		moneyDispatcher.connect([this] {
 			marketTab->updateMoney();
 		});
+	}
+
+	void App::init() {
+		onTravel();
+		inventoryTab->reset();
+		conversionTab->reset();
+		marketTab->reset();
+		activeTab->onFocus();
+		connectSave();
 	}
 
 	void App::resetTitle() {
