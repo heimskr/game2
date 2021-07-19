@@ -21,15 +21,19 @@ namespace Game2 {
 			ExtractionsTab & operator=(const ExtractionsTab &) = delete;
 			ExtractionsTab & operator=(ExtractionsTab &&) = delete;
 
+			Gtk::Widget & getWidget() override { return scrolled; }
+			Glib::ustring getName() override { return "Extractions"; }
+			void onFocus() override;
+			void onBlur() override;
+
 			void reset();
 
 		private:
+			bool global = false;
 			Gtk::ScrolledWindow scrolled;
 			Gtk::Grid grid;
-
+			std::unique_ptr<Gtk::ToggleButton> globalButton;
 			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 
-			Gtk::Widget & getWidget() override { return scrolled; }
-			Glib::ustring getName() override { return "Extractions"; }
 	};
 }
