@@ -1,6 +1,7 @@
 #include "App.h"
 #include "UI.h"
 #include "tab/AutomationTab.h"
+#include "ui/ProcessorsDialog.h"
 
 namespace Game2 {
 	AutomationTab::AutomationTab(App &app_): app(app_) {
@@ -28,7 +29,14 @@ namespace Game2 {
 
 		addButton = std::make_unique<Gtk::Button>("Add");
 		addButton->signal_clicked().connect([this] {
-						
+			auto *dialog = new ProcessorsDialog("Processors", *app.mainWindow, app);
+			app.dialog.reset(dialog);
+			dialog->signal_submit().connect([this](std::optional<Processor::Type> type) {
+				app.delay([this, type] {
+
+				});
+			});
+			app.dialog->show();
 		});
 
 		app.header->pack_start(*addButton);
