@@ -30,6 +30,8 @@ namespace Game2 {
 		notebook->hide();
 
 		mainWindow->add_action("new", Gio::ActionMap::ActivateSlot([this] {
+			resetTitle();
+			activeTab->onBlur();
 			notebook->show();
 			auto lock = lockGame();
 			game = Game::loadDefaults(*this);
@@ -37,6 +39,8 @@ namespace Game2 {
 		}));
 
 		mainWindow->add_action("open", Gio::ActionMap::ActivateSlot([this] {
+			resetTitle();
+			activeTab->onBlur();
 			notebook->show();
 			auto lock = lockGame();
 			game = Game::load(*this);
