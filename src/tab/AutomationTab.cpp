@@ -1,7 +1,10 @@
 #include "App.h"
 #include "UI.h"
 #include "tab/AutomationTab.h"
+#include "ui/EntryDialog.h"
+#include "ui/NumericEntry.h"
 #include "ui/ProcessorsDialog.h"
+#include "ui/ProcessorTypeDialog.h"
 #include "ui/ResourcesDialog.h"
 
 namespace Game2 {
@@ -30,12 +33,51 @@ namespace Game2 {
 
 		addButton = std::make_unique<Gtk::Button>("Add");
 		addButton->signal_clicked().connect([this] {
-			auto *dialog = new ProcessorsDialog("Processors", *app.mainWindow, app);
+			auto *dialog = new ProcessorsDialog("Source Processor", *app.mainWindow, app);
 			app.dialog.reset(dialog);
-			dialog->signal_submit().connect([this](std::optional<Processor::Type> type) {
-				app.delay([this, type] {
-					auto *dialog = new ResourcesDialog("Resources", *app.mainWindow, app);
+			dialog->signal_submit().connect([this](std::shared_ptr<Processor> src) {
+				if (!src)
+					return;
+				app.delay([this, src] {
+					auto *dialog = new ResourcesDialog("Resource", *app.mainWindow, app);
 					app.dialog.reset(dialog);
+					dialog->signal_submit().connect([this, src](std::string rtype) {
+						if (rtype.empty())
+							return;
+						// Oh god I'm in callback hell
+						app.delay([this, src, rtype] {
+							auto *dialog = new ProcessorsDialog("Destination Processor", *app.mainWindow, app);
+							app.dialog.reset(dialog);
+							dialog->signal_submit().connect([this, src, rtype](std::shared_ptr<Processor> dest) {
+								if (!dest)
+									return;
+								app.delay([this, src, rtype, dest] {
+									auto *dialog = new EntryDialog<NumericEntry>("Weight", *app.mainWindow, "Weight:");
+									app.dialog.reset(dialog);
+									dialog->signal_submit().connect([this, src, rtype, dest](const Glib::ustring &str) {
+										double weight;
+										try {
+											if (lte(weight = parseDouble(str), 0))
+												throw std::invalid_argument("Invalid weight.");
+										} catch (std::invalid_argument &) {
+											app.delay([this] { app.error("Invalid weight."); });
+											return;
+										}
+										auto lock = app.lockGame();
+										app.game->automationLinks.emplace_back(*app.game, src, dest, rtype, weight)
+										                         .setup();
+										app.delay([this, src, rtype, dest] {
+											app.alert("Linked " + src->name + " to " + dest->name + " for " + rtype
+												+ ".");
+										});
+										reset();
+									});
+									app.dialog->show();
+								});
+							});
+							app.dialog->show();
+						});
+					});
 					app.dialog->show();
 				});
 			});
