@@ -39,6 +39,7 @@ namespace Game2 {
 			Gtk::Grid topGrid, sellGrid, buyGrid;
 			Gtk::Label regionMoneyLabel {"Region money"}, yourMoneyLabel {"Your money"}, regionMoney, yourMoney;
 			Gtk::Label errorLabel {"Region has no market."};
+			Gtk::Separator separator;
 			std::vector<std::unique_ptr<Gtk::Widget>> sellWidgets, buyWidgets;
 			std::unordered_map<std::string, Gtk::Label> sellAmountLabels, sellPriceLabels;
 			std::unordered_map<std::string, Gtk::Label> buyAmountLabels,  buyPriceLabels;

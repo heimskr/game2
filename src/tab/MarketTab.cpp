@@ -22,12 +22,12 @@ namespace Game2 {
 		topGrid.set_row_spacing(5);
 		topGrid.set_column_spacing(10);
 		box.append(topGrid);
-		gridBox.set_homogeneous(true);
 		gridBox.set_spacing(50);
 		scrolled.set_child(gridBox);
 		sellGrid.set_row_spacing(5);
 		sellGrid.set_column_spacing(5);
 		gridBox.append(sellGrid);
+		gridBox.append(separator);
 		buyGrid.set_row_spacing(5);
 		buyGrid.set_column_spacing(5);
 		gridBox.append(buyGrid);
