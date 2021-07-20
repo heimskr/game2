@@ -33,8 +33,6 @@ namespace Game2 {
 			size_t money = 0;
 			bool cheatsEnabled = false;
 
-			bool craftingOutputReady = false;
-
 			Game() = delete;
 			Game(App &);
 

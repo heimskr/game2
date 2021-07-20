@@ -16,6 +16,7 @@ namespace Game2 {
 	class ConversionTab;
 	class MarketTab;
 	class AutomationTab;
+	class CraftingTab;
 
 	class App {
 		public:
@@ -39,6 +40,7 @@ namespace Game2 {
 			std::shared_ptr<ConversionTab> conversionTab;
 			std::shared_ptr<MarketTab> marketTab;
 			std::shared_ptr<AutomationTab> automationTab;
+			std::shared_ptr<CraftingTab> craftingTab;
 			bool alive = true;
 
 			std::vector<Gtk::Button> travelButtons;

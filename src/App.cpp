@@ -10,6 +10,7 @@
 #include "tab/ConversionTab.h"
 #include "tab/MarketTab.h"
 #include "tab/AutomationTab.h"
+#include "tab/CraftingTab.h"
 
 #include <gtk-4.0/gdk/x11/gdkx.h>
 
@@ -63,6 +64,7 @@ namespace Game2 {
 		conversionTab = std::make_shared<ConversionTab>(*this);
 		marketTab = std::make_shared<MarketTab>(*this);
 		automationTab = std::make_shared<AutomationTab>(*this);
+		craftingTab = std::make_shared<CraftingTab>(*this);
 
 		addTab(regionTab);
 		addTab(travelTab);
@@ -71,6 +73,7 @@ namespace Game2 {
 		addTab(conversionTab);
 		addTab(marketTab);
 		addTab(automationTab);
+		addTab(craftingTab);
 
 		notebook->signal_unmap().connect([this] {
 			notebookConnection.disconnect();
@@ -99,6 +102,7 @@ namespace Game2 {
 		conversionTab->reset();
 		marketTab->reset();
 		automationTab->reset();
+		craftingTab->reset();
 		activeTab->onFocus();
 		connectSave();
 	}

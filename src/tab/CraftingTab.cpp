@@ -1,0 +1,120 @@
+#include "App.h"
+#include "UI.h"
+#include "tab/CraftingTab.h"
+#include "ui/EntryDialog.h"
+#include "ui/InventoryDialog.h"
+#include "ui/NumericEntry.h"
+
+namespace Game2 {
+	CraftingTab::CraftingTab(App &app_): app(app_) {
+		scrolled.set_child(gridBox);
+		scrolled.set_vexpand(true);
+		setMargins(gridBox, 5);
+		gridBox.set_spacing(5);
+		inputGrid.set_row_spacing(5);
+		outputGrid.set_row_spacing(5);
+		inputGrid.set_column_spacing(5);
+		outputGrid.set_column_spacing(5);
+		gridBox.append(inputGrid);
+		gridBox.append(separator);
+		gridBox.append(outputGrid);
+		inputLabel.set_hexpand(true);
+		outputLabel.set_hexpand(true);
+		inputLabel.add_css_class("table-header");
+		outputLabel.add_css_class("table-header");
+		inputAmountLabel.add_css_class("table-header");
+		outputAmountLabel.add_css_class("table-header");
+		inputLabel.set_xalign(0);
+		outputLabel.set_xalign(0);
+		inputAmountLabel.set_xalign(0);
+		outputAmountLabel.set_xalign(0);
+		reset();
+	}
+
+	void CraftingTab::reset() {
+		removeChildren(inputGrid);
+		removeChildren(outputGrid);
+
+		inputGrid.attach(inputLabel, 1, 0);
+		inputGrid.attach(inputAmountLabel, 2, 0);
+		outputGrid.attach(outputLabel, 0, 0);
+		outputGrid.attach(outputAmountLabel, 1, 0);
+
+		if (!app.game)
+			return;
+
+		auto lock = app.lockGame();
+		int row = 1;
+		for (const auto &pair: app.game->craftingInventory) {
+			const auto &name = pair.first;
+			const auto &amount = pair.second;
+			auto *button = new Gtk::Button;
+			widgets.emplace_back(button);
+			button->set_icon_name("list-remove-symbolic");
+			button->signal_clicked().connect([this, &name, &amount] {
+
+			});
+			inputGrid.attach(*button, 0, row);
+			auto *label = new Gtk::Label(name, Gtk::Align::START);
+			widgets.emplace_back(label);
+			inputGrid.attach(*label, 1, row);
+			label = new Gtk::Label(niceDouble(amount), Gtk::Align::START);
+			widgets.emplace_back(label);
+			inputGrid.attach(*label, 2, row);
+			++row;
+		}
+	}
+	
+	void CraftingTab::add() {
+		auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
+		app.dialog.reset(dialog);
+		dialog->signal_submit().connect([this](Glib::ustring name) {
+			if (name.empty())
+				return;
+			app.delay([this, name] {
+				auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow, "Amount to add:");
+				app.dialog.reset(dialog);
+				dialog->signal_submit().connect([this, name](const Glib::ustring &amount_str) {
+					double amount;
+					try {
+						amount = parseDouble(amount_str);
+					} catch (std::invalid_argument &) {
+						app.delay([this] { app.error("Invalid amount."); });
+						return;
+					}
+					if (amount == 0)
+						amount = app.game->inventory[name];
+					if (amount <= 0 || ltna(app.game->inventory[name], amount)) {
+						app.delay([this] { app.error("Invalid amount."); });
+						return;
+					}
+					app.game->inventory[name] -= amount;
+					app.game->craftingInventory[name] += amount;
+					shrink(app.game->inventory);
+					computeCraftingOutput();
+					reset();
+				});
+				app.dialog->show();
+			});
+		});
+		app.dialog->show();
+	}
+
+	void CraftingTab::computeCraftingOutput() {
+
+	}
+
+	void CraftingTab::onFocus() {
+		if (!app.game)
+			return;
+		addButton = std::make_unique<Gtk::Button>();
+		addButton->set_icon_name("list-add-symbolic");
+		addButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::add));
+		app.header->pack_start(*addButton);
+		app.titleWidgets.push_back(addButton.get());
+	}
+
+	void CraftingTab::onBlur() {
+		addButton.reset();
+	}
+}
