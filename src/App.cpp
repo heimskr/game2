@@ -83,7 +83,10 @@ namespace Game2 {
 
 	void App::init() {
 		onTravel();
+		regionTab->reset();
+		travelTab->update();
 		inventoryTab->reset();
+		extractionsTab->reset();
 		conversionTab->reset();
 		marketTab->reset();
 		activeTab->onFocus();

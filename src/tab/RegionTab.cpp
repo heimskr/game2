@@ -235,6 +235,11 @@ namespace Game2 {
 		}
 	}
 
+	void RegionTab::reset() {
+		lastRegion = nullptr;
+		update();
+	}
+
 	bool RegionTab::insert(std::shared_ptr<Area> area, const Glib::ustring &resource_name, double amount) {
 		try {
 			if (amount <= 0) {
