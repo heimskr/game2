@@ -10,13 +10,6 @@ namespace Game2 {
 
 	class TravelTab: public Tab {
 		public:
-			static constexpr int ROWS = 5, COLUMNS = 5;
-			static constexpr int BUTTON_COUNT = ROWS * COLUMNS;
-
-			App &app;
-			Gtk::Grid grid;
-			Gtk::Button buttons[BUTTON_COUNT];
-
 			TravelTab() = delete;
 			TravelTab(const TravelTab &) = delete;
 			TravelTab(TravelTab &&) = delete;
@@ -27,9 +20,14 @@ namespace Game2 {
 
 			Gtk::Widget & getWidget() override { return grid; }
 			Glib::ustring getName() override { return "Travel"; }
-			void update();
+			void reset();
 
 		private:
+			static constexpr int ROWS = 5, COLUMNS = 5;
+			static constexpr int BUTTON_COUNT = ROWS * COLUMNS;
+			App &app;
+			Gtk::Grid grid;
+			Gtk::Button buttons[BUTTON_COUNT];
 			Region::Position getPosition(Region &, int row, int column);
 	};
 }

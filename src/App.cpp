@@ -86,7 +86,7 @@ namespace Game2 {
 	void App::init() {
 		onTravel();
 		regionTab->reset();
-		travelTab->update();
+		travelTab->reset();
 		inventoryTab->reset();
 		extractionsTab->reset();
 		conversionTab->reset();
@@ -153,7 +153,7 @@ namespace Game2 {
 
 	void App::onTravel() {
 		regionTab->update();
-		travelTab->update();
+		travelTab->reset();
 		extractionsTab->reset();
 		marketTab->reset();
 	}
@@ -162,7 +162,7 @@ namespace Game2 {
 		if (dialog)
 			if (auto *udialog = dynamic_cast<UpdatingDialog *>(dialog.get()))
 				udialog->updateData();
-		travelTab->update();
+		travelTab->reset();
 		inventoryTab->update();
 		regionTab->update();
 		conversionTab->update();

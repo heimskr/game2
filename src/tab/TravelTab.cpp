@@ -22,14 +22,13 @@ namespace Game2 {
 						app.game->position = pos;
 					else
 						*app.game += Region::generate(*app.game, pos);
-					update();
 					app.onTravel();
 				});
 			}
-		update();
+		reset();
 	}
 
-	void TravelTab::update() {
+	void TravelTab::reset() {
 		if (!app.game)
 			return;
 
