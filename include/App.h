@@ -6,15 +6,17 @@
 #include <thread>
 
 #include "Game.h"
-#include "tab/RegionTab.h"
-#include "tab/TravelTab.h"
-#include "tab/InventoryTab.h"
-#include "tab/ExtractionsTab.h"
-#include "tab/ConversionTab.h"
-#include "tab/AutomationTab.h"
-#include "tab/MarketTab.h"
 
 namespace Game2 {
+	class Tab;
+	class RegionTab;
+	class TravelTab;
+	class InventoryTab;
+	class ExtractionsTab;
+	class ConversionTab;
+	class MarketTab;
+	class AutomationTab;
+
 	class App {
 		public:
 			Glib::RefPtr<Gtk::Application> gtkApp;

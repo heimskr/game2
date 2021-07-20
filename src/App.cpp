@@ -3,6 +3,13 @@
 #include "App.h"
 #include "UI.h"
 #include "ui/InventoryDialog.h"
+#include "tab/RegionTab.h"
+#include "tab/TravelTab.h"
+#include "tab/InventoryTab.h"
+#include "tab/ExtractionsTab.h"
+#include "tab/ConversionTab.h"
+#include "tab/MarketTab.h"
+#include "tab/AutomationTab.h"
 
 #include <gtk-4.0/gdk/x11/gdkx.h>
 
