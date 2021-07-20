@@ -313,7 +313,7 @@ namespace Game2 {
 								app.game->inventory[resource_name] -= amount;
 								region.setMoney(region.money - total_price);
 								app.game->setMoney(app.game->money + total_price);
-								shrink(app.game->inventory, resource_name);
+								shrink(app.game->inventory);
 							}
 						}
 						app.gameMutex.unlock();
@@ -365,6 +365,8 @@ namespace Game2 {
 						app.game->addToInventory(resource_name, amount);
 						region->setMoney(region->money + total_price);
 						app.game->setMoney(app.game->money - total_price);
+						for (auto &[name, area]: region->areas)
+							shrink(area->resources);
 					}
 					app.gameMutex.unlock();
 					app.dialog->hide();
