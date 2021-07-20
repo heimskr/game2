@@ -16,6 +16,7 @@ namespace Game2 {
 		cancel.signal_clicked().connect(sigc::mem_fun(*this, &ProcessorsDialog::hide));
 		scrolled.set_size_request(-1, 150);
 		processorsBox.set_spacing(5);
+		scrolled.set_vexpand(true);
 		scrolled.set_child(processorsBox);
 		for (Processor::Type type: Processor::TYPES) {
 			auto &label = labels.emplace_back(Processor::typeName(type), Gtk::Align::START);

@@ -2,6 +2,7 @@
 #include "UI.h"
 #include "tab/AutomationTab.h"
 #include "ui/ProcessorsDialog.h"
+#include "ui/ResourcesDialog.h"
 
 namespace Game2 {
 	AutomationTab::AutomationTab(App &app_): app(app_) {
@@ -33,7 +34,9 @@ namespace Game2 {
 			app.dialog.reset(dialog);
 			dialog->signal_submit().connect([this](std::optional<Processor::Type> type) {
 				app.delay([this, type] {
-
+					auto *dialog = new ResourcesDialog("Resources", *app.mainWindow, app);
+					app.dialog.reset(dialog);
+					app.dialog->show();
 				});
 			});
 			app.dialog->show();

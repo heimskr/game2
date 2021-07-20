@@ -4,7 +4,7 @@
 namespace Game2 {
 	ResourcesDialog::ResourcesDialog(const Glib::ustring &title, Gtk::Window &parent, App &app_, bool modal):
 	Dialog(title, parent, modal), app(app_) {
-		set_default_size(300, -1);
+		set_default_size(300, 500);
 		auto &area = *get_content_area();
 		area.set_orientation(Gtk::Orientation::VERTICAL);
 		area.set_spacing(5);
@@ -16,6 +16,7 @@ namespace Game2 {
 		cancel.signal_clicked().connect(sigc::mem_fun(*this, &ResourcesDialog::hide));
 		scrolled.set_size_request(-1, 150);
 		resourcesBox.set_spacing(5);
+		scrolled.set_vexpand(true);
 		scrolled.set_child(resourcesBox);
 		auto lock = app.lockGame();
 		for (auto &[name, resource]: app.game->resources) {
