@@ -55,6 +55,7 @@ namespace Game2 {
 		extractionsTab = std::make_shared<ExtractionsTab>(*this);
 		conversionTab = std::make_shared<ConversionTab>(*this);
 		marketTab = std::make_shared<MarketTab>(*this);
+		automationTab = std::make_shared<AutomationTab>(*this);
 
 		addTab(regionTab);
 		addTab(travelTab);
@@ -62,6 +63,7 @@ namespace Game2 {
 		addTab(extractionsTab);
 		addTab(conversionTab);
 		addTab(marketTab);
+		addTab(automationTab);
 
 		notebook->signal_unmap().connect([this] {
 			notebookConnection.disconnect();
@@ -89,6 +91,7 @@ namespace Game2 {
 		extractionsTab->reset();
 		conversionTab->reset();
 		marketTab->reset();
+		automationTab->reset();
 		activeTab->onFocus();
 		connectSave();
 	}

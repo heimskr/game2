@@ -11,6 +11,7 @@
 #include "tab/InventoryTab.h"
 #include "tab/ExtractionsTab.h"
 #include "tab/ConversionTab.h"
+#include "tab/AutomationTab.h"
 #include "tab/MarketTab.h"
 
 namespace Game2 {
@@ -35,6 +36,7 @@ namespace Game2 {
 			std::shared_ptr<ExtractionsTab> extractionsTab;
 			std::shared_ptr<ConversionTab> conversionTab;
 			std::shared_ptr<MarketTab> marketTab;
+			std::shared_ptr<AutomationTab> automationTab;
 			bool alive = true;
 
 			std::vector<Gtk::Button> travelButtons;
