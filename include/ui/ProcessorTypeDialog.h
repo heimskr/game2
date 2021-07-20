@@ -10,14 +10,14 @@
 namespace Game2 {
 	class App;
 
-	class ProcessorsDialog: public Gtk::Dialog {
+	class ProcessorTypeDialog: public Gtk::Dialog {
 		public:
 			Gtk::Button cancel {"Cancel"};
 			Gtk::ScrolledWindow scrolled;
 			Gtk::Box processorsBox {Gtk::Orientation::VERTICAL};
 			sigc::signal<void(std::optional<Processor::Type>)> signal_submit() const { return signal_submit_; }
 
-			ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, App &, bool modal = true);
+			ProcessorTypeDialog(const Glib::ustring &title, Gtk::Window &parent, App &, bool modal = true);
 
 		private:
 			App &app;

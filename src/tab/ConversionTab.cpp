@@ -11,7 +11,7 @@
 #include "ui/FurnaceWidget.h"
 #include "ui/InventoryDialog.h"
 #include "ui/NumericEntry.h"
-#include "ui/ProcessorsDialog.h"
+#include "ui/ProcessorTypeDialog.h"
 #include "ui/RefineryWidget.h"
 #include "ui/RocketFurnaceWidget.h"
 
@@ -25,7 +25,7 @@ namespace Game2 {
 	}
 
 	void ConversionTab::add() {
-		auto *dialog = new ProcessorsDialog("Processors", *app.mainWindow, app);
+		auto *dialog = new ProcessorTypeDialog("Processors", *app.mainWindow, app);
 		app.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](std::optional<Processor::Type> type) {
 			if (!type.has_value())
@@ -94,7 +94,7 @@ namespace Game2 {
 							app.error("You don't have enough of that resource.");
 							return;
 						}
-						auto *dialog = new ProcessorsDialog("Procesors", *app.mainWindow, app);
+						auto *dialog = new ProcessorTypeDialog("Procesors", *app.mainWindow, app);
 						app.dialog.reset(dialog);
 						dialog->signal_submit().connect([this, resource_name, amount, &in_inventory](auto type) {
 							if (!type.has_value()) {

@@ -1,8 +1,8 @@
 #include "App.h"
-#include "ui/ProcessorsDialog.h"
+#include "ui/ProcessorTypeDialog.h"
 
 namespace Game2 {
-	ProcessorsDialog::ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, App &app_, bool modal):
+	ProcessorTypeDialog::ProcessorTypeDialog(const Glib::ustring &title, Gtk::Window &parent, App &app_, bool modal):
 	Dialog(title, parent, modal), app(app_) {
 		set_default_size(300, -1);
 		auto &area = *get_content_area();
@@ -13,7 +13,7 @@ namespace Game2 {
 		area.set_margin_end(5);
 		area.set_margin_bottom(5);
 		cancel.set_halign(Gtk::Align::END);
-		cancel.signal_clicked().connect(sigc::mem_fun(*this, &ProcessorsDialog::hide));
+		cancel.signal_clicked().connect(sigc::mem_fun(*this, &ProcessorTypeDialog::hide));
 		scrolled.set_size_request(-1, 150);
 		processorsBox.set_spacing(5);
 		scrolled.set_vexpand(true);
