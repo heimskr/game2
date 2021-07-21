@@ -16,8 +16,8 @@ namespace Game2 {
 		operator std::string() const { return "(" + std::to_string(x) + ", " + std::to_string(y) + ")"; }
 		Position operator+(const Position &other) const { return {x + other.x, y + other.y}; }
 		constexpr bool operator==(const Position &other) const { return x == other.x && y == other.y; }
-		constexpr std::strong_ordering operator<=>(const Position &other) const {
-			return std::pair<long, long>(*this) <=> std::pair<long, long>(other);
+		constexpr bool operator<(const Position &other) const {
+			return std::pair<long, long>(*this) < std::pair<long, long>(other);
 		}
 	};
 }
