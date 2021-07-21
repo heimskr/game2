@@ -215,7 +215,7 @@ namespace Game2 {
 	double Game::adjust(double to_extract, double in_region, const Extraction &extraction) {
 		// Questionable.
 		if (ltna(in_region - to_extract, extraction.minimum))
-			return in_region - extraction.minimum;
+			return std::max(0., in_region - extraction.minimum);
 		return to_extract;
 	}
 
@@ -232,6 +232,7 @@ namespace Game2 {
 					in_region -= to_extract;
 					in_inventory += to_extract;
 				}
+
 				++iter;
 			} else {
 				const double to_extract = adjust(std::min(extraction.rate * delta, extraction.amount),
