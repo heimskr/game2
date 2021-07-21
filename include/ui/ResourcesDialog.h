@@ -13,9 +13,10 @@ namespace Game2 {
 			Gtk::Button cancel {"Cancel"};
 			Gtk::ScrolledWindow scrolled;
 			Gtk::Box resourcesBox {Gtk::Orientation::VERTICAL};
-			sigc::signal<void(std::string)> signal_submit() const { return signal_submit_; }
 
 			ResourcesDialog(const Glib::ustring &title, Gtk::Window &parent, App &, bool modal = true);
+
+			sigc::signal<void(std::string)> signal_submit() const { return signal_submit_; }
 
 		private:
 			App &app;

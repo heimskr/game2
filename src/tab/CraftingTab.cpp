@@ -167,7 +167,20 @@ namespace Game2 {
 	}
 
 	void CraftingTab::showHelp() {
-		app.dialog.reset(new RecipesDialog("Recipes", *app.mainWindow, app));
+		auto *dialog = new RecipesDialog("Recipes", *app.mainWindow, app);
+		app.dialog.reset(dialog);
+		dialog->signal_submit().connect([this](const CraftingRecipe &recipe) {
+			auto lock = app.lockGame();
+			if (contains(app.game->inventory, recipe.inputs)) {
+				for (const auto &[name, amount]: recipe.inputs) {
+					app.game->inventory[name] -= amount;
+					app.game->craftingInventory[name] += amount;
+					reset();
+				}
+			} else {
+				app.delay([this] { app.error("You don't have enough resources."); });
+			}
+		});
 		app.dialog->show();
 	}
 }

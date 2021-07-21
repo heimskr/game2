@@ -13,13 +13,18 @@ namespace Game2 {
 		set_child(scrolled);
 		auto lock = app.lockGame();
 		for (const auto &recipe: app.game->recipes.crafting) {
-
 			auto &label = labels.emplace_back(recipe.output +
 				(recipe.amount == 1? "" : " x " + niceDouble(recipe.amount)), Gtk::Align::START);
 			std::vector<std::string> pieces;
 			for (const auto &[name, amount]: recipe.inputs)
 				pieces.push_back(name + " x " + niceDouble(amount));
 			label.set_tooltip_text(join(pieces, "\n"));
+			auto &gesture = gestures.emplace_back(Gtk::GestureClick::create());
+			gesture->signal_pressed().connect([this, &recipe](int, double, double) {
+				signal_submit_.emit(recipe);
+				hide();
+			});
+			label.add_controller(gesture);
 			recipesBox.append(label);
 		}
 	}
