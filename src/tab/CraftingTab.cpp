@@ -15,6 +15,8 @@ namespace Game2 {
 		outputGrid.set_row_spacing(5);
 		inputGrid.set_column_spacing(5);
 		outputGrid.set_column_spacing(5);
+		inputGrid.set_hexpand(true);
+		outputGrid.set_hexpand(true);
 		gridBox.append(inputGrid);
 		gridBox.append(separator);
 		gridBox.append(outputGrid);
@@ -28,12 +30,13 @@ namespace Game2 {
 		outputLabel.set_xalign(0);
 		inputAmountLabel.set_xalign(0);
 		outputAmountLabel.set_xalign(0);
-		reset();
+		reset(false);
 	}
 
-	void CraftingTab::reset() {
+	void CraftingTab::reset(bool compute_crafting) {
 		removeChildren(inputGrid);
 		removeChildren(outputGrid);
+		widgets.clear();
 
 		inputGrid.attach(inputLabel, 1, 0);
 		inputGrid.attach(inputAmountLabel, 2, 0);
@@ -42,6 +45,9 @@ namespace Game2 {
 
 		if (!app.game)
 			return;
+
+		if (compute_crafting)
+			computeCraftingOutput();
 
 		auto lock = app.lockGame();
 		int row = 1;
@@ -63,6 +69,33 @@ namespace Game2 {
 			inputGrid.attach(*label, 2, row);
 			++row;
 		}
+
+		row = 1;
+		for (const auto *recipe: craftingOutput) {
+			auto *label = new Gtk::Label(recipe->output, Gtk::Align::START);
+			widgets.emplace_back(label);
+			outputGrid.attach(*label, 0, row);
+			label = new Gtk::Label(niceDouble(recipe->amount), Gtk::Align::START);
+			widgets.emplace_back(label);
+			outputGrid.attach(*label, 1, row);
+			auto *button = new Gtk::Button;
+			widgets.emplace_back(button);
+			button->set_icon_name("applications-engineering-symbolic"); // Probably confusing with other icon sets.
+			button->signal_clicked().connect([this, recipe] {
+				craft(recipe);
+			});
+			outputGrid.attach(*button, 2, row);
+			++row;
+		}
+	}
+
+	void CraftingTab::craft(const CraftingRecipe *recipe) {
+		auto lock = app.lockGame();
+		for (const auto &[name, amount]: recipe->inputs)
+			app.game->craftingInventory[name] -= amount;
+		app.game->inventory[recipe->output] += recipe->amount;
+		shrink(app.game->craftingInventory);
+		reset();
 	}
 	
 	void CraftingTab::add() {
@@ -82,6 +115,7 @@ namespace Game2 {
 						app.delay([this] { app.error("Invalid amount."); });
 						return;
 					}
+					auto lock = app.lockGame();
 					if (amount == 0)
 						amount = app.game->inventory[name];
 					if (amount <= 0 || ltna(app.game->inventory[name], amount)) {
@@ -91,7 +125,6 @@ namespace Game2 {
 					app.game->inventory[name] -= amount;
 					app.game->craftingInventory[name] += amount;
 					shrink(app.game->inventory);
-					computeCraftingOutput();
 					reset();
 				});
 				app.dialog->show();
@@ -101,7 +134,10 @@ namespace Game2 {
 	}
 
 	void CraftingTab::computeCraftingOutput() {
-
+		craftingOutput.clear();
+		for (const CraftingRecipe &recipe: app.game->recipes.crafting)
+			if (contains(app.game->craftingInventory, recipe.inputs))
+				craftingOutput.push_back(&recipe);
 	}
 
 	void CraftingTab::onFocus() {

@@ -66,7 +66,6 @@ namespace Game2 {
 	}
 
 	void ConversionTab::distribute() {
-
 		auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
 		app.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](const Glib::ustring &resource_name) {

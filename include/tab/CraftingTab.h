@@ -8,6 +8,7 @@
 
 namespace Game2 {
 	class App;
+	class CraftingRecipe;
 
 	class CraftingTab: public Tab {
 		public:
@@ -26,7 +27,7 @@ namespace Game2 {
 			void onFocus() override;
 			void onBlur() override;
 
-			void reset();
+			void reset(bool compute_crafting = true);
 
 		private:
 			Gtk::ScrolledWindow scrolled;
@@ -37,7 +38,8 @@ namespace Game2 {
 			           outputAmountLabel {"Amount"};
 			std::unique_ptr<Gtk::Button> addButton;
 			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
-
+			std::vector<const CraftingRecipe *> craftingOutput;
+			void craft(const CraftingRecipe *);
 			void add();
 			void computeCraftingOutput();
 	};
