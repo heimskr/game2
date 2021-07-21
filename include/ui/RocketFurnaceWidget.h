@@ -7,7 +7,7 @@ namespace Game2 {
 		public:
 			using ProcessorWidget::ProcessorWidget;
 
-			virtual void update() override;
+			void update() override;
 
 		protected:
 			void addExtraButtons() override;

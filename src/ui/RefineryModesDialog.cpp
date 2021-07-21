@@ -5,7 +5,7 @@
 namespace Game2 {
 	RefineryModesDialog::RefineryModesDialog(const Glib::ustring &title, Gtk::Window &parent, App &app_, bool modal):
 	Dialog(title, parent, modal), app(app_) {
-		set_default_size(300, 300);
+		set_default_size(200, 100);
 		scrolled.set_vexpand(true);
 		scrolled.set_child(modesBox);
 		setMargins(modesBox, 5);

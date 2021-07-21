@@ -7,10 +7,13 @@ namespace Game2 {
 		public:
 			using ProcessorWidget::ProcessorWidget;
 
+			void update() override;
+
 		protected:
 			void addExtraButtons() override;
 
 		private:
 			Gtk::Button modeButton;
+			Gtk::Label modeLabel {"", Gtk::Align::START};
 	};
 }
