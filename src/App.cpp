@@ -202,6 +202,6 @@ namespace Game2 {
 				XMoveWindow(display, window, (display_width - window_width) / 2, (display_height - window_height) / 2);
 			}
 		}
-	}
 #endif
+	}
 }
