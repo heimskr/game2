@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "Game.h"
 #include "tab/Tab.h"
 
 namespace Game2 {
@@ -11,6 +12,19 @@ namespace Game2 {
 
 	class ExtractionsTab: public Tab {
 		public:
+			struct Columns: public Gtk::TreeModelColumnRecord {
+				Columns() {
+					add(resource);
+					add(area);
+					add(region);
+					add(rate);
+					add(iter);
+				}
+
+				Gtk::TreeModelColumn<Glib::ustring> resource, area, region, rate;
+				Gtk::TreeModelColumn<decltype(Game::extractions)::iterator> iter;
+			};
+
 			App &app;
 
 			ExtractionsTab() = delete;
@@ -31,9 +45,13 @@ namespace Game2 {
 		private:
 			bool global = false;
 			Gtk::ScrolledWindow scrolled;
-			Gtk::Grid grid;
 			std::unique_ptr<Gtk::ToggleButton> globalButton;
-			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
+			std::unique_ptr<Gtk::Button> removeButton;
+			Gtk::TreeView treeView;
+			Glib::RefPtr<Gtk::ListStore> treeModel;
+			Columns columns;
 
+			void toggleGlobal();
+			void removeExtraction();
 	};
 }

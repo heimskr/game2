@@ -57,8 +57,8 @@ namespace Game2 {
 			return;
 
 		auto lock = app.lockGame();
-
 		auto &links = app.game->automationLinks;
+
 		for (auto iter = links.begin(), end = links.end(); iter != end; ++iter) {
 			AutomationLink &link = *iter;
 			auto row = *treeModel->append();

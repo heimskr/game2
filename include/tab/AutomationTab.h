@@ -45,7 +45,6 @@ namespace Game2 {
 		private:
 			Gtk::ScrolledWindow scrolled;
 			std::unique_ptr<Gtk::Button> addButton, removeButton;
-			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 			Columns columns;
 			Gtk::TreeView treeView;
 			Glib::RefPtr<Gtk::ListStore> treeModel;
