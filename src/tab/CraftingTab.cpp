@@ -4,6 +4,7 @@
 #include "ui/EntryDialog.h"
 #include "ui/InventoryDialog.h"
 #include "ui/NumericEntry.h"
+#include "ui/RecipesDialog.h"
 
 namespace Game2 {
 	CraftingTab::CraftingTab(App &app_): app(app_) {
@@ -146,14 +147,27 @@ namespace Game2 {
 	void CraftingTab::onFocus() {
 		if (!app.game)
 			return;
+
 		addButton = std::make_unique<Gtk::Button>();
 		addButton->set_icon_name("list-add-symbolic");
 		addButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::add));
 		app.header->pack_start(*addButton);
 		app.titleWidgets.push_back(addButton.get());
+
+		helpButton = std::make_unique<Gtk::Button>();
+		helpButton->set_icon_name("help-browser-symbolic");
+		helpButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::showHelp));
+		app.header->pack_start(*helpButton);
+		app.titleWidgets.push_back(helpButton.get());
 	}
 
 	void CraftingTab::onBlur() {
 		addButton.reset();
+		helpButton.reset();
+	}
+
+	void CraftingTab::showHelp() {
+		app.dialog.reset(new RecipesDialog("Recipes", *app.mainWindow, app));
+		app.dialog->show();
 	}
 }

@@ -36,11 +36,12 @@ namespace Game2 {
 			Gtk::Separator separator;
 			Gtk::Label inputLabel {"Input"}, inputAmountLabel {"Amount"}, outputLabel {"Output"},
 			           outputAmountLabel {"Amount"};
-			std::unique_ptr<Gtk::Button> addButton;
+			std::unique_ptr<Gtk::Button> addButton, helpButton;
 			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 			std::vector<const CraftingRecipe *> craftingOutput;
 			void craft(const CraftingRecipe *);
 			void add();
 			void computeCraftingOutput();
+			void showHelp();
 	};
 }
