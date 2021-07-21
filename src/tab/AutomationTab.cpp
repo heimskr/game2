@@ -31,7 +31,8 @@ namespace Game2 {
 		if (!app.game)
 			return;
 
-		addButton = std::make_unique<Gtk::Button>("Add");
+		addButton = std::make_unique<Gtk::Button>();
+		addButton->set_icon_name("list-add-symbolic");
 		addButton->signal_clicked().connect([this] {
 			auto *dialog = new ProcessorsDialog("Source Processor", *app.mainWindow, app);
 			app.dialog.reset(dialog);
