@@ -212,6 +212,13 @@ namespace Game2 {
 		inventory[resource_name] += amount;
 	}
 
+	double Game::adjust(double to_extract, double in_region, const Extraction &extraction) {
+		// Questionable.
+		if (ltna(in_region - to_extract, extraction.minimum))
+			return in_region - extraction.minimum;
+		return to_extract;
+	}
+
 	void Game::tick(double delta) {
 		for (auto &pair: regions)
 			pair.second->tick(delta);
@@ -220,13 +227,16 @@ namespace Game2 {
 			double &in_inventory = inventory[extraction.resourceName];
 			double &in_region = extraction.area->resources[extraction.resourceName];
 			if (extraction.startAmount == 0) { // Eternal extraction
-				const double to_extract = std::min(in_region, extraction.rate * delta);
-				in_region -= to_extract;
-				in_inventory += to_extract;
+				const double to_extract = adjust(std::min(in_region, extraction.rate * delta), in_region, extraction);
+				if (lte(to_extract, in_region)) {
+					in_region -= to_extract;
+					in_inventory += to_extract;
+				}
 				++iter;
 			} else {
-				const double to_extract = std::min(extraction.rate * delta, extraction.amount);
-				if (in_region <= to_extract) {
+				const double to_extract = adjust(std::min(extraction.rate * delta, extraction.amount),
+				                                 in_region, extraction);
+				if (lte(in_region, to_extract)) {
 					in_inventory += in_region;
 					const double floored = std::floor(in_inventory);
 					if (1 - (in_inventory - floored) < Resource::MIN_AMOUNT)
