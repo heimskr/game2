@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "Game.h"
 #include "tab/Tab.h"
 
 namespace Game2 {
@@ -17,9 +18,11 @@ namespace Game2 {
 					add(destination);
 					add(resource);
 					add(weight);
+					add(iter);
 				}
 
 				Gtk::TreeModelColumn<Glib::ustring> source, destination, resource, weight;
+				Gtk::TreeModelColumn<decltype(Game::automationLinks)::iterator> iter;
 			};
 
 			App &app;
@@ -41,10 +44,13 @@ namespace Game2 {
 
 		private:
 			Gtk::ScrolledWindow scrolled;
-			std::unique_ptr<Gtk::Button> addButton;
+			std::unique_ptr<Gtk::Button> addButton, removeButton;
 			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 			Columns columns;
 			Gtk::TreeView treeView;
 			Glib::RefPtr<Gtk::ListStore> treeModel;
+
+			void addLink();
+			void removeLink();
 	};
 }

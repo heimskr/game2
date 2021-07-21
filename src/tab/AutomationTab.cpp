@@ -34,64 +34,20 @@ namespace Game2 {
 
 		addButton = std::make_unique<Gtk::Button>();
 		addButton->set_icon_name("list-add-symbolic");
-		addButton->signal_clicked().connect([this] {
-			auto *dialog = new ProcessorsDialog("Source Processor", *app.mainWindow, app);
-			app.dialog.reset(dialog);
-			dialog->signal_submit().connect([this](std::shared_ptr<Processor> src) {
-				if (!src)
-					return;
-				app.delay([this, src] {
-					auto *dialog = new ResourcesDialog("Resource", *app.mainWindow, app);
-					app.dialog.reset(dialog);
-					dialog->signal_submit().connect([this, src](std::string rtype) {
-						if (rtype.empty())
-							return;
-						// Oh god I'm in callback hell
-						app.delay([this, src, rtype] {
-							auto *dialog = new ProcessorsDialog("Destination Processor", *app.mainWindow, app);
-							app.dialog.reset(dialog);
-							dialog->signal_submit().connect([this, src, rtype](std::shared_ptr<Processor> dest) {
-								if (!dest)
-									return;
-								app.delay([this, src, rtype, dest] {
-									auto *dialog = new EntryDialog<NumericEntry>("Weight", *app.mainWindow, "Weight:");
-									app.dialog.reset(dialog);
-									dialog->signal_submit().connect([this, src, rtype, dest](const Glib::ustring &str) {
-										double weight;
-										try {
-											if (lte(weight = parseDouble(str), 0))
-												throw std::invalid_argument("Invalid weight.");
-										} catch (std::invalid_argument &) {
-											app.delay([this] { app.error("Invalid weight."); });
-											return;
-										}
-										auto lock = app.lockGame();
-										app.game->automationLinks.emplace_back(*app.game, src, dest, rtype, weight)
-										                         .setup();
-										app.delay([this, src, rtype, dest] {
-											app.alert("Linked " + src->name + " to " + dest->name + " for " + rtype
-												+ ".");
-										});
-										reset();
-									});
-									app.dialog->show();
-								});
-							});
-							app.dialog->show();
-						});
-					});
-					app.dialog->show();
-				});
-			});
-			app.dialog->show();
-		});
-
+		addButton->signal_clicked().connect(sigc::mem_fun(*this, &AutomationTab::addLink));
 		app.header->pack_start(*addButton);
 		app.titleWidgets.push_back(addButton.get());
+
+		removeButton = std::make_unique<Gtk::Button>();
+		removeButton->set_icon_name("list-remove-symbolic");
+		removeButton->signal_clicked().connect(sigc::mem_fun(*this, &AutomationTab::removeLink));
+		app.header->pack_start(*removeButton);
+		app.titleWidgets.push_back(removeButton.get());
 	}
 
 	void AutomationTab::onBlur() {
 		addButton.reset();
+		removeButton.reset();
 	}
 
 	void AutomationTab::reset() {
@@ -102,12 +58,74 @@ namespace Game2 {
 
 		auto lock = app.lockGame();
 
-		for (auto &link: app.game->automationLinks) {
+		auto &links = app.game->automationLinks;
+		for (auto iter = links.begin(), end = links.end(); iter != end; ++iter) {
+			AutomationLink &link = *iter;
 			auto row = *treeModel->append();
 			row[columns.source] = link.producer->name;
 			row[columns.destination] = link.consumer->name;
 			row[columns.resource] = link.resourceName;
 			row[columns.weight] = niceDouble(link.weight);
+			row[columns.iter] = iter;
+		}
+	}
+
+	void AutomationTab::addLink() {
+		auto *dialog = new ProcessorsDialog("Source Processor", *app.mainWindow, app);
+		app.dialog.reset(dialog);
+		dialog->signal_submit().connect([this](std::shared_ptr<Processor> src) {
+			if (!src)
+				return;
+			app.delay([this, src] {
+				auto *dialog = new ResourcesDialog("Resource", *app.mainWindow, app);
+				app.dialog.reset(dialog);
+				dialog->signal_submit().connect([this, src](std::string rtype) {
+					if (rtype.empty())
+						return;
+					// Oh god I'm in callback hell
+					app.delay([this, src, rtype] {
+						auto *dialog = new ProcessorsDialog("Destination Processor", *app.mainWindow, app);
+						app.dialog.reset(dialog);
+						dialog->signal_submit().connect([this, src, rtype](std::shared_ptr<Processor> dest) {
+							if (!dest)
+								return;
+							app.delay([this, src, rtype, dest] {
+								auto *dialog = new EntryDialog<NumericEntry>("Weight", *app.mainWindow, "Weight:");
+								app.dialog.reset(dialog);
+								dialog->signal_submit().connect([this, src, rtype, dest](const Glib::ustring &str) {
+									double weight;
+									try {
+										if (lte(weight = parseDouble(str), 0))
+											throw std::invalid_argument("Invalid weight.");
+									} catch (std::invalid_argument &) {
+										app.delay([this] { app.error("Invalid weight."); });
+										return;
+									}
+									auto lock = app.lockGame();
+									app.game->automationLinks.emplace_back(*app.game, src, dest, rtype, weight).setup();
+									app.delay([this, src, rtype, dest] {
+										app.alert("Linked " + src->name + " to " + dest->name + " for " + rtype + ".");
+									});
+									reset();
+								});
+								app.dialog->show();
+							});
+						});
+						app.dialog->show();
+					});
+				});
+				app.dialog->show();
+			});
+		});
+		app.dialog->show();
+	}
+
+	void AutomationTab::removeLink() {
+		if (auto iter = treeView.get_selection()->get_selected()) {
+			auto link_iter = iter->get_value(columns.iter);
+			link_iter->cleanup();
+			app.game->automationLinks.erase(link_iter);
+			treeModel->erase(iter);
 		}
 	}
 }
