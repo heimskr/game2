@@ -1,4 +1,4 @@
-CPP      := g++-10
+CPP      := g++
 CPPFLAGS := -Wall -Wextra -g -O0 -std=c++20 -Iinclude -rdynamic
 INCLUDES := $(shell pkg-config --cflags gtk4 gtkmm-4.0 x11)
 LIBS     := $(shell pkg-config --libs   gtk4 gtkmm-4.0 x11)
