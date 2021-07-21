@@ -52,6 +52,36 @@ namespace Game2 {
 		reset();
 	}
 
+	void MarketTab::onFocus() {
+		if (!app.game)
+			return;
+
+		sellButton = std::make_unique<Gtk::Button>("Sell");
+		sellButton->signal_clicked().connect(sigc::mem_fun(*this, &MarketTab::sellRow));
+		app.header->pack_start(*sellButton);
+		app.titleWidgets.push_back(sellButton.get());
+
+		buyButton = std::make_unique<Gtk::Button>("Buy");
+		buyButton->signal_clicked().connect(sigc::mem_fun(*this, &MarketTab::buyRow));
+		app.header->pack_start(*buyButton);
+		app.titleWidgets.push_back(buyButton.get());
+	}
+
+	void MarketTab::onBlur() {
+		sellButton.reset();
+		buyButton.reset();
+	}
+
+	void MarketTab::sellRow() {
+		if (auto iter = sellView.get_selection()->get_selected())
+			sell(iter->get_value(columns.resource));
+	}
+
+	void MarketTab::buyRow() {
+		if (auto iter = buyView.get_selection()->get_selected())
+			buy(iter->get_value(columns.resource));
+	}
+
 	void MarketTab::reset() {
 		buyModel->clear();
 		sellModel->clear();
