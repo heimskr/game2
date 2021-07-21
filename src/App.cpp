@@ -12,7 +12,9 @@
 #include "tab/AutomationTab.h"
 #include "tab/CraftingTab.h"
 
+#ifdef __linux__
 #include <gtk-4.0/gdk/x11/gdkx.h>
+#endif
 
 namespace Game2 {
 	std::unique_ptr<App> app;
@@ -181,6 +183,7 @@ namespace Game2 {
 	}
 
 	void App::hackWindow() {
+#ifdef __linux__
 		if (mainWindow->get_width() == 0 && mainWindow->get_height() == 0) {
 			delay(sigc::mem_fun(*this, &App::hackWindow));
 		} else {
@@ -200,4 +203,5 @@ namespace Game2 {
 			}
 		}
 	}
+#endif
 }

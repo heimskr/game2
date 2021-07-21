@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtkmm-4.0/gtkmm.h>
+#include "Toolkit.h"
 
 namespace Game2 {
 	class NumericEntry: public Gtk::Entry {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <gtkmm-4.0/gtkmm.h>
+#include "Toolkit.h"
 #include <vector>
 
 namespace Game2 {
 	class App;
-	class CraftingRecipe;
+	struct CraftingRecipe;
 
 	class RecipesDialog: public Gtk::Dialog {
 		public:

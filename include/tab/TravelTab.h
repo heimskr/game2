@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtkmm-4.0/gtkmm.h>
+#include "Toolkit.h"
 
 #include "tab/Tab.h"
 
@@ -28,6 +28,6 @@ namespace Game2 {
 			App &app;
 			Gtk::Grid grid;
 			Gtk::Button buttons[BUTTON_COUNT];
-			Region::Position getPosition(Region &, int row, int column);
+			Position getPosition(Region &, int row, int column);
 	};
 }

@@ -24,12 +24,12 @@ namespace Game2 {
 			RecipeManager recipes = {*this};
 
 			std::map<std::string, double> inventory, craftingInventory;
-			std::map<Region::Position, std::shared_ptr<Region>> regions;
+			std::map<Position, std::shared_ptr<Region>> regions;
 			std::list<Extraction> extractions;
 			std::list<std::shared_ptr<Processor>> processors;
 			std::unordered_map<std::string, std::shared_ptr<Processor>> processorsByID;
 			std::list<AutomationLink> automationLinks;
-			Region::Position position;
+			Position position;
 			size_t money = 0;
 			bool cheatsEnabled = false;
 
@@ -43,8 +43,8 @@ namespace Game2 {
 			void addAll();
 			std::string randomResource(const Resource::Type &) const;
 
-			bool updatePosition(Region &, const Region::Position &);
-			Region::Position suggestPosition(bool is_free, s64 x = 0, s64 y = 0);
+			bool updatePosition(Region &, const Position &);
+			Position suggestPosition(bool is_free, s64 x = 0, s64 y = 0);
 			bool updateName(Region &, const std::string &);
 
 			Region & currentRegion();

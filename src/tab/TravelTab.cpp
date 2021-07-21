@@ -17,7 +17,7 @@ namespace Game2 {
 					std::shared_ptr<Region> region = app.game->currentRegionPointer();
 					if (!region)
 						return;
-					const Region::Position pos = getPosition(*region, row, column);
+					const Position pos = getPosition(*region, row, column);
 					if (app.game->regions.count(pos) != 0)
 						app.game->position = pos;
 					else
@@ -43,14 +43,14 @@ namespace Game2 {
 				Gtk::Button &button = buttons[row * COLUMNS + column];
 				button.set_label("");
 				if (region) {
-					const Region::Position pos = getPosition(*region, row, column);
+					const Position pos = getPosition(*region, row, column);
 					if (app.game->regions.count(pos) != 0)
 						button.set_label(app.game->regions.at(pos)->name);
 				}
 			}
 	}
 
-	Region::Position TravelTab::getPosition(Region &region, int row, int column) {
-		return region.position + Region::Position(column - COLUMNS / 2, row - ROWS / 2);
+	Position TravelTab::getPosition(Region &region, int row, int column) {
+		return region.position + Position(column - COLUMNS / 2, row - ROWS / 2);
 	}
 }

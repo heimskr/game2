@@ -102,12 +102,12 @@ namespace Game2 {
 	}
 
 	bool Region::hasNeighbor(Direction direction) const {
-		const Position offset = getOffset(direction);
+		const Position offset(direction);
 		return game->regions.count(position + offset) != 0;
 	}
 
 	Region * Region::getNeighbor(Direction direction) const {
-		const Position offset = getOffset(direction);
+		const Position offset(direction);
 		return game->regions.count(position + offset) == 0? nullptr : game->regions.at(position + offset).get();
 	}
 
@@ -155,7 +155,7 @@ namespace Game2 {
 		return *this;
 	}
 
-	Region & Region::setPosition(const std::pair<s64, s64> &position_) {
+	Region & Region::setPosition(const Position &position_) {
 		game->updatePosition(*this, position_);
 		return *this;
 	}
@@ -203,7 +203,7 @@ namespace Game2 {
 		const size_t size = parseUlong(by_colon[3]);
 		const size_t money = parseUlong(by_colon[4]);
 		const double greed = parseDouble(by_colon[5]);
-		std::unique_ptr<Region> region = std::make_unique<Region>(game, name, std::make_pair(x, y), size);
+		std::unique_ptr<Region> region = std::make_unique<Region>(game, name, Position(x, y), size);
 		region->money = money;
 		region->greed = greed;
 		region->areas.clear();

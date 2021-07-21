@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtkmm-4.0/gtkmm.h>
+#include "Toolkit.h"
 
 void setMargins(Gtk::Widget &widget, int margin);
 

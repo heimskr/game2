@@ -136,7 +136,9 @@ namespace Game2 {
 		int row = 1;
 		previousInventory.clear();
 
-		for (const auto &[name, amount]: app.game->inventory) {
+		for (const auto &pair: app.game->inventory) {
+			const auto &name = pair.first;
+			const auto &amount = pair.second;
 			previousInventory.insert(name);
 			auto *button = new Gtk::Button;
 			sellWidgets.emplace_back(button);
@@ -179,7 +181,9 @@ namespace Game2 {
 
 		int row = 1;
 
-		for (const auto &[name, amount]: non_owned) {
+		for (const auto &pair: non_owned) {
+			const auto &name = pair.first;
+			const auto &amount = pair.second;
 			previousNonOwned.insert(name);
 			auto *label = new Gtk::Label(name, Gtk::Align::START);
 			buyWidgets.emplace_back(label);

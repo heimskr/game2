@@ -116,7 +116,7 @@ namespace Game2 {
 		return choices.at(randomRange(0ul, choices.size() - 1ul));
 	}
 
-	bool Game::updatePosition(Region &region, const Region::Position &new_position) {
+	bool Game::updatePosition(Region &region, const Position &new_position) {
 		if (regions.count(region.position) == 0)
 			return false;
 		auto handler = regions.extract(region.position);
@@ -128,7 +128,7 @@ namespace Game2 {
 		return true;
 	}
 
-	Region::Position Game::suggestPosition(bool is_free, s64 x, s64 y) {
+	Position Game::suggestPosition(bool is_free, s64 x, s64 y) {
 		enum Direction {Up, Right, Down, Left};
 		Direction direction = Up;
 		int max_extent = 1;
@@ -256,7 +256,7 @@ namespace Game2 {
 	std::shared_ptr<Game> Game::loadDefaults(App &app) {
 		std::shared_ptr<Game> game = std::make_shared<Game>(app);
 		game->regions.clear();
-		Region &home = *game->regions.insert({Region::Position(0, 0), std::make_unique<Region>(*game, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
+		Region &home = *game->regions.insert({Position(0, 0), std::make_unique<Region>(*game, NameGen::makeRandomLanguage().makeName(), Position(0, 0), 128)}).first->second;
 		home.greed = 0.25;
 		home.money = 10'000;
 		auto forest = std::make_shared<ForestArea>(&home, 32);

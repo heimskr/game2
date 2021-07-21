@@ -19,7 +19,8 @@ namespace Game2 {
 		scrolled.set_vexpand(true);
 		scrolled.set_child(resourcesBox);
 		auto lock = app.lockGame();
-		for (auto &[name, resource]: app.game->resources) {
+		for (auto &pair: app.game->resources) {
+			auto &name = pair.first;
 			auto &label = labels.emplace_back(name, Gtk::Align::START);
 			auto &gesture = gestures.emplace_back(Gtk::GestureClick::create());
 			gesture->signal_pressed().connect([this, name](int, double, double) {
