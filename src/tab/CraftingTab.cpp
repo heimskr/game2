@@ -58,7 +58,10 @@ namespace Game2 {
 			widgets.emplace_back(button);
 			button->set_icon_name("list-remove-symbolic");
 			button->signal_clicked().connect([this, &name, &amount] {
-
+				auto lock = app.lockGame();
+				app.game->inventory[name] += amount;
+				app.game->craftingInventory.erase(name);
+				reset();
 			});
 			inputGrid.attach(*button, 0, row);
 			auto *label = new Gtk::Label(name, Gtk::Align::START);
