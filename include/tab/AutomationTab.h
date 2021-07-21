@@ -11,6 +11,17 @@ namespace Game2 {
 
 	class AutomationTab: public Tab {
 		public:
+			struct Columns: public Gtk::TreeModelColumnRecord {
+				Columns() {
+					add(source);
+					add(destination);
+					add(resource);
+					add(weight);
+				}
+
+				Gtk::TreeModelColumn<Glib::ustring> source, destination, resource, weight;
+			};
+
 			App &app;
 
 			AutomationTab() = delete;
@@ -30,10 +41,10 @@ namespace Game2 {
 
 		private:
 			Gtk::ScrolledWindow scrolled;
-			Gtk::Grid grid;
-			Gtk::Label sourceLabel {"Source"}, destinationLabel {"Destination"}, resourceLabel {"Resource"},
-			           weightLabel {"Weight"};
 			std::unique_ptr<Gtk::Button> addButton;
 			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
+			Columns columns;
+			Gtk::TreeView treeView;
+			Glib::RefPtr<Gtk::ListStore> treeModel;
 	};
 }

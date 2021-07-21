@@ -226,8 +226,9 @@ namespace Game2 {
 			Extraction &extraction = *iter;
 			double &in_inventory = inventory[extraction.resourceName];
 			double &in_region = extraction.area->resources[extraction.resourceName];
+			const double base = extraction.rate * delta;
 			if (extraction.startAmount == 0) { // Eternal extraction
-				const double to_extract = adjust(std::min(in_region, extraction.rate * delta), in_region, extraction);
+				const double to_extract = adjust(std::min(base, in_region), in_region, extraction);
 				if (lte(to_extract, in_region)) {
 					in_region -= to_extract;
 					in_inventory += to_extract;
@@ -235,8 +236,7 @@ namespace Game2 {
 
 				++iter;
 			} else {
-				const double to_extract = adjust(std::min(extraction.rate * delta, extraction.amount),
-				                                 in_region, extraction);
+				const double to_extract = adjust(std::min(base, extraction.amount), in_region, extraction);
 				if (lte(in_region, to_extract)) {
 					in_inventory += in_region;
 					const double floored = std::floor(in_inventory);
