@@ -14,6 +14,16 @@ namespace Game2 {
 
 	class MarketTab: public Tab {
 		public:
+			struct Columns: public Gtk::TreeModelColumnRecord {
+				Columns() {
+					add(resource);
+					add(amount);
+					add(price);
+				}
+
+				Gtk::TreeModelColumn<Glib::ustring> resource, amount, price;
+			};
+
 			App &app;
 
 			MarketTab() = delete;
@@ -34,19 +44,17 @@ namespace Game2 {
 			void update();
 
 		private:
-			Gtk::Box box {Gtk::Orientation::VERTICAL}, gridBox {Gtk::Orientation::HORIZONTAL};
+			Gtk::Box box {Gtk::Orientation::VERTICAL}, tableBox {Gtk::Orientation::HORIZONTAL};
 			Gtk::ScrolledWindow scrolled;
-			Gtk::Grid topGrid, sellGrid, buyGrid;
-			Gtk::Label regionMoneyLabel {"Region money"}, yourMoneyLabel {"Your money"}, regionMoney, yourMoney;
-			Gtk::Label errorLabel {"Region has no market."};
-			Gtk::Separator separator;
-			std::vector<std::unique_ptr<Gtk::Widget>> sellWidgets, buyWidgets;
-			std::unordered_map<std::string, Gtk::Label> sellAmountLabels, sellPriceLabels;
-			std::unordered_map<std::string, Gtk::Label> buyAmountLabels,  buyPriceLabels;
+			Gtk::Grid topGrid;
+			Gtk::TreeView sellView, buyView;
+			Glib::RefPtr<Gtk::ListStore> sellModel, buyModel;
+			Gtk::Label regionMoneyLabel {"Region money"}, yourMoneyLabel {"Your money"}, regionMoney, yourMoney,
+			           errorLabel {"Region has no market."};
+			Columns columns;
+			std::unordered_map<std::string, Gtk::TreeModel::iterator> sellRows, buyRows;
 			std::unordered_set<std::string> previousInventory, previousNonOwned;
 
-			void addSellHeader();
-			void addBuyHeader();
 			void resetSell();
 			void resetBuy();
 			void sell(const std::string &resource_name);

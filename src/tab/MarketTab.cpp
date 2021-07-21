@@ -22,27 +22,39 @@ namespace Game2 {
 		topGrid.set_row_spacing(5);
 		topGrid.set_column_spacing(10);
 		box.append(topGrid);
-		gridBox.set_spacing(50);
-		scrolled.set_child(gridBox);
-		sellGrid.set_row_spacing(5);
-		sellGrid.set_column_spacing(5);
-		gridBox.append(sellGrid);
-		gridBox.append(separator);
-		buyGrid.set_row_spacing(5);
-		buyGrid.set_column_spacing(5);
-		gridBox.append(buyGrid);
+		scrolled.set_child(tableBox);
+		tableBox.set_homogeneous(true);
+		tableBox.append(sellView);
+		tableBox.append(buyView);
 		scrolled.set_vexpand(true);
 		box.append(scrolled);
-		setMargins(box, 5);
+		setMargins(topGrid, 5);
+
+		sellModel = Gtk::ListStore::create(columns);
+		sellView.set_model(sellModel);
+		appendColumn(sellView, "Your Resources", columns.resource);
+		appendColumn(sellView, "Amount", columns.amount);
+		appendColumn(sellView, "Price", columns.price);
+
+		buyModel = Gtk::ListStore::create(columns);
+		buyView.set_model(buyModel);
+		appendColumn(buyView, "Region Resources", columns.resource);
+		appendColumn(buyView, "Amount", columns.amount);
+		appendColumn(buyView, "Price", columns.price);
+
+		for (auto *view: {&sellView, &buyView})
+			for (int i = 0, columns = view->get_n_columns(); i < columns; ++i) {
+				auto *column = view->get_column(i);
+				column->set_expand(true);
+				column->set_resizable(true);
+			}
+
 		reset();
 	}
 
 	void MarketTab::reset() {
-		removeChildren(sellGrid);
-		removeChildren(buyGrid);
-		sellWidgets.clear();
-		buyWidgets.clear();
-
+		buyModel->clear();
+		sellModel->clear();
 		updateMoney();
 
 		auto lock = app.lockGame();
@@ -60,12 +72,10 @@ namespace Game2 {
 			return;
 		}
 
-		scrolled.set_child(gridBox);
+		scrolled.set_child(tableBox);
 		regionMoneyLabel.show();
 		regionMoney.show();
 
-		addSellHeader();
-		addBuyHeader();
 		resetSell();
 		resetBuy();
 	}
@@ -82,128 +92,49 @@ namespace Game2 {
 		yourMoney.set_label(niceDouble(app.game->money));
 	}
 
-	void MarketTab::addSellHeader() {
-		auto *label = new Gtk::Label("Your Resources", Gtk::Align::START);
-		sellWidgets.emplace_back(label);
-		label->add_css_class("table-header");
-		label->set_hexpand(true);
-		sellGrid.attach(*label, 1, 0);
-		label = new Gtk::Label("Amount", Gtk::Align::START);
-		sellWidgets.emplace_back(label);
-		label->set_xalign(0);
-		label->set_size_request(100, -1);
-		label->add_css_class("table-header");
-		sellGrid.attach(*label, 2, 0);
-		label = new Gtk::Label("Price", Gtk::Align::START);
-		sellWidgets.emplace_back(label);
-		label->add_css_class("table-header");
-		sellGrid.attach(*label, 3, 0);
-	}
-
-	void MarketTab::addBuyHeader() {
-		auto *label = new Gtk::Label("Region Resources", Gtk::Align::START);
-		buyWidgets.emplace_back(label);
-		label->add_css_class("table-header");
-		label->set_hexpand(true);
-		buyGrid.attach(*label, 0, 0);
-		label = new Gtk::Label("Amount", Gtk::Align::START);
-		buyWidgets.emplace_back(label);
-		label->set_xalign(0);
-		label->set_size_request(100, -1);
-		label->add_css_class("table-header");
-		buyGrid.attach(*label, 1, 0);
-		label = new Gtk::Label("Price", Gtk::Align::START);
-		buyWidgets.emplace_back(label);
-		label->add_css_class("table-header");
-		buyGrid.attach(*label, 2, 0);
-	}
-
 	void MarketTab::resetSell() {
-		auto lock = app.lockGame();
+		sellModel->clear();
+		sellRows.clear();
+
 		if (!app.game)
 			return;
 
-		removeChildren(sellGrid);
-		sellWidgets.clear();
-		sellAmountLabels.clear();
-		sellPriceLabels.clear();
-		addSellHeader();
-
+		auto lock = app.lockGame();
 		Region &region = app.game->currentRegion();
-		auto non_owned = region.allNonOwnedResources();
-		double money = app.game->money;
-		double greed = region.greed;
-		int row = 1;
+		const auto non_owned = region.allNonOwnedResources();
+		const double money = app.game->money;
+		const double greed = region.greed;
 		previousInventory.clear();
 
-		for (const auto &pair: app.game->inventory) {
-			const auto &name = pair.first;
-			const auto &amount = pair.second;
+		for (const auto &[name, amount]: app.game->inventory) {
 			previousInventory.insert(name);
-			auto *button = new Gtk::Button;
-			sellWidgets.emplace_back(button);
-			button->set_icon_name("list-remove-symbolic");
-			button->set_tooltip_text("Sell resource");
-			button->signal_clicked().connect([this, name] { sell(name); });
-			sellGrid.attach(*button, 0, row);
-
-			auto *label = new Gtk::Label(name, Gtk::Align::START);
-			sellWidgets.emplace_back(label);
-			sellGrid.attach(*label, 1, row);
-
-			label = &sellAmountLabels.emplace(name, Gtk::Label(niceDouble(amount), Gtk::Align::START)).first->second;
-			sellGrid.attach(*label, 2, row);
-
-			label = &sellPriceLabels.emplace(name, Gtk::Label(niceDouble(
-				Stonks::sellPrice(app.game->resources.at(name).basePrice, non_owned.count(name)? non_owned.at(name) : 0,
-				money, greed)), Gtk::Align::START)).first->second;
-			sellGrid.attach(*label, 3, row);
-
-			++row;
+			auto &row = *sellRows.emplace(name, sellModel->append()).first->second;
+			row[columns.resource] = name;
+			row[columns.amount] = niceDouble(amount);
+			row[columns.price] = niceDouble(Stonks::sellPrice(app.game->resources.at(name).basePrice,
+				non_owned.count(name)? non_owned.at(name) : 0, money, greed));
 		}
 	}
 
 	void MarketTab::resetBuy() {
-		auto lock = app.lockGame();
+		buyModel->clear();
+		buyRows.clear();
+
 		if (!app.game)
 			return;
 
-		removeChildren(buyGrid);
-		buyWidgets.clear();
-		buyAmountLabels.clear();
-		buyPriceLabels.clear();
-		addBuyHeader();
-
+		auto lock = app.lockGame();
 		Region &region = app.game->currentRegion();
 		auto non_owned = region.allNonOwnedResources();
 		double money = app.game->money;
 		previousNonOwned.clear();
 
-		int row = 1;
-
-		for (const auto &pair: non_owned) {
-			const auto &name = pair.first;
-			const auto &amount = pair.second;
+		for (const auto &[name, amount]: non_owned) {
 			previousNonOwned.insert(name);
-			auto *label = new Gtk::Label(name, Gtk::Align::START);
-			buyWidgets.emplace_back(label);
-			buyGrid.attach(*label, 0, row);
-
-			label = &buyAmountLabels.emplace(name, Gtk::Label(niceDouble(amount), Gtk::Align::START)).first->second;
-			buyGrid.attach(*label, 1, row);
-
-			label = &buyPriceLabels.emplace(name, Gtk::Label(niceDouble(Stonks::buyPrice(
-				app.game->resources.at(name).basePrice, amount, money)),Gtk::Align::START)).first->second;
-			buyGrid.attach(*label, 2, row);
-
-			auto *button = new Gtk::Button;
-			buyWidgets.emplace_back(button);
-			button->set_icon_name("list-add-symbolic");
-			button->set_tooltip_text("Buy resource");
-			button->signal_clicked().connect([this, name] { buy(name); });
-			buyGrid.attach(*button, 3, row);
-
-			++row;
+			auto &row = *buyRows.emplace(name, buyModel->append()).first->second;
+			row[columns.resource] = name;
+			row[columns.amount] = niceDouble(amount);
+			row[columns.price] = niceDouble(Stonks::buyPrice(app.game->resources.at(name).basePrice, amount, money));
 		}
 	}
 
@@ -217,26 +148,16 @@ namespace Game2 {
 		double money = app.game->money;
 		double greed = region.greed;
 
-		if (!compare(previousInventory, app.game->inventory)) {
+		if (!compare(previousInventory, app.game->inventory))
 			resetSell();
-		} else {
-			for (const auto &[name, amount]: app.game->inventory) {
-				if (sellAmountLabels.count(name) != 0) {
-					const Glib::ustring string = niceDouble(amount);
-					auto &label = sellAmountLabels.at(name);
-					if (label.get_text() != string)
-						label.set_text(string);
-				}
-
-				if (sellPriceLabels.count(name) != 0) {
-					const Glib::ustring string = niceDouble(Stonks::sellPrice(app.game->resources.at(name).basePrice,
+		else
+			for (const auto &[name, amount]: app.game->inventory)
+				if (sellRows.count(name) != 0) {
+					auto &row = *sellRows.at(name);
+					row[columns.amount] = niceDouble(amount);
+					row[columns.price] = niceDouble(Stonks::sellPrice(app.game->resources.at(name).basePrice,
 						non_owned.count(name)? non_owned.at(name) : 0, money, greed));
-					auto &label = sellPriceLabels.at(name);
-					if (label.get_text() != string)
-						label.set_text(string);
 				}
-			}
-		}
 	}
 
 	void MarketTab::updateBuy() {
@@ -248,26 +169,16 @@ namespace Game2 {
 		auto non_owned = region.allNonOwnedResources();
 		double money = app.game->money;
 
-		if (!compare(previousNonOwned, non_owned)) {
+		if (!compare(previousNonOwned, non_owned))
 			resetBuy();
-		} else {
-			for (const auto &[name, amount]: non_owned) {
-				if (buyAmountLabels.count(name) != 0) {
-					const Glib::ustring string = niceDouble(amount);
-					auto &label = buyAmountLabels.at(name);
-					if (label.get_text() != string)
-						label.set_text(string);
+		else
+			for (const auto &[name, amount]: non_owned)
+				if (buyRows.count(name) != 0) {
+					auto &row = *buyRows.at(name);
+					row[columns.amount] = niceDouble(amount);
+					row[columns.price] = niceDouble(Stonks::buyPrice(app.game->resources.at(name).basePrice, amount,
+					                                                 money));
 				}
-
-				if (buyPriceLabels.count(name) != 0) {
-					const Glib::ustring string = niceDouble(Stonks::buyPrice(app.game->resources.at(name).basePrice,
-						amount, money));
-					auto &label = buyPriceLabels.at(name);
-					if (label.get_text() != string)
-						label.set_text(string);
-				}
-			}
-		}
 	}
 
 	void MarketTab::update() {
