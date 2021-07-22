@@ -21,7 +21,8 @@ namespace Game2 {
 					add(price);
 				}
 
-				Gtk::TreeModelColumn<Glib::ustring> resource, amount, price;
+				Gtk::TreeModelColumn<Glib::ustring> resource;
+				Gtk::TreeModelColumn<double> amount, price;
 			};
 
 			App &app;

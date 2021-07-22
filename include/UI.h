@@ -23,3 +23,6 @@ Gtk::TreeViewColumn * appendColumn(Gtk::TreeView &tree_view, const Glib::ustring
 	column->set_sort_column(model_column);
 	return column;
 }
+
+Gtk::TreeViewColumn * appendColumn(Gtk::TreeView &tree_view, const Glib::ustring &title,
+                                   const Gtk::TreeModelColumn<double> &model_column);

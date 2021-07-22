@@ -140,9 +140,9 @@ namespace Game2 {
 			previousInventory.insert(name);
 			auto &row = *sellRows.emplace(name, sellModel->append()).first->second;
 			row[columns.resource] = name;
-			row[columns.amount] = niceDouble(amount);
-			row[columns.price] = niceDouble(Stonks::sellPrice(app.game->resources.at(name).basePrice,
-				non_owned.count(name)? non_owned.at(name) : 0, money, greed));
+			row[columns.amount] = amount;
+			row[columns.price] = Stonks::sellPrice(app.game->resources.at(name).basePrice,
+				non_owned.count(name)? non_owned.at(name) : 0, money, greed);
 		}
 	}
 
@@ -163,8 +163,8 @@ namespace Game2 {
 			previousNonOwned.insert(name);
 			auto &row = *buyRows.emplace(name, buyModel->append()).first->second;
 			row[columns.resource] = name;
-			row[columns.amount] = niceDouble(amount);
-			row[columns.price] = niceDouble(Stonks::buyPrice(app.game->resources.at(name).basePrice, amount, money));
+			row[columns.amount] = amount;
+			row[columns.price] = Stonks::buyPrice(app.game->resources.at(name).basePrice, amount, money);
 		}
 	}
 
@@ -184,9 +184,9 @@ namespace Game2 {
 			for (const auto &[name, amount]: app.game->inventory)
 				if (sellRows.count(name) != 0) {
 					auto &row = *sellRows.at(name);
-					row[columns.amount] = niceDouble(amount);
-					row[columns.price] = niceDouble(Stonks::sellPrice(app.game->resources.at(name).basePrice,
-						non_owned.count(name)? non_owned.at(name) : 0, money, greed));
+					row[columns.amount] = amount;
+					row[columns.price] = Stonks::sellPrice(app.game->resources.at(name).basePrice,
+						non_owned.count(name)? non_owned.at(name) : 0, money, greed);
 				}
 	}
 
@@ -205,9 +205,8 @@ namespace Game2 {
 			for (const auto &[name, amount]: non_owned)
 				if (buyRows.count(name) != 0) {
 					auto &row = *buyRows.at(name);
-					row[columns.amount] = niceDouble(amount);
-					row[columns.price] = niceDouble(Stonks::buyPrice(app.game->resources.at(name).basePrice, amount,
-					                                                 money));
+					row[columns.amount] = amount;
+					row[columns.price] = Stonks::buyPrice(app.game->resources.at(name).basePrice, amount, money);
 				}
 	}
 

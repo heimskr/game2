@@ -111,12 +111,9 @@ namespace Game2 {
 		auto &region = *region_ptr;
 		auto &pos = region.position;
 
-		// Let's hope no one uses markup in their region name.
-		nameLabel.set_markup("<b>" + region.name + "</b>");
+		nameLabel.set_text(region.name);
 		positionLabel.set_text("Position: " + std::string(pos));
 		sizeLabel.set_text("Size: " + std::to_string(region.size));
-
-		// return;
 
 		if (region_ptr != lastRegion) {
 			lastRegion = region_ptr;
