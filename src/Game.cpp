@@ -290,12 +290,12 @@ namespace Game2 {
 		return game;
 	}
 
-	void Game::extract(Area &area, const std::string &name, double amount, double minimum) {
-		extractions.emplace_back(&area, name, amount, amount, resources.at(name).defaultExtractionRate, minimum);
+	Extraction & Game::extract(Area &area, const std::string &name, double amount, double minimum) {
+		return extractions.emplace_back(&area, name, amount, amount, resources.at(name).defaultExtractionRate, minimum);
 	}
 
-	void Game::extract(Area &area, const std::string &name, double amount, double minimum, double rate) {
-		extractions.emplace_back(&area, name, amount, amount, rate, minimum);
+	Extraction & Game::extract(Area &area, const std::string &name, double amount, double minimum, double rate) {
+		return extractions.emplace_back(&area, name, amount, amount, rate, minimum);
 	}
 
 	std::string Game::toString() const {

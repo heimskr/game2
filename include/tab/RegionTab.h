@@ -13,18 +13,20 @@
 
 namespace Game2 {
 	class App;
+	class Area;
 	class Extraction;
 	class Region;
 
 	class RegionTab: public Tab {
 		public:
 			struct Rbox: public Gtk::Box {
+				App &app;
+				std::shared_ptr<Area> area;
 				Gtk::Button extractButton {"Extract"};
 				Gtk::Label label;
 				Extraction *extraction;
-				std::function<void()> onClick;
 				Rbox() = delete;
-				Rbox(const std::string &resource_name, double amount, Extraction *, std::function<void()> on_click);
+				Rbox(App &, std::shared_ptr<Area>, const std::string &resource_name, double amount, Extraction *);
 				void updateLabel(const std::string &resource_name, double amount);
 			};
 

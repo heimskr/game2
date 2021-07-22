@@ -8,15 +8,55 @@
 #include "ui/NumericEntry.h"
 
 namespace Game2 {
-	RegionTab::Rbox::Rbox(const std::string &resource_name, double amount, Extraction *extraction_,
-	                      std::function<void()> on_click):
-	Box(Gtk::Orientation::HORIZONTAL, 5), extraction(extraction_), onClick(on_click) {
+	RegionTab::Rbox::Rbox(App &app_, std::shared_ptr<Area> area_, const std::string &resource_name, double amount,
+	                      Extraction *extraction_):
+	Box(Gtk::Orientation::HORIZONTAL, 5), app(app_), area(area_), extraction(extraction_) {
 		append(extractButton);
 		append(label);
 		updateLabel(resource_name, amount);
 		label.set_halign(Gtk::Align::START);
 		label.set_hexpand(true);
-		extractButton.signal_clicked().connect(on_click);
+		extractButton.signal_clicked().connect([this, resource_name] {
+			if (extraction)
+				return;
+			auto *dialog = new EntryDialog<NumericEntry>("", *app.mainWindow, "Amount to extract:");
+			app.dialog.reset(dialog);
+			dialog->signal_submit().connect([this, resource_name](const Glib::ustring &str) {
+				double chosen;
+				try {
+					chosen = parseDouble(str);
+					if (ltna(chosen, 0))
+						throw std::invalid_argument("Invalid amount.");
+				} catch (std::invalid_argument &) {
+					app.delay([this] { app.error("Invalid amount."); });
+					return;
+				}
+				if (ltna(0, chosen)) {
+					if (area->resources.count(resource_name) == 0 || ltna(area->resources.at(resource_name), chosen)) {
+						app.delay([this] { app.error("Not enough of that resource is available."); });
+						return;
+					}
+				}
+				app.delay([this, resource_name, chosen] {
+					auto *dialog = new EntryDialog<NumericEntry>("", *app.mainWindow, "Minimum amount in area:");
+					app.dialog.reset(dialog);
+					dialog->signal_submit().connect([this, resource_name, chosen](const Glib::ustring &str) {
+						double minimum;
+						try {
+							minimum = parseDouble(str);
+							if (ltna(minimum, 0))
+								throw std::invalid_argument("Invalid minimum.");
+						} catch (std::invalid_argument &) {
+							app.delay([this] { app.error("Invalid minimum."); });
+							return;
+						}
+						extraction = &app.game->extract(*area, resource_name, chosen, minimum);
+					});
+					app.dialog->show();
+				});
+			});
+			app.dialog->show();
+		});
 	}
 
 	void RegionTab::Rbox::updateLabel(const std::string &resource_name, double amount) {
@@ -192,12 +232,8 @@ namespace Game2 {
 					const auto &amount = pair.second;
 					resourceSets[area_name].insert(resource_name);
 					Extraction *extraction = app.game->getExtraction(*area, resource_name);
-					ebox->append(*(boxMaps[area_name][resource_name] = std::make_shared<Rbox>(resource_name, amount,
-						extraction, [this, resource_name, extraction] {
-						if (extraction)
-							return;
-
-					})));
+					ebox->append(*(boxMaps[area_name][resource_name] = std::make_shared<Rbox>(app, area, resource_name,
+						amount, extraction)));
 				}
 			}
 		} else {
@@ -225,9 +261,7 @@ namespace Game2 {
 					Extraction *extraction = app.game->getExtraction(*area, resource_name);
 					std::shared_ptr<Rbox> rbox;
 					if (resource_set.count(resource_name) == 0) {
-						rbox = std::make_shared<Rbox>(resource_name, amount, extraction, [] {
-							std::cout << "Clicked 2.\n";
-						});
+						rbox = std::make_shared<Rbox>(app, area, resource_name, amount, extraction);
 						if (!last_rbox) {
 							map.emplace(resource_name, rbox);
 							rbox->insert_after(ebox, *ebox.get_first_child());

@@ -69,7 +69,7 @@ namespace Game2 {
 		char *end;
 		double parsed = strtod(c_str, &end);
 		if (c_str + str.length() != end)
-			throw std::invalid_argument("Not an integer: \"" + str + "\"");
+			throw std::invalid_argument("Not a double: \"" + str + "\"");
 		return parsed;
 	}
 

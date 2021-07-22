@@ -58,8 +58,8 @@ namespace Game2 {
 
 			static std::shared_ptr<Game> loadDefaults(App &);
 
-			void extract(Area &, const std::string &name, double amount, double minimum);
-			void extract(Area &, const std::string &name, double amount, double minimum, double rate);
+			Extraction & extract(Area &, const std::string &name, double amount, double minimum);
+			Extraction & extract(Area &, const std::string &name, double amount, double minimum, double rate);
 
 			std::string toString() const;
 			static std::shared_ptr<Game> fromString(App &, const std::string &);
