@@ -8,8 +8,9 @@
 #include "ui/NumericEntry.h"
 
 namespace Game2 {
-	RegionTab::Rbox::Rbox(const std::string &resource_name, double amount, std::function<void()> on_click):
-	Box(Gtk::Orientation::HORIZONTAL, 5), onClick(on_click) {
+	RegionTab::Rbox::Rbox(const std::string &resource_name, double amount, Extraction *extraction_,
+	                      std::function<void()> on_click):
+	Box(Gtk::Orientation::HORIZONTAL, 5), extraction(extraction_), onClick(on_click) {
 		append(extractButton);
 		append(label);
 		updateLabel(resource_name, amount);
@@ -19,7 +20,10 @@ namespace Game2 {
 	}
 
 	void RegionTab::Rbox::updateLabel(const std::string &resource_name, double amount) {
-		label.set_text(resource_name + " x " + niceDouble(amount));
+		Glib::ustring markup = Glib::Markup::escape_text(resource_name) + " x " + niceDouble(amount);
+		if (extraction)
+			markup += " <span foreground=\"red\">- " + niceDouble(extraction->rate) + "/s</span>";
+		label.set_markup(markup);
 	}
 
 	RegionTab::RegionTab(App &app_): app(app_) {
@@ -183,10 +187,17 @@ namespace Game2 {
 				resourceSets[area_name].clear();
 				boxMaps[area_name].clear();
 
-				for (const auto &[resource_name, amount]: area->resources) {
+				for (const auto &pair: area->resources) {
+					const auto &resource_name = pair.first;
+					const auto &amount = pair.second;
 					resourceSets[area_name].insert(resource_name);
+					Extraction *extraction = app.game->getExtraction(*area, resource_name);
 					ebox->append(*(boxMaps[area_name][resource_name] = std::make_shared<Rbox>(resource_name, amount,
-						[] { std::cout << "Clicked 1.\n"; })));
+						extraction, [this, resource_name, extraction] {
+						if (extraction)
+							return;
+
+					})));
 				}
 			}
 		} else {
@@ -211,9 +222,10 @@ namespace Game2 {
 				Rbox *last_rbox = nullptr;
 
 				for (const auto &[resource_name, amount]: area->resources) {
+					Extraction *extraction = app.game->getExtraction(*area, resource_name);
 					std::shared_ptr<Rbox> rbox;
 					if (resource_set.count(resource_name) == 0) {
-						rbox = std::make_shared<Rbox>(resource_name, amount, [] {
+						rbox = std::make_shared<Rbox>(resource_name, amount, extraction, [] {
 							std::cout << "Clicked 2.\n";
 						});
 						if (!last_rbox) {

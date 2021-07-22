@@ -13,6 +13,7 @@
 
 namespace Game2 {
 	class App;
+	class Extraction;
 	class Region;
 
 	class RegionTab: public Tab {
@@ -20,9 +21,10 @@ namespace Game2 {
 			struct Rbox: public Gtk::Box {
 				Gtk::Button extractButton {"Extract"};
 				Gtk::Label label;
+				Extraction *extraction;
 				std::function<void()> onClick;
 				Rbox() = delete;
-				Rbox(const std::string &resource_name, double amount, std::function<void()> on_click);
+				Rbox(const std::string &resource_name, double amount, Extraction *, std::function<void()> on_click);
 				void updateLabel(const std::string &resource_name, double amount);
 			};
 
