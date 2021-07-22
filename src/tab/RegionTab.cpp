@@ -171,7 +171,7 @@ namespace Game2 {
 			for (const auto &pair: region.areas) {
 				const std::string &area_name = pair.first;
 				std::shared_ptr<Area> area = pair.second;
-				Gtk::Expander &expander = expanders.emplace_back(area->name);
+				Gtk::Expander &expander = expanders.emplace_back(area->name + " (" + std::to_string(area->size) + ")");
 				expandersBox.append(expander);
 				expander.set_margin_bottom(10);
 
@@ -222,7 +222,30 @@ namespace Game2 {
 				widgets.emplace_back(button);
 				bbox->append(*button);
 				button->set_halign(Gtk::Align::START);
-				button->signal_clicked().connect([&] {});
+				button->signal_clicked().connect([this, area] {
+					auto *dialog = new EntryDialog<NumericEntry>("Size", *app.mainWindow, "New size:");
+					app.dialog.reset(dialog);
+					dialog->signal_submit().connect([this, area](const Glib::ustring &str) {
+						size_t new_size;
+						try {
+							new_size = parseUlong(str);
+						} catch (std::invalid_argument &) {
+							app.delay([this] { app.error("Invalid size."); });
+							return;
+						}
+						if (new_size < area->size) {
+							if (!area->reduceSize(new_size))
+								app.delay([this] { app.error("Couldn't resize area."); });
+							else
+								update();
+						} else if (new_size == area->size)
+							app.delay([this] { app.alert("That wouldn't do anything."); });
+						else
+							app.delay([this] { app.error("Increasing area size is unimplemented."); });
+
+					});
+					app.dialog->show();
+				});
 
 				resourceSets[area_name].clear();
 				boxMaps[area_name].clear();
@@ -245,6 +268,11 @@ namespace Game2 {
 				for (const std::string &resource_name: resource_set)
 					if (area->resources.count(resource_name) == 0)
 						removed.push_back(resource_name);
+
+				if (boxMaps.count(area_name) == 0) {
+					reset();
+					return;
+				}
 
 				auto &map = boxMaps.at(area_name);
 				Gtk::Box &ebox = *expanderBoxes.at(area_name);
