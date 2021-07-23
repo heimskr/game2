@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "App.h"
 #include "UI.h"
 #include "Util.h"
@@ -9,59 +7,67 @@
 
 namespace Game2 {
 	InventoryTab::InventoryTab(App &app_): app(app_) {
-		scrolled.set_child(grid);
-		setMargins(grid, 5);
-		grid.set_row_spacing(5);
-		grid.set_column_spacing(15);
+		scrolled.set_child(treeView);
+		scrolled.set_vexpand(true);
+
+		treeModel = Gtk::ListStore::create(columns);
+		treeView.set_model(treeModel);
+		appendColumn(treeView, "Resource", columns.resource);
+		appendColumn(treeView, "Amount", columns.amount);
+		appendColumn(treeView, "Description", columns.description);
+
+		for (int i = 0, columns = treeView.get_n_columns(); i < columns; ++i) {
+			auto *column = treeView.get_column(i);
+			column->set_expand(true);
+			column->set_resizable(true);
+		}
 	}
 
-	void InventoryTab::reset() {
-		removeChildren(grid);
-		auto lock = app.lockGame();
+	void InventoryTab::onFocus() {
 		if (!app.game)
 			return;
-		size_t row = 0;
-		for (const auto &[resource_name, amount]: app.game->inventory)
-			insertRow(resource_name, amount, row++);
+
+		discardButton = std::make_unique<Gtk::Button>();
+		discardButton->set_icon_name("list-remove-symbolic");
+		discardButton->signal_clicked().connect(sigc::mem_fun(*this, &InventoryTab::discardClicked));
+		app.header->pack_start(*discardButton);
+		app.titleWidgets.push_back(discardButton.get());
+	}
+
+	void InventoryTab::onBlur() {
+		discardButton.reset();
 	}
 
 	void InventoryTab::update() {
-		auto lock = app.lockGame();
 		if (!app.game)
 			return;
 
-		std::vector<std::string> removed;
+		auto lock = app.lockGame();
 
-		for (const auto &[name, label]: nameLabels)
-			if (app.game->inventory.count(name) == 0)
-				removed.push_back(name);
-
-		for (const std::string &name: removed) {
-			std::cout << "Removing " << name << " from inventory\n";
-			grid.remove(nameLabels.at(name));
-			grid.remove(amountLabels.at(name));
-			grid.remove(discardButtons.at(name));
-			nameLabels.erase(name);
-			amountLabels.erase(name);
-			discardButtons.erase(name);
-		}
-
-		unsigned row = 0;
-		for (const auto &[name, amount]: app.game->inventory) {
-			if (nameLabels.count(name) == 0) {
-				grid.insert_row(row);
-				insertRow(name, amount, row);
+		auto children = treeModel->children();
+		for (auto iter = children.begin(); iter != children.end();) {
+			const Glib::ustring resource_name = (*iter)[columns.resource];
+			if (app.game->inventory.count(resource_name) == 0) {
+				rows.erase(resource_name);
+				treeModel->erase(iter++);
 			} else
-				amountLabels.at(name).set_label(niceDouble(amount));
-			++row;
+				++iter;
 		}
+
+		for (const auto &[name, amount]: app.game->inventory)
+			if (rows.count(name) == 0) {
+				auto row = treeModel->append();
+				(*row)[columns.resource] = name;
+				(*row)[columns.amount] = amount;
+				(*row)[columns.description] = app.game->resources.at(name).description;
+				rows.emplace(name, row);
+			} else
+				(*rows.at(name))[columns.amount] = amount;
 	}
 
-	void InventoryTab::insertRow(const std::string &resource_name, double amount, int row) {
-		auto &button = discardButtons.emplace(resource_name, Gtk::Button()).first->second;
-		button.set_tooltip_text("Discard resource");
-		button.set_icon_name("list-remove-symbolic");
-		button.signal_clicked().connect([this, resource_name] {
+	void InventoryTab::discardClicked() {
+		if (auto iter = treeView.get_selection()->get_selected()) {
+			const Glib::ustring resource_name = (*iter)[columns.resource];
 			auto *dialog = new EntryDialog<NumericEntry>("Discard Resource", *app.mainWindow, "Amount to discard:");
 			app.dialog.reset(dialog);
 			dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
@@ -77,19 +83,7 @@ namespace Game2 {
 				});
 			});
 			app.dialog->show();
-		});
-		grid.attach(button, 0, row);
-
-		auto &name_label = nameLabels.emplace(resource_name, resource_name).first->second;
-		const std::string &description = app.game->resources.at(resource_name).description;
-		if (!description.empty())
-			name_label.set_tooltip_text(description);
-		name_label.set_halign(Gtk::Align::START);
-		grid.attach(name_label, 1, row);
-
-		auto &amount_label = amountLabels.emplace(resource_name, niceDouble(amount)).first->second;
-		amount_label.set_halign(Gtk::Align::START);
-		grid.attach(amount_label, 2, row);
+		}
 	}
 
 	bool InventoryTab::discard(const std::string &resource_name, double amount) {
@@ -107,6 +101,8 @@ namespace Game2 {
 
 			if ((in_inventory -= amount) < Resource::MIN_AMOUNT)
 				app.game->inventory.erase(resource_name);
+
+			update();
 		} catch (std::out_of_range &) {
 			app.error("Resource not in inventory.");
 			return false;

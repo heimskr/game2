@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Toolkit.h"
-#include <map>
+#include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "tab/Tab.h"
 
@@ -11,6 +12,17 @@ namespace Game2 {
 
 	class InventoryTab: public Tab {
 		public:
+			struct Columns: public Gtk::TreeModelColumnRecord {
+				Columns() {
+					add(resource);
+					add(amount);
+					add(description);
+				}
+
+				Gtk::TreeModelColumn<Glib::ustring> resource, description;
+				Gtk::TreeModelColumn<double> amount;
+			};
+
 			App &app;
 
 			InventoryTab() = delete;
@@ -23,15 +35,20 @@ namespace Game2 {
 
 			Gtk::Widget & getWidget() override { return scrolled; }
 			Glib::ustring getName() override { return "Inventory"; }
-			void reset();
+			void onFocus() override;
+			void onBlur() override;
+
 			void update();
 
 		private:
 			Gtk::ScrolledWindow scrolled;
-			Gtk::Grid grid;
-			std::map<std::string, Gtk::Button> discardButtons;
-			std::map<std::string, Gtk::Label> nameLabels, amountLabels;
-			void insertRow(const std::string &resource_name, double amount, int row);
+			Gtk::TreeView treeView;
+			Glib::RefPtr<Gtk::ListStore> treeModel;
+			std::unique_ptr<Gtk::Button> discardButton;
+			Columns columns;
+			std::unordered_map<std::string, Gtk::TreeModel::iterator> rows;
+
+			void discardClicked();
 			bool discard(const std::string &resource_name, double amount);
 	};
 }

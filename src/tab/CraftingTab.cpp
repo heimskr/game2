@@ -115,7 +115,7 @@ namespace Game2 {
 		shrink(app.game->craftingInventory);
 		update();
 	}
-	
+
 	void CraftingTab::add() {
 		auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
 		app.dialog.reset(dialog);

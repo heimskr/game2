@@ -99,7 +99,7 @@ namespace Game2 {
 		onTravel();
 		regionTab->reset();
 		travelTab->reset();
-		inventoryTab->reset();
+		inventoryTab->update();
 		extractionsTab->reset();
 		conversionTab->reset();
 		marketTab->reset();
