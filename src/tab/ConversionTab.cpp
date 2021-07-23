@@ -190,7 +190,7 @@ namespace Game2 {
 
 	void ConversionTab::update() {
 		for (auto &widget: processorWidgets) {
-			widget->updateGrid();
+			widget->updateTrees();
 			widget->update();
 		}
 	}

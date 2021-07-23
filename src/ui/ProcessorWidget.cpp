@@ -32,106 +32,123 @@ namespace Game2 {
 		topBox.set_spacing(5);
 		append(topBox);
 
-		grid.set_row_spacing(5);
-		grid.set_column_spacing(5);
-		grid.set_column_homogeneous(true);
-		append(grid);
+		inputModel = Gtk::ListStore::create(columns);
+		inputView.set_model(inputModel);
+		appendColumn(inputView, "Input Resource", columns.resource);
+		appendColumn(inputView, "Rate", columns.amount);
+
+		outputModel = Gtk::ListStore::create(columns);
+		outputView.set_model(outputModel);
+		appendColumn(outputView, "Output Resource", columns.resource);
+		appendColumn(outputView, "Rate", columns.amount);
+
+		for (auto *tree: {&inputView, &outputView})
+			for (int i = 0, columns = tree->get_n_columns(); i < columns; ++i) {
+				auto *column = tree->get_column(i);
+				column->set_expand(true);
+				column->set_resizable(true);
+			}
+
+		treeBox.set_homogeneous(true);
+		treeBox.append(inputView);
+		treeBox.append(outputView);
+		append(treeBox);
 	}
 
 	ProcessorWidget & ProcessorWidget::init() {
 		addExtraButtons();
-		resetGrid();
+		resetTrees();
 		return *this;
 	}
 
-	void ProcessorWidget::resetGrid() {
-		removeChildren(grid);
-		gridWidgets.clear();
-		inputNames.clear();
-		inputAmounts.clear();
-		outputNames.clear();
-		outputAmounts.clear();
-		grid.set_margin_bottom(0);
+	void ProcessorWidget::resetTrees() {
+		inputModel->clear();
+		outputModel->clear();
+
+		treeBox.set_margin_bottom(0);
 
 		if (processor.input.empty() && processor.output.empty())
 			return;
 
-		grid.set_margin_bottom(20);
+		treeBox.set_margin_bottom(20);
 
-		{
-			auto *label = new Gtk::Label("Input Resource", Gtk::Align::START);
-			label->add_css_class("table-header");
-			gridWidgets.emplace_back(label);
-			grid.attach(*label, 0, 0);
+		inputRows.clear();
+		outputRows.clear();
+		inputRows.reserve(processor.input.size());
+		outputRows.reserve(processor.output.size());
 
-			label = new Gtk::Label("Amount", Gtk::Align::START);
-			label->add_css_class("table-header");
-			gridWidgets.emplace_back(label);
-			grid.attach(*label, 1, 0);
+		for (const auto &[name, amount]: processor.input)
+			insertInputRow(name, amount);
 
-			label = new Gtk::Label("Output Resource", Gtk::Align::START);
-			label->add_css_class("table-header");
-			gridWidgets.emplace_back(label);
-			grid.attach(*label, 2, 0);
+		for (const auto &[name, amount]: processor.output)
+			insertOutputRow(name, amount);
 
-			label = new Gtk::Label("Amount", Gtk::Align::START);
-			label->add_css_class("table-header");
-			gridWidgets.emplace_back(label);
-			grid.attach(*label, 3, 0);
-		}
-
-		previousInputs.clear();
-		previousOutputs.clear();
-		previousInputs.reserve(processor.input.size());
-		previousOutputs.reserve(processor.output.size());
-		int row = 1;
-
-		for (const auto &[name, amount]: processor.input) {
-			previousInputs.insert(name);
-
-			auto &nlabel = inputNames.emplace(name, Gtk::Label(name, Gtk::Align::START)).first->second;
-			grid.attach(nlabel, 0, row);
-
-			auto &alabel = inputAmounts.emplace(name, Gtk::Label(niceDouble(amount), Gtk::Align::START)).first->second;
-			grid.attach(alabel, 1, row);
-
-			++row;
-		}
-
-		row = 1;
-
-		for (const auto &[name, amount]: processor.output) {
-			previousOutputs.insert(name);
-
-			auto &nlabel = outputNames.emplace(name, Gtk::Label(name, Gtk::Align::START)).first->second;
-			grid.attach(nlabel, 2, row);
-
-			auto &alabel = outputAmounts.emplace(name, Gtk::Label(niceDouble(amount), Gtk::Align::START)).first->second;
-			grid.attach(alabel, 3, row);
-
-			++row;
+		if (processor.input.empty() && processor.output.empty()) {
+			inputView.hide();
+			outputView.hide();
+		} else {
+			inputView.show();
+			outputView.show();
 		}
 	}
 
-	void ProcessorWidget::updateGrid() {
-		if (!compare(previousInputs, processor.input) || !compare(previousOutputs, processor.output)) {
-			resetGrid();
-		} else {
-			for (const auto &[resource_name, amount]: processor.input)
-				if (inputAmounts.count(resource_name) != 0) {
-					const Glib::ustring amount_string = niceDouble(amount);
-					Gtk::Label &label = inputAmounts.at(resource_name);
-					if (label.get_text() != amount_string)
-						label.set_text(amount_string);
-				}
+	Gtk::TreeModel::iterator ProcessorWidget::insertInputRow(const std::string &resource_name, double amount) {
+		auto row = inputModel->append();
+		(*row)[columns.resource] = resource_name;
+		(*row)[columns.amount] = amount;
+		inputRows.emplace(resource_name, row);
+		return row;
+	}
 
-			for (const auto &[resource_name, amount]: processor.output)
-				if (outputAmounts.count(resource_name) != 0) {
-					const Glib::ustring amount_string = niceDouble(amount);
-					Gtk::Label &label = outputAmounts.at(resource_name);
-					if (label.get_text() != amount_string)
-						label.set_text(amount_string);
-				}
+	Gtk::TreeModel::iterator ProcessorWidget::insertOutputRow(const std::string &resource_name, double amount) {
+		auto row = outputModel->append();
+		(*row)[columns.resource] = resource_name;
+		(*row)[columns.amount] = amount;
+		outputRows.emplace(resource_name, row);
+		return row;
+	}
+
+	void ProcessorWidget::updateTrees() {
+		std::vector<std::string> to_remove;
+
+		for (const auto &[resource_name, amount]: processor.input)
+			if (inputRows.count(resource_name) != 0)
+				(*inputRows.at(resource_name))[columns.amount] = amount;
+			else
+				insertInputRow(resource_name, amount);
+
+		for (const auto &[resource_name, row]: inputRows)
+			if (processor.input.count(resource_name) == 0)
+				to_remove.push_back(resource_name);
+
+		for (const std::string &resource_name: to_remove) {
+			inputModel->erase(inputRows.at(resource_name));
+			inputRows.erase(resource_name);
+		}
+
+		to_remove.clear();
+
+		for (const auto &[resource_name, amount]: processor.output)
+			if (outputRows.count(resource_name) != 0)
+				(*outputRows.at(resource_name))[columns.amount] = amount;
+			else
+				insertOutputRow(resource_name, amount);
+
+		for (const auto &[resource_name, row]: outputRows)
+			if (processor.output.count(resource_name) == 0)
+				to_remove.push_back(resource_name);
+
+		for (const std::string &resource_name: to_remove) {
+			outputModel->erase(outputRows.at(resource_name));
+			outputRows.erase(resource_name);
+		}
+
+		if (processor.input.empty() && processor.output.empty()) {
+			inputView.hide();
+			outputView.hide();
+		} else {
+			inputView.show();
+			outputView.show();
 		}
 	}
 
@@ -151,7 +168,7 @@ namespace Game2 {
 						return;
 					}
 					if (insert(resource_name, amount))
-						updateGrid();
+						updateTrees();
 				});
 				app.dialog.reset(dialog);
 				app.dialog->show();

@@ -12,6 +12,7 @@ namespace Game2 {
 
 	class ConversionTab: public Tab {
 		public:
+
 			App &app;
 
 			ConversionTab() = delete;

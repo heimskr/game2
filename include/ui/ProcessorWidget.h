@@ -13,11 +13,21 @@ namespace Game2 {
 
 	class ProcessorWidget: public Gtk::Box {
 		public:
+			struct Columns: public Gtk::TreeModelColumnRecord {
+				Columns() {
+					add(resource);
+					add(amount);
+				}
+
+				Gtk::TreeModelColumn<Glib::ustring> resource;
+				Gtk::TreeModelColumn<double> amount;
+			};
+
 			ProcessorWidget(App &, Processor &);
 
 			ProcessorWidget & init();
-			void resetGrid();
-			void updateGrid();
+			void resetTrees();
+			void updateTrees();
 
 			virtual void update() {}
 
@@ -25,7 +35,6 @@ namespace Game2 {
 			App &app;
 			Processor &processor;
 			Gtk::Box topBox {Gtk::Orientation::HORIZONTAL};
-			Gtk::Grid grid;
 			Gtk::Button addResourceButton;
 			Gtk::ToggleButton autoExtractButton;
 			Gtk::Button renameButton;
@@ -34,10 +43,14 @@ namespace Game2 {
 			virtual void addExtraButtons() = 0;
 
 		private:
-			std::vector<std::unique_ptr<Gtk::Widget>> gridWidgets;
-			std::unordered_map<std::string, Gtk::Label> inputNames, inputAmounts, outputNames, outputAmounts;
-			std::unordered_set<std::string> previousInputs, previousOutputs;
+			Gtk::Box treeBox {Gtk::Orientation::HORIZONTAL};
+			Gtk::TreeView inputView, outputView;
+			Glib::RefPtr<Gtk::ListStore> inputModel, outputModel;
+			std::unordered_map<std::string, Gtk::TreeModel::iterator> inputRows, outputRows;
+			Columns columns;
 
+			Gtk::TreeModel::iterator insertInputRow(const std::string &resource_name, double amount);
+			Gtk::TreeModel::iterator insertOutputRow(const std::string &resource_name, double amount);
 			void addResource();
 			void toggleAutoExtract();
 			void rename();
