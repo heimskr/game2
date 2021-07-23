@@ -238,7 +238,7 @@ namespace Game2 {
 					return;
 				}
 
-				size_t total_price;
+				size_t total_price = 0;
 				if (!Stonks::totalSellPrice(*region, resource_name, amount, total_price)) {
 					app.gameMutex.unlock();
 					app.error("Region doesn't have enough money. Price: " + std::to_string(total_price));

@@ -32,10 +32,11 @@ namespace Game2::Stonks {
 		double price = 0.;
 		double region_money = region.money;
 		const double greed = region.greed;
+		bool result = true;
 		while (1. <= amount) {
 			const double unit_price = sellPrice(base, region_amount++, region_money, greed);
 			if (region_money < unit_price)
-				return false;
+				result = false;
 			region_money -= unit_price;
 			price += unit_price;
 			--amount;
@@ -44,18 +45,14 @@ namespace Game2::Stonks {
 		if (0. < amount) {
 			const double subunit_price = amount * sellPrice(base, region_amount, region_money, greed);
 			if (region_money < subunit_price)
-				return false;
+				result = false;
 			region_money -= subunit_price;
 			price += subunit_price;
 		}
 
 		const size_t discrete_price = std::floor(price);
-
-		if (region.money < discrete_price)
-			return false;
-
 		out = discrete_price;
-		return true;
+		return result? discrete_price <= region.money : false;
 	}
 
 	size_t totalBuyPrice(const Region &region, const std::string &resource_name, double amount) {
