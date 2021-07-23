@@ -28,6 +28,7 @@ namespace Game2 {
 			void onFocus() override;
 			void onBlur() override;
 
+			void updateAutomationButton();
 			void reset();
 			void update();
 
@@ -36,11 +37,12 @@ namespace Game2 {
 			Gtk::Box buttonBox {Gtk::Orientation::HORIZONTAL};
 			Gtk::ScrolledWindow scrolled;
 			Gtk::Box vbox {Gtk::Orientation::VERTICAL};
-			std::unique_ptr<Gtk::Button> addButton, sortButton, distributeButton;
+			std::unique_ptr<Gtk::Button> addButton, sortButton, distributeButton, automationButton;
 			std::vector<std::unique_ptr<ProcessorWidget>> processorWidgets;
 
 			void add();
 			void sort();
 			void distribute();
+			void toggleAutomation();
 	};
 }

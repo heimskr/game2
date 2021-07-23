@@ -132,10 +132,13 @@ namespace Game2 {
 		app.dialog->show();
 	}
 
-	void ConversionTab::onBlur() {
-		addButton.reset();
-		sortButton.reset();
-		distributeButton.reset();
+	void ConversionTab::toggleAutomation() {
+		if (!app.game)
+			return;
+
+		auto lock = app.lockGame();
+		app.game->automationEnabled = !app.game->automationEnabled;
+		updateAutomationButton();
 	}
 
 	void ConversionTab::onFocus() {
@@ -143,20 +146,50 @@ namespace Game2 {
 		addButton->set_icon_name("list-add-symbolic");
 		addButton->set_tooltip_text("Add processor");
 		addButton->signal_clicked().connect(sigc::mem_fun(*this, &ConversionTab::add));
+		app.header->pack_start(*addButton);
+		app.titleWidgets.push_back(addButton.get());
+
 		sortButton = std::make_unique<Gtk::Button>();
 		sortButton->set_icon_name("view-sort-descending-symbolic");
 		sortButton->set_tooltip_text("Sort processors");
 		sortButton->signal_clicked().connect(sigc::mem_fun(*this, &ConversionTab::sort));
+		app.header->pack_start(*sortButton);
+		app.titleWidgets.push_back(sortButton.get());
+
 		distributeButton = std::make_unique<Gtk::Button>();
 		distributeButton->set_icon_name("emblem-shared-symbolic");
 		distributeButton->set_tooltip_text("Distribute resource among all processors of a given type");
 		distributeButton->signal_clicked().connect(sigc::mem_fun(*this, &ConversionTab::distribute));
-		app.header->pack_start(*addButton);
-		app.header->pack_start(*sortButton);
 		app.header->pack_start(*distributeButton);
-		app.titleWidgets.push_back(addButton.get());
-		app.titleWidgets.push_back(sortButton.get());
 		app.titleWidgets.push_back(distributeButton.get());
+
+		automationButton = std::make_unique<Gtk::Button>();
+		automationButton->signal_clicked().connect(sigc::mem_fun(*this, &ConversionTab::toggleAutomation));
+		app.header->pack_start(*automationButton);
+		app.titleWidgets.push_back(automationButton.get());
+		updateAutomationButton();
+	}
+
+	void ConversionTab::onBlur() {
+		addButton.reset();
+		sortButton.reset();
+		distributeButton.reset();
+		automationButton.reset();
+	}
+
+	void ConversionTab::updateAutomationButton() {
+		if (!app.game || !automationButton)
+			return;
+
+		auto lock = app.lockGame();
+
+		if (app.game->automationEnabled) {
+			automationButton->set_icon_name("media-playback-pause-symbolic");
+			automationButton->set_tooltip_text("Pause automation");
+		} else {
+			automationButton->set_icon_name("media-playback-start-symbolic");
+			automationButton->set_tooltip_text("Start automation");
+		}
 	}
 
 	void ConversionTab::reset() {

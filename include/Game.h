@@ -32,6 +32,7 @@ namespace Game2 {
 			Position position;
 			size_t money = 0;
 			bool cheatsEnabled = false;
+			bool automationEnabled = true;
 
 			Game() = delete;
 			Game(App &);

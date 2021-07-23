@@ -222,6 +222,7 @@ namespace Game2 {
 	void Game::tick(double delta) {
 		for (auto &pair: regions)
 			pair.second->tick(delta);
+
 		for (auto iter = extractions.begin(); iter != extractions.end();) {
 			Extraction &extraction = *iter;
 			double &in_inventory = inventory[extraction.resourceName];
@@ -258,10 +259,13 @@ namespace Game2 {
 				}
 			}
 		}
+
 		for (auto &processor: processors)
 			processor->tick(delta);
-		for (auto &link: automationLinks)
-			link.tick();
+
+		if (automationEnabled)
+			for (auto &link: automationLinks)
+				link.tick();
 	}
 
 	std::shared_ptr<Game> Game::loadDefaults(App &app) {
