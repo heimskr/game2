@@ -73,12 +73,15 @@ namespace Game2 {
 			dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
 				app.delay([this, resource_name, response] {
 					double amount;
-					try {
-						amount = parseDouble(response);
-					} catch (std::invalid_argument &) {
-						app.error("Invalid amount.");
-						return;
-					}
+					if (response == ".")
+						amount = app.game->inventory[resource_name];
+					else
+						try {
+							amount = parseDouble(response);
+						} catch (std::invalid_argument &) {
+							app.error("Invalid amount.");
+							return;
+						}
 					discard(resource_name, amount);
 				});
 			});
