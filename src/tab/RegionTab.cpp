@@ -174,6 +174,7 @@ namespace Game2 {
 				Gtk::Expander &expander = expanders.emplace_back(area->name + " (" + std::to_string(area->size) + ")");
 				expandersBox.append(expander);
 				expander.set_margin_bottom(10);
+				expander.set_expanded(true);
 
 				auto ebox = std::make_shared<Gtk::Box>(Gtk::Orientation::VERTICAL, 5);
 				widgets.push_back(ebox);
