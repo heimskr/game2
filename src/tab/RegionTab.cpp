@@ -270,6 +270,7 @@ namespace Game2 {
 						removed.push_back(resource_name);
 
 				if (boxMaps.count(area_name) == 0) {
+					// Resizing an area can cause a new Empty area to appear that isn't in boxMaps.
 					reset();
 					return;
 				}

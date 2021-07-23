@@ -8,89 +8,103 @@
 
 namespace Game2 {
 	CraftingTab::CraftingTab(App &app_): app(app_) {
-		scrolled.set_child(gridBox);
+		scrolled.set_child(treeBox);
 		scrolled.set_vexpand(true);
-		setMargins(gridBox, 5);
-		gridBox.set_spacing(5);
-		inputGrid.set_row_spacing(5);
-		outputGrid.set_row_spacing(5);
-		inputGrid.set_column_spacing(5);
-		outputGrid.set_column_spacing(5);
-		inputGrid.set_hexpand(true);
-		outputGrid.set_hexpand(true);
-		gridBox.append(inputGrid);
-		gridBox.append(separator);
-		gridBox.append(outputGrid);
-		inputLabel.set_hexpand(true);
-		outputLabel.set_hexpand(true);
-		inputLabel.add_css_class("table-header");
-		outputLabel.add_css_class("table-header");
-		inputAmountLabel.add_css_class("table-header");
-		outputAmountLabel.add_css_class("table-header");
-		inputLabel.set_xalign(0);
-		outputLabel.set_xalign(0);
-		inputAmountLabel.set_xalign(0);
-		outputAmountLabel.set_xalign(0);
+		treeBox.set_homogeneous(true);
+		treeBox.append(inputView);
+		treeBox.append(outputView);
+
+		inputModel = Gtk::ListStore::create(columns);
+		inputView.set_model(inputModel);
+		appendColumn(inputView, "Input", columns.resource);
+		appendColumn(inputView, "Amount", columns.amount);
+
+		outputModel = Gtk::ListStore::create(columns);
+		outputView.set_model(outputModel);
+		appendColumn(outputView, "Output", columns.resource);
+		appendColumn(outputView, "Amount", columns.amount);
+
+		for (auto *view: {&inputView, &outputView})
+			for (int i = 0, columns = view->get_n_columns(); i < columns; ++i) {
+				auto *column = view->get_column(i);
+				column->set_expand(true);
+				column->set_resizable(true);
+			}
+
 		reset(false);
 	}
 
 	void CraftingTab::reset(bool compute_crafting) {
-		removeChildren(inputGrid);
-		removeChildren(outputGrid);
-		widgets.clear();
-
-		inputGrid.attach(inputLabel, 1, 0);
-		inputGrid.attach(inputAmountLabel, 2, 0);
-		outputGrid.attach(outputLabel, 0, 0);
-		outputGrid.attach(outputAmountLabel, 1, 0);
+		inputModel->clear();
+		outputModel->clear();
+		inputRows.clear();
+		outputRows.clear();
 
 		if (!app.game)
 			return;
 
+		auto lock = app.lockGame();
+
 		if (compute_crafting)
 			computeCraftingOutput();
 
+		for (const auto &[name, amount]: app.game->craftingInventory)
+			addInput(name, amount);
+
+		for (const auto *recipe: craftingOutput)
+			addOutput(recipe);
+	}
+
+	Gtk::TreeModel::iterator CraftingTab::addInput(const std::string &name, double amount) {
+		auto row = inputModel->append();
+		(*row)[columns.resource] = name;
+		(*row)[columns.amount] = amount;
+		inputRows.emplace(name, row);
+		return row;
+	}
+
+	Gtk::TreeModel::iterator CraftingTab::addOutput(const CraftingRecipe *recipe) {
+		auto row = outputModel->append();
+		(*row)[columns.resource] = recipe->output;
+		(*row)[columns.amount] = recipe->amount;
+		(*row)[columns.recipe] = recipe;
+		outputRows.emplace(recipe, row);
+		return row;
+	}
+
+	void CraftingTab::update() {
 		auto lock = app.lockGame();
-		int row = 1;
-		for (const auto &pair: app.game->craftingInventory) {
-			const auto &name = pair.first;
-			const auto &amount = pair.second;
-			auto *button = new Gtk::Button;
-			widgets.emplace_back(button);
-			button->set_icon_name("list-remove-symbolic");
-			button->signal_clicked().connect([this, &name, &amount] {
-				auto lock = app.lockGame();
-				app.game->inventory[name] += amount;
-				app.game->craftingInventory.erase(name);
-				reset();
-			});
-			inputGrid.attach(*button, 0, row);
-			auto *label = new Gtk::Label(name, Gtk::Align::START);
-			widgets.emplace_back(label);
-			inputGrid.attach(*label, 1, row);
-			label = new Gtk::Label(niceDouble(amount), Gtk::Align::START);
-			widgets.emplace_back(label);
-			inputGrid.attach(*label, 2, row);
-			++row;
+		computeCraftingOutput();
+
+		auto input_children = inputModel->children();
+		for (auto iter = input_children.begin(); iter != input_children.end();) {
+			const Glib::ustring resource_name = (*iter)[columns.resource];
+			if (app.game->craftingInventory.count(resource_name) == 0) {
+				inputRows.erase(resource_name);
+				inputModel->erase(iter++);
+			} else
+				++iter;
 		}
 
-		row = 1;
-		for (const auto *recipe: craftingOutput) {
-			auto *label = new Gtk::Label(recipe->output, Gtk::Align::START);
-			widgets.emplace_back(label);
-			outputGrid.attach(*label, 0, row);
-			label = new Gtk::Label(niceDouble(recipe->amount), Gtk::Align::START);
-			widgets.emplace_back(label);
-			outputGrid.attach(*label, 1, row);
-			auto *button = new Gtk::Button;
-			widgets.emplace_back(button);
-			button->set_icon_name("applications-engineering-symbolic"); // Probably confusing with other icon sets.
-			button->signal_clicked().connect([this, recipe] {
-				craft(recipe);
-			});
-			outputGrid.attach(*button, 2, row);
-			++row;
+		for (const auto &[name, amount]: app.game->craftingInventory)
+			if (inputRows.count(name) == 0)
+				addInput(name, amount);
+			else
+				(*inputRows.at(name))[columns.amount] = amount;
+
+		auto output_children = outputModel->children();
+		for (auto iter = output_children.begin(); iter != output_children.end();) {
+			const CraftingRecipe *recipe = (*iter)[columns.recipe];
+			if (craftingOutput.count(recipe) == 0) {
+				outputRows.erase(recipe);
+				outputModel->erase(iter++);
+			} else
+				++iter;
 		}
+
+		for (const CraftingRecipe *recipe: craftingOutput)
+			if (outputRows.count(recipe) == 0)
+				addOutput(recipe);
 	}
 
 	void CraftingTab::craft(const CraftingRecipe *recipe) {
@@ -99,13 +113,13 @@ namespace Game2 {
 			app.game->craftingInventory[name] -= amount;
 		app.game->inventory[recipe->output] += recipe->amount;
 		shrink(app.game->craftingInventory);
-		reset();
+		update();
 	}
 	
 	void CraftingTab::add() {
 		auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
 		app.dialog.reset(dialog);
-		dialog->signal_submit().connect([this](Glib::ustring name) {
+		dialog->signal_submit().connect([this](const Glib::ustring &name) {
 			if (name.empty())
 				return;
 			app.delay([this, name] {
@@ -137,11 +151,27 @@ namespace Game2 {
 		app.dialog->show();
 	}
 
+	void CraftingTab::remove() {
+		if (auto iter = inputView.get_selection()->get_selected()) {
+			auto lock = app.lockGame();
+			auto name = iter->get_value(columns.resource);
+			auto amount = iter->get_value(columns.amount);
+			app.game->inventory[name] += amount;
+			app.game->craftingInventory.erase(name);
+			update();
+		}
+	}
+
+	void CraftingTab::craftClicked() {
+		if (auto iter = outputView.get_selection()->get_selected())
+			craft(iter->get_value(columns.recipe));
+	}
+
 	void CraftingTab::computeCraftingOutput() {
 		craftingOutput.clear();
 		for (const CraftingRecipe &recipe: app.game->recipes.crafting)
 			if (contains(app.game->craftingInventory, recipe.inputs))
-				craftingOutput.push_back(&recipe);
+				craftingOutput.insert(&recipe);
 	}
 
 	void CraftingTab::onFocus() {
@@ -154,6 +184,18 @@ namespace Game2 {
 		app.header->pack_start(*addButton);
 		app.titleWidgets.push_back(addButton.get());
 
+		removeButton = std::make_unique<Gtk::Button>();
+		removeButton->set_icon_name("list-remove-symbolic");
+		removeButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::remove));
+		app.header->pack_start(*removeButton);
+		app.titleWidgets.push_back(removeButton.get());
+
+		craftButton = std::make_unique<Gtk::Button>();
+		craftButton->set_icon_name("applications-engineering-symbolic"); // Probably confusing with other icon sets.
+		craftButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::craftClicked));
+		app.header->pack_start(*craftButton);
+		app.titleWidgets.push_back(craftButton.get());
+
 		helpButton = std::make_unique<Gtk::Button>();
 		helpButton->set_icon_name("help-browser-symbolic");
 		helpButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::showHelp));
@@ -163,6 +205,8 @@ namespace Game2 {
 
 	void CraftingTab::onBlur() {
 		addButton.reset();
+		removeButton.reset();
+		craftButton.reset();
 		helpButton.reset();
 	}
 

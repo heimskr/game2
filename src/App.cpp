@@ -2,7 +2,7 @@
 
 #include "App.h"
 #include "UI.h"
-#include "ui/InventoryDialog.h"
+#include "ui/UpdatingDialog.h"
 #include "tab/RegionTab.h"
 #include "tab/TravelTab.h"
 #include "tab/InventoryTab.h"
