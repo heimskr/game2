@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Processor.h"
+#include "Resource.h"
 
 namespace Game2 {
 	class AppWindow;
@@ -54,6 +55,7 @@ namespace Game2 {
 			Gtk::TreeModel::iterator insertOutputRow(const std::string &resource_name, double amount);
 			void inputClicked(const Gtk::TreeModel::Path &, Gtk::TreeViewColumn *);
 			void outputClicked(const Gtk::TreeModel::Path &, Gtk::TreeViewColumn *);
+			void remove(const std::string &resource_name, Resource::Map &);
 			void addResource();
 			void toggleAutoExtract();
 			void rename();

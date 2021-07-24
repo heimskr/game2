@@ -55,47 +55,53 @@ namespace Game2 {
 		treeBox.append(outputView);
 		append(treeBox);
 
+		 inputView.signal_row_activated().connect(sigc::mem_fun(*this, &ProcessorWidget::inputClicked));
 		outputView.signal_row_activated().connect(sigc::mem_fun(*this, &ProcessorWidget::outputClicked));
 	}
 
 	void ProcessorWidget::inputClicked(const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *) {
 		if (path.size() != 1)
 			return;
+
+		// I could just use outputModel->children(), but that would require creating a new container,
+		// whereas this (presumably) doesn't.
+		if (auto iter = inputView.get_selection()->get_selected())
+			remove(iter->get_value(columns.resource), processor.input);
 	}
 
 	void ProcessorWidget::outputClicked(const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *) {
 		if (path.size() != 1)
 			return;
 
-		// I could just use outputModel->children(), but that would require creating a new container,
-		// whereas this (presumably) doesn't.
-		if (auto iter = outputView.get_selection()->get_selected()) {
-			const std::string resource_name = iter->get_value(columns.resource);
-			auto *dialog = new EntryDialog<NumericEntry>("Amount", appWindow, "Amount to remove:");
-			appWindow.dialog.reset(dialog);
-			dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
-				auto lock = appWindow.lockGame();
-				double amount;
-				double &in_output = processor.output[resource_name];
-				if (response.empty())
-					amount = in_output;
-				else
-					try {
-						amount = parseDouble(response);
-					} catch (const std::invalid_argument &) {
-						appWindow.delay([this] { appWindow.error("Invalid amount."); });
-						return;
-					}
-				if (ltna(in_output, amount)) {
-					appWindow.delay([this] { appWindow.error("There's not enough of that in the processor."); });
+		if (auto iter = outputView.get_selection()->get_selected())
+			remove(iter->get_value(columns.resource), processor.output);
+	}
+
+	void ProcessorWidget::remove(const std::string &resource_name, Resource::Map &map) {
+		auto *dialog = new EntryDialog<NumericEntry>("Amount", appWindow, "Amount to remove:");
+		appWindow.dialog.reset(dialog);
+		dialog->signal_submit().connect([this, resource_name, &map](const Glib::ustring &response) {
+			auto lock = appWindow.lockGame();
+			double amount;
+			double &in_processor = map[resource_name];
+			if (response.empty())
+				amount = in_processor;
+			else
+				try {
+					amount = parseDouble(response);
+				} catch (const std::invalid_argument &) {
+					appWindow.delay([this] { appWindow.error("Invalid amount."); });
 					return;
 				}
-				in_output -= amount;
-				appWindow.game->addToInventory(resource_name, amount);
-				shrink(processor.output, resource_name);
-			});
-			dialog->show();
-		}
+			if (ltna(in_processor, amount)) {
+				appWindow.delay([this] { appWindow.error("There's not enough of that in the processor."); });
+				return;
+			}
+			in_processor -= amount;
+			appWindow.game->addToInventory(resource_name, amount);
+			shrink(map, resource_name);
+		});
+		dialog->show();
 	}
 
 	ProcessorWidget & ProcessorWidget::init() {
