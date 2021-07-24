@@ -41,6 +41,7 @@ namespace Game2 {
 		electrolyzer.emplace("Cellulose",  MOV {{"Carbon", 6.}, {"Hydrogen", 10.}, {"Oxygen", 5.}});
 		electrolyzer.emplace("Lignin",     MOV {{"Carbon", 81.}, {"Hydrogen", 92.}, {"Oxygen", 28.}});
 		electrolyzer.emplace("Blood",      MOV {{"Iron", 1.}});
+		electrolyzer.emplace("Sand",       MOV {{"Silicon", 1.}, {"Oxygen", 2.}});
 
 		electrolyzer.emplace("Ammolite",      MOV {{"Calcium", 1.}, {"Carbon", 1.}, {"Oxygen", 3.}});
 		electrolyzer.emplace("Azurite",       MOV {{"Copper", 3.}, {"Carbon", 2.}, {"Oxygen", 8.}, {"Hydrogen", 2.}});

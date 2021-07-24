@@ -48,9 +48,12 @@ namespace Game2 {
 			Glib::RefPtr<Gtk::ListStore> inputModel, outputModel;
 			std::unordered_map<std::string, Gtk::TreeModel::iterator> inputRows, outputRows;
 			Columns columns;
+			Glib::RefPtr<Gtk::GestureClick> inputGesture, outputGesture;
 
 			Gtk::TreeModel::iterator insertInputRow(const std::string &resource_name, double amount);
 			Gtk::TreeModel::iterator insertOutputRow(const std::string &resource_name, double amount);
+			void inputClicked(const Gtk::TreeModel::Path &, Gtk::TreeViewColumn *);
+			void outputClicked(const Gtk::TreeModel::Path &, Gtk::TreeViewColumn *);
 			void addResource();
 			void toggleAutoExtract();
 			void rename();
