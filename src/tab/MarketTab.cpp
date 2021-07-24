@@ -211,17 +211,20 @@ namespace Game2 {
 		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
 			appWindow.delay([this, resource_name, response] {
-				double amount;
-				try {
-					amount = parseDouble(response);
-				} catch (std::invalid_argument &) {
-					appWindow.error("Invalid amount.");
-					return;
-				}
-
 				appWindow.gameMutex.lock();
+				double amount, &in_inventory = appWindow.game->inventory[resource_name];
+				if (response.empty())
+					amount = in_inventory;
+				else
+					try {
+						amount = parseDouble(response);
+					} catch (std::invalid_argument &) {
+						appWindow.gameMutex.unlock();
+						appWindow.error("Invalid amount.");
+						return;
+					}
+
 				auto region = appWindow.game->currentRegionPointer();
-				double &in_inventory = appWindow.game->inventory[resource_name];
 
 				if (lte(amount, 0) || ltna(in_inventory, amount)) {
 					appWindow.gameMutex.unlock();
