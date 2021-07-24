@@ -27,6 +27,9 @@ src/resources.cpp: game2.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourc
 $(OUTPUT): $(OBJECTS)
 	@ printf "\e[2m[\e[22;36mLD\e[39;2m]\e[22m $@\n"
 	@ $(CPP) $^ -o $@ $(LIBS) $(LDFLAGS)
+ifeq ($(BUILD),release)
+	strip $@
+endif
 
 test: $(OUTPUT)
 	./$(OUTPUT)
