@@ -72,14 +72,14 @@ namespace Game2 {
 
 		// add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
 
-		activeTab = regionTab = std::make_shared<RegionTab>(*this);
-		travelTab = std::make_shared<TravelTab>(*this);
-		inventoryTab = std::make_shared<InventoryTab>(*this);
+		     activeTab = regionTab = std::make_shared<RegionTab>(*this);
+		     travelTab = std::make_shared<TravelTab>(*this);
+		  inventoryTab = std::make_shared<InventoryTab>(*this);
 		extractionsTab = std::make_shared<ExtractionsTab>(*this);
-		conversionTab = std::make_shared<ConversionTab>(*this);
-		marketTab = std::make_shared<MarketTab>(*this);
-		automationTab = std::make_shared<AutomationTab>(*this);
-		craftingTab = std::make_shared<CraftingTab>(*this);
+		 conversionTab = std::make_shared<ConversionTab>(*this);
+		     marketTab = std::make_shared<MarketTab>(*this);
+		 automationTab = std::make_shared<AutomationTab>(*this);
+		   craftingTab = std::make_shared<CraftingTab>(*this);
 
 		addTab(regionTab);
 		addTab(travelTab);

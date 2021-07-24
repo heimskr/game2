@@ -21,7 +21,7 @@ src/resources.cpp: game2.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourc
 	$(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=src --generate-source $<
 
 %.o: %.cpp
-	@ printf "\e[2m[\e[22;32mCC\e[39;2m]\e[22m $< $(BUILDFLAGS)\n"
+	@ printf "\e[2m[\e[22;32mCC\e[39;2m]\e[22m $< \e[2m$(BUILDFLAGS)\e[22m\n"
 	@ $(CPP) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT): $(OBJECTS)
