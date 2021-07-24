@@ -2,10 +2,11 @@
 
 #include "Toolkit.h"
 
+#include "Position.h"
 #include "tab/Tab.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 	class Region;
 
 	class TravelTab: public Tab {
@@ -13,7 +14,7 @@ namespace Game2 {
 			TravelTab() = delete;
 			TravelTab(const TravelTab &) = delete;
 			TravelTab(TravelTab &&) = delete;
-			TravelTab(App &);
+			TravelTab(AppWindow &);
 
 			TravelTab & operator=(const TravelTab &) = delete;
 			TravelTab & operator=(TravelTab &&) = delete;
@@ -25,7 +26,7 @@ namespace Game2 {
 		private:
 			static constexpr int ROWS = 5, COLUMNS = 5;
 			static constexpr int BUTTON_COUNT = ROWS * COLUMNS;
-			App &app;
+			AppWindow &appWindow;
 			Gtk::Grid grid;
 			Gtk::Button buttons[BUTTON_COUNT];
 			Position getPosition(Region &, int row, int column);

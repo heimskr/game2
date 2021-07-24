@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 	struct CraftingRecipe;
 
 	class RecipesDialog: public Gtk::Dialog {
@@ -12,12 +12,12 @@ namespace Game2 {
 			Gtk::ScrolledWindow scrolled;
 			Gtk::Box recipesBox {Gtk::Orientation::VERTICAL};
 
-			RecipesDialog(const Glib::ustring &title, Gtk::Window &parent, App &, bool modal = true);
+			RecipesDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &, bool modal = true);
 
 			sigc::signal<void(const CraftingRecipe &)> signal_submit() const { return signal_submit_; }
 
 		private:
-			App &app;
+			AppWindow &appWindow;
 			std::vector<Gtk::Label> labels;
 			std::vector<Glib::RefPtr<Gtk::GestureClick>> gestures;
 			sigc::signal<void(const CraftingRecipe &)> signal_submit_;

@@ -1,16 +1,17 @@
 #include <iostream>
 
-#include "App.h"
+#include "Game.h"
 #include "Stonks.h"
 #include "UI.h"
 #include "Util.h"
 #include "area/Housing.h"
 #include "tab/MarketTab.h"
+#include "ui/AppWindow.h"
 #include "ui/EntryDialog.h"
 #include "ui/NumericEntry.h"
 
 namespace Game2 {
-	MarketTab::MarketTab(App &app_): app(app_) {
+	MarketTab::MarketTab(AppWindow &app_window): appWindow(app_window) {
 		regionMoneyLabel.set_halign(Gtk::Align::END);
 		topGrid.attach(regionMoneyLabel, 0, 0);
 		regionMoney.set_halign(Gtk::Align::START);
@@ -53,18 +54,18 @@ namespace Game2 {
 	}
 
 	void MarketTab::onFocus() {
-		if (!app.game)
+		if (!appWindow.game)
 			return;
 
 		sellButton = std::make_unique<Gtk::Button>("Sell");
 		sellButton->signal_clicked().connect(sigc::mem_fun(*this, &MarketTab::sellRow));
-		app.header->pack_start(*sellButton);
-		app.titleWidgets.push_back(sellButton.get());
+		appWindow.header->pack_start(*sellButton);
+		appWindow.titleWidgets.push_back(sellButton.get());
 
 		buyButton = std::make_unique<Gtk::Button>("Buy");
 		buyButton->signal_clicked().connect(sigc::mem_fun(*this, &MarketTab::buyRow));
-		app.header->pack_start(*buyButton);
-		app.titleWidgets.push_back(buyButton.get());
+		appWindow.header->pack_start(*buyButton);
+		appWindow.titleWidgets.push_back(buyButton.get());
 	}
 
 	void MarketTab::onBlur() {
@@ -87,12 +88,12 @@ namespace Game2 {
 		sellModel->clear();
 		updateMoney();
 
-		auto lock = app.lockGame();
-		if (!app.game)
+		auto lock = appWindow.lockGame();
+		if (!appWindow.game)
 			return;
 
 		std::shared_ptr<HousingArea> housing;
-		if (auto region = app.game->currentRegionPointer())
+		if (auto region = appWindow.game->currentRegionPointer())
 			housing = region->getHousing();
 
 		if (!housing) {
@@ -111,37 +112,37 @@ namespace Game2 {
 	}
 
 	void MarketTab::updateMoney() {
-		auto lock = app.lockGame();
-		if (!app.game)
+		auto lock = appWindow.lockGame();
+		if (!appWindow.game)
 			return;
 
-		auto region = app.game->currentRegionPointer();
+		auto region = appWindow.game->currentRegionPointer();
 		if (region)
 			regionMoney.set_label(niceDouble(region->money));
 
-		yourMoney.set_label(niceDouble(app.game->money));
+		yourMoney.set_label(niceDouble(appWindow.game->money));
 	}
 
 	void MarketTab::resetSell() {
 		sellModel->clear();
 		sellRows.clear();
 
-		if (!app.game)
+		if (!appWindow.game)
 			return;
 
-		auto lock = app.lockGame();
-		Region &region = app.game->currentRegion();
+		auto lock = appWindow.lockGame();
+		Region &region = appWindow.game->currentRegion();
 		const auto non_owned = region.allNonOwnedResources();
-		const double money = app.game->money;
+		const double money = appWindow.game->money;
 		const double greed = region.greed;
 		previousInventory.clear();
 
-		for (const auto &[name, amount]: app.game->inventory) {
+		for (const auto &[name, amount]: appWindow.game->inventory) {
 			previousInventory.insert(name);
 			auto &row = *sellRows.emplace(name, sellModel->append()).first->second;
 			row[columns.resource] = name;
 			row[columns.amount] = amount;
-			row[columns.price] = Stonks::sellPrice(app.game->resources.at(name).basePrice,
+			row[columns.price] = Stonks::sellPrice(appWindow.game->resources.at(name).basePrice,
 				non_owned.count(name)? non_owned.at(name) : 0, money, greed);
 		}
 	}
@@ -150,13 +151,13 @@ namespace Game2 {
 		buyModel->clear();
 		buyRows.clear();
 
-		if (!app.game)
+		if (!appWindow.game)
 			return;
 
-		auto lock = app.lockGame();
-		Region &region = app.game->currentRegion();
+		auto lock = appWindow.lockGame();
+		Region &region = appWindow.game->currentRegion();
 		auto non_owned = region.allNonOwnedResources();
-		double money = app.game->money;
+		double money = appWindow.game->money;
 		previousNonOwned.clear();
 
 		for (const auto &[name, amount]: non_owned) {
@@ -164,40 +165,40 @@ namespace Game2 {
 			auto &row = *buyRows.emplace(name, buyModel->append()).first->second;
 			row[columns.resource] = name;
 			row[columns.amount] = amount;
-			row[columns.price] = Stonks::buyPrice(app.game->resources.at(name).basePrice, amount, money);
+			row[columns.price] = Stonks::buyPrice(appWindow.game->resources.at(name).basePrice, amount, money);
 		}
 	}
 
 	void MarketTab::updateSell() {
-		auto lock = app.lockGame();
-		if (!app.game)
+		auto lock = appWindow.lockGame();
+		if (!appWindow.game)
 			return;
 
-		Region &region = app.game->currentRegion();
+		Region &region = appWindow.game->currentRegion();
 		auto non_owned = region.allNonOwnedResources();
-		double money = app.game->money;
+		double money = appWindow.game->money;
 		double greed = region.greed;
 
-		if (!compare(previousInventory, app.game->inventory))
+		if (!compare(previousInventory, appWindow.game->inventory))
 			resetSell();
 		else
-			for (const auto &[name, amount]: app.game->inventory)
+			for (const auto &[name, amount]: appWindow.game->inventory)
 				if (sellRows.count(name) != 0) {
 					auto &row = *sellRows.at(name);
 					row[columns.amount] = amount;
-					row[columns.price] = Stonks::sellPrice(app.game->resources.at(name).basePrice,
+					row[columns.price] = Stonks::sellPrice(appWindow.game->resources.at(name).basePrice,
 						non_owned.count(name)? non_owned.at(name) : 0, money, greed);
 				}
 	}
 
 	void MarketTab::updateBuy() {
-		auto lock = app.lockGame();
-		if (!app.game)
+		auto lock = appWindow.lockGame();
+		if (!appWindow.game)
 			return;
 
-		Region &region = app.game->currentRegion();
+		Region &region = appWindow.game->currentRegion();
 		auto non_owned = region.allNonOwnedResources();
-		double money = app.game->money;
+		double money = appWindow.game->money;
 
 		if (!compare(previousNonOwned, non_owned))
 			resetBuy();
@@ -206,7 +207,7 @@ namespace Game2 {
 				if (buyRows.count(name) != 0) {
 					auto &row = *buyRows.at(name);
 					row[columns.amount] = amount;
-					row[columns.price] = Stonks::buyPrice(app.game->resources.at(name).basePrice, amount, money);
+					row[columns.price] = Stonks::buyPrice(appWindow.game->resources.at(name).basePrice, amount, money);
 				}
 	}
 
@@ -216,108 +217,108 @@ namespace Game2 {
 	}
 
 	void MarketTab::sell(const std::string &resource_name) {
-		auto *dialog = new EntryDialog<NumericEntry>("Sell", *app.mainWindow, "Amount to sell:");
-		app.dialog.reset(dialog);
+		auto *dialog = new EntryDialog<NumericEntry>("Sell", appWindow, "Amount to sell:");
+		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
-			app.delay([this, resource_name, response] {
+			appWindow.delay([this, resource_name, response] {
 				double amount;
 				try {
 					amount = parseDouble(response);
 				} catch (std::invalid_argument &) {
-					app.error("Invalid amount.");
+					appWindow.error("Invalid amount.");
 					return;
 				}
 
-				app.gameMutex.lock();
-				auto region = app.game->currentRegionPointer();
-				double &in_inventory = app.game->inventory[resource_name];
+				appWindow.gameMutex.lock();
+				auto region = appWindow.game->currentRegionPointer();
+				double &in_inventory = appWindow.game->inventory[resource_name];
 
 				if (lte(amount, 0) || ltna(in_inventory, amount)) {
-					app.gameMutex.unlock();
-					app.error("Invalid amount.");
+					appWindow.gameMutex.unlock();
+					appWindow.error("Invalid amount.");
 					return;
 				}
 
 				size_t total_price = 0;
 				if (!Stonks::totalSellPrice(*region, resource_name, amount, total_price)) {
-					app.gameMutex.unlock();
-					app.error("Region doesn't have enough money. Price: " + std::to_string(total_price));
+					appWindow.gameMutex.unlock();
+					appWindow.error("Region doesn't have enough money. Price: " + std::to_string(total_price));
 				} else {
-					auto *dialog = new Gtk::MessageDialog(*app.mainWindow, "Price: " + std::to_string(total_price),
+					auto *dialog = new Gtk::MessageDialog(appWindow, "Price: " + std::to_string(total_price),
 						false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true);
-					app.dialog.reset(dialog);
+					appWindow.dialog.reset(dialog);
 					dialog->signal_response().connect([this, resource_name, region, amount, total_price](int response) {
 						if (response == Gtk::ResponseType::OK) {
-							Region &region = app.game->currentRegion();
+							Region &region = appWindow.game->currentRegion();
 							auto housing = region.getHousing();
 							if (!housing) {
-								app.error("Region has no market.");
+								appWindow.error("Region has no market.");
 							} else {
 								housing->resources[resource_name] += amount;
-								app.game->inventory[resource_name] -= amount;
+								appWindow.game->inventory[resource_name] -= amount;
 								region.setMoney(region.money - total_price);
-								app.game->setMoney(app.game->money + total_price);
-								shrink(app.game->inventory);
+								appWindow.game->setMoney(appWindow.game->money + total_price);
+								shrink(appWindow.game->inventory);
 							}
 						}
-						app.gameMutex.unlock();
-						app.dialog->hide();
+						appWindow.gameMutex.unlock();
+						appWindow.dialog->hide();
 					});
-					app.dialog->show();
+					appWindow.dialog->show();
 				}
 			});
 		});
-		app.dialog->show();
+		appWindow.dialog->show();
 	}
 
 	void MarketTab::buy(const std::string &resource_name) {
-		auto *dialog = new EntryDialog<NumericEntry>("Buy", *app.mainWindow, "Amount to buy:");
-		app.dialog.reset(dialog);
+		auto *dialog = new EntryDialog<NumericEntry>("Buy", appWindow, "Amount to buy:");
+		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
-			app.delay([this, resource_name, response] {
+			appWindow.delay([this, resource_name, response] {
 				double amount;
 				try {
 					amount = parseDouble(response);
 				} catch (std::invalid_argument &) {
-					app.error("Invalid amount.");
+					appWindow.error("Invalid amount.");
 					return;
 				}
 
-				app.gameMutex.lock();
-				auto region = app.game->currentRegionPointer();
+				appWindow.gameMutex.lock();
+				auto region = appWindow.game->currentRegionPointer();
 				double in_region = region->allNonOwnedResources()[resource_name];
 
 				if (lte(amount, 0) || ltna(in_region, amount)) {
-					app.gameMutex.unlock();
-					app.error("Invalid amount.");
+					appWindow.gameMutex.unlock();
+					appWindow.error("Invalid amount.");
 					return;
 				}
 
 				const size_t total_price = Stonks::totalBuyPrice(*region, resource_name, amount);
-				if (app.game->money < total_price) {
-					app.error("You don't have enough money.");
-					app.gameMutex.unlock();
+				if (appWindow.game->money < total_price) {
+					appWindow.error("You don't have enough money.");
+					appWindow.gameMutex.unlock();
 					return;
 				}
 
-				auto *dialog = new Gtk::MessageDialog(*app.mainWindow, "Amount: " + std::to_string(total_price), false,
+				auto *dialog = new Gtk::MessageDialog(appWindow, "Amount: " + std::to_string(total_price), false,
 					Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true);
-				app.dialog.reset(dialog);
+				appWindow.dialog.reset(dialog);
 				dialog->signal_response().connect([this, resource_name, total_price, amount, region](int response) {
 					if (response == Gtk::ResponseType::OK) {
 						region->subtractResourceFromNonOwned(resource_name, amount);
-						app.game->addToInventory(resource_name, amount);
+						appWindow.game->addToInventory(resource_name, amount);
 						region->setMoney(region->money + total_price);
-						app.game->setMoney(app.game->money - total_price);
+						appWindow.game->setMoney(appWindow.game->money - total_price);
 						for (auto &[name, area]: region->areas)
 							shrink(area->resources);
 					}
-					app.gameMutex.unlock();
-					app.dialog->hide();
+					appWindow.gameMutex.unlock();
+					appWindow.dialog->hide();
 				});
-				app.dialog->show();
+				appWindow.dialog->show();
 			});
 		});
-		app.dialog->show();
+		appWindow.dialog->show();
 	}
 }

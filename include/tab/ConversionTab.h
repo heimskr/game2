@@ -8,17 +8,16 @@
 #include "ui/ProcessorWidget.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 
 	class ConversionTab: public Tab {
 		public:
-
-			App &app;
+			AppWindow &appWindow;
 
 			ConversionTab() = delete;
 			ConversionTab(const ConversionTab &) = delete;
 			ConversionTab(ConversionTab &&) = delete;
-			ConversionTab(App &);
+			ConversionTab(AppWindow &);
 
 			ConversionTab & operator=(const ConversionTab &) = delete;
 			ConversionTab & operator=(ConversionTab &&) = delete;

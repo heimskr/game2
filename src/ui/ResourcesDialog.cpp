@@ -1,9 +1,11 @@
-#include "App.h"
+#include "Game.h"
+#include "ui/AppWindow.h"
 #include "ui/ResourcesDialog.h"
 
 namespace Game2 {
-	ResourcesDialog::ResourcesDialog(const Glib::ustring &title, Gtk::Window &parent, App &app_, bool modal):
-	Dialog(title, parent, modal), app(app_) {
+	ResourcesDialog::ResourcesDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &app_window,
+	                                 bool modal):
+	Dialog(title, parent, modal), appWindow(app_window) {
 		set_default_size(300, 500);
 		auto &area = *get_content_area();
 		area.set_orientation(Gtk::Orientation::VERTICAL);
@@ -18,8 +20,8 @@ namespace Game2 {
 		resourcesBox.set_spacing(5);
 		scrolled.set_vexpand(true);
 		scrolled.set_child(resourcesBox);
-		auto lock = app.lockGame();
-		for (auto &pair: app.game->resources) {
+		auto lock = appWindow.lockGame();
+		for (auto &pair: appWindow.game->resources) {
 			auto &name = pair.first;
 			auto &label = labels.emplace_back(name, Gtk::Align::START);
 			auto &gesture = gestures.emplace_back(Gtk::GestureClick::create());

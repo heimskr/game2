@@ -1,9 +1,9 @@
-#include "App.h"
 #include "UI.h"
 #include "tab/ExtractionsTab.h"
+#include "ui/AppWindow.h"
 
 namespace Game2 {
-	ExtractionsTab::ExtractionsTab(App &app_): app(app_) {
+	ExtractionsTab::ExtractionsTab(AppWindow &app_window): appWindow(app_window) {
 		scrolled.set_vexpand(true);
 		scrolled.set_child(treeView);
 		treeModel = Gtk::ListStore::create(columns);
@@ -20,20 +20,20 @@ namespace Game2 {
 	}
 
 	void ExtractionsTab::onFocus() {
-		if (!app.game)
+		if (!appWindow.game)
 			return;
 
 		globalButton = std::make_unique<Gtk::ToggleButton>("Global");
 		globalButton->set_active(global);
 		globalButton->signal_clicked().connect(sigc::mem_fun(*this, &ExtractionsTab::toggleGlobal));
-		app.header->pack_start(*globalButton);
-		app.titleWidgets.push_back(globalButton.get());
+		appWindow.header->pack_start(*globalButton);
+		appWindow.titleWidgets.push_back(globalButton.get());
 
 		removeButton = std::make_unique<Gtk::Button>();
 		removeButton->set_icon_name("list-remove-symbolic");
 		removeButton->signal_clicked().connect(sigc::mem_fun(*this, &ExtractionsTab::removeExtraction));
-		app.header->pack_start(*removeButton);
-		app.titleWidgets.push_back(removeButton.get());
+		appWindow.header->pack_start(*removeButton);
+		appWindow.titleWidgets.push_back(removeButton.get());
 	}
 
 	void ExtractionsTab::onBlur() {
@@ -44,13 +44,14 @@ namespace Game2 {
 	void ExtractionsTab::reset() {
 		treeModel->clear();
 
-		if (!app.game)
+		if (!appWindow.game)
 			return;
 
-		auto lock = app.lockGame();
-		auto region = app.game->currentRegionPointer();
+		auto lock = appWindow.lockGame();
+		auto region = appWindow.game->currentRegionPointer();
+		auto &extractions = appWindow.game->extractions;
 
-		for (auto iter = app.game->extractions.begin(), end = app.game->extractions.end(); iter != end; ++iter) {
+		for (auto iter = extractions.begin(), end = extractions.end(); iter != end; ++iter) {
 			const Extraction &extraction = *iter;
 
 			if (!global && extraction.area->parent != region.get())
@@ -73,7 +74,7 @@ namespace Game2 {
 	void ExtractionsTab::removeExtraction() {
 		if (auto iter = treeView.get_selection()->get_selected()) {
 			auto extraction_iter = iter->get_value(columns.iter);
-			app.game->extractions.erase(extraction_iter);
+			appWindow.game->extractions.erase(extraction_iter);
 			treeModel->erase(iter);
 		}
 	}

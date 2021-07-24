@@ -1,8 +1,9 @@
 #include <iostream>
 
-#include "App.h"
+#include "Game.h"
 #include "UI.h"
 #include "tab/ConversionTab.h"
+#include "ui/AppWindow.h"
 #include "ui/CentrifugeWidget.h"
 #include "ui/CrusherWidget.h"
 #include "ui/ElectrolyzerWidget.h"
@@ -16,7 +17,7 @@
 #include "ui/RocketFurnaceWidget.h"
 
 namespace Game2 {
-	ConversionTab::ConversionTab(App &app_): app(app_) {
+	ConversionTab::ConversionTab(AppWindow &app_window): appWindow(app_window) {
 		vbox.set_spacing(5);
 		setMargins(vbox, 5);
 		scrolled.set_child(vbox);
@@ -25,119 +26,119 @@ namespace Game2 {
 	}
 
 	void ConversionTab::add() {
-		auto *dialog = new ProcessorTypeDialog("Processors", *app.mainWindow, app);
-		app.dialog.reset(dialog);
+		auto *dialog = new ProcessorTypeDialog("Processors", appWindow, appWindow);
+		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](std::optional<Processor::Type> type) {
 			if (!type.has_value())
 				return;
-			app.delay([this, type] {
-				auto lock = app.lockGame();
-				const auto &cost = app.game->processorCosts.at(*type);
-				if (!contains(app.game->inventory, cost)) {
-					app.error("You don't have enough resources to make that.");
+			appWindow.delay([this, type] {
+				auto lock = appWindow.lockGame();
+				const auto &cost = appWindow.game->processorCosts.at(*type);
+				if (!contains(appWindow.game->inventory, cost)) {
+					appWindow.error("You don't have enough resources to make that.");
 					return;
 				}
 				for (const auto &[name, amount]: cost)
-					app.game->inventory[name] -= amount;
-				shrink(app.game->inventory);
+					appWindow.game->inventory[name] -= amount;
+				shrink(appWindow.game->inventory);
 				std::shared_ptr<Processor> new_processor;
 				try {
-					new_processor = std::shared_ptr<Processor>(Processor::ofType(*app.game, *type));
+					new_processor = std::shared_ptr<Processor>(Processor::ofType(*appWindow.game, *type));
 				} catch (std::invalid_argument &err) {
-					app.error(err.what());
+					appWindow.error(err.what());
 					return;
 				}
 				new_processor->name = Processor::typeName(*type);
-				app.game->processors.push_back(new_processor);
-				app.game->processorsByID.emplace(new_processor->id, new_processor);
+				appWindow.game->processors.push_back(new_processor);
+				appWindow.game->processorsByID.emplace(new_processor->id, new_processor);
 				reset();
-				app.alert("Added a new " + std::string(Processor::typeName(*type)) + ".");
+				appWindow.alert("Added a new " + std::string(Processor::typeName(*type)) + ".");
 			});
 		});
-		app.dialog->show();
+		appWindow.dialog->show();
 	}
 
 	void ConversionTab::sort() {
-		auto lock = app.lockGame();
-		app.game->processors.sort([](std::shared_ptr<Processor> &left, std::shared_ptr<Processor> &right) {
+		auto lock = appWindow.lockGame();
+		appWindow.game->processors.sort([](std::shared_ptr<Processor> &left, std::shared_ptr<Processor> &right) {
 			return left->name < right->name;
 		});
 		reset();
 	}
 
 	void ConversionTab::distribute() {
-		auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
-		app.dialog.reset(dialog);
+		auto *dialog = new InventoryDialog("Resource Selector", appWindow, appWindow);
+		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](const Glib::ustring &resource_name) {
-			app.delay([this, resource_name]() {
-				auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow,
+			appWindow.delay([this, resource_name]() {
+				auto *dialog = new EntryDialog<NumericEntry>("Amount", appWindow,
 					"Amount of " + resource_name + " to distribute:");
 				dialog->signal_submit().connect([this, resource_name](const Glib::ustring &amount_text) {
-					app.delay([this, resource_name, amount_text] {
+					appWindow.delay([this, resource_name, amount_text] {
 						double amount;
 						try {
 							amount = parseDouble(amount_text);
 						} catch (std::invalid_argument &) {
-							app.error("Invalid amount.");
+							appWindow.error("Invalid amount.");
 							return;
 						}
-						app.gameMutex.lock();
-						if (app.game->inventory.count(resource_name) == 0) {
-							app.gameMutex.unlock();
-							app.error("You don't have any of that resource.");
+						appWindow.gameMutex.lock();
+						if (appWindow.game->inventory.count(resource_name) == 0) {
+							appWindow.gameMutex.unlock();
+							appWindow.error("You don't have any of that resource.");
 							return;
 						}
-						double &in_inventory = app.game->inventory.at(resource_name);
+						double &in_inventory = appWindow.game->inventory.at(resource_name);
 						if (lte(amount, 0) || ltna(in_inventory, amount)) {
-							app.gameMutex.unlock();
-							app.error("You don't have enough of that resource.");
+							appWindow.gameMutex.unlock();
+							appWindow.error("You don't have enough of that resource.");
 							return;
 						}
-						auto *dialog = new ProcessorTypeDialog("Procesors", *app.mainWindow, app);
-						app.dialog.reset(dialog);
+						auto *dialog = new ProcessorTypeDialog("Procesors", appWindow, appWindow);
+						appWindow.dialog.reset(dialog);
 						dialog->signal_submit().connect([this, resource_name, amount, &in_inventory](auto type) {
 							if (!type.has_value()) {
-								app.gameMutex.unlock();
+								appWindow.gameMutex.unlock();
 								return;
 							}
 
-							app.delay([this, resource_name, amount, &in_inventory, type] {
+							appWindow.delay([this, resource_name, amount, &in_inventory, type] {
 								size_t count = 0;
-								for (const auto &processor: app.game->processors)
+								for (const auto &processor: appWindow.game->processors)
 									if (processor->getType() == *type)
 										++count;
 
 								if (count == 0) {
-									app.gameMutex.unlock();
-									app.error("You don't have any " + std::string(Processor::typeName(*type))
+									appWindow.gameMutex.unlock();
+									appWindow.error("You don't have any " + std::string(Processor::typeName(*type))
 										+ " processors.");
 									return;
 								}
 
-								for (auto &processor: app.game->processors)
+								for (auto &processor: appWindow.game->processors)
 									if (processor->getType() == *type)
 										processor->input[resource_name] += amount / count;
 								in_inventory -= amount;
-								shrink(app.game->inventory);
-								app.gameMutex.unlock();
+								shrink(appWindow.game->inventory);
+								appWindow.gameMutex.unlock();
 							});
 						});
-						app.dialog->show();
+						appWindow.dialog->show();
 					});
 				});
-				app.dialog.reset(dialog);
-				app.dialog->show();
+				appWindow.dialog.reset(dialog);
+				appWindow.dialog->show();
 			});
 		});
-		app.dialog->show();
+		appWindow.dialog->show();
 	}
 
 	void ConversionTab::toggleAutomation() {
-		if (!app.game)
+		if (!appWindow.game)
 			return;
 
-		auto lock = app.lockGame();
-		app.game->automationEnabled = !app.game->automationEnabled;
+		auto lock = appWindow.lockGame();
+		appWindow.game->automationEnabled = !appWindow.game->automationEnabled;
 		updateAutomationButton();
 	}
 
@@ -146,27 +147,27 @@ namespace Game2 {
 		addButton->set_icon_name("list-add-symbolic");
 		addButton->set_tooltip_text("Add processor");
 		addButton->signal_clicked().connect(sigc::mem_fun(*this, &ConversionTab::add));
-		app.header->pack_start(*addButton);
-		app.titleWidgets.push_back(addButton.get());
+		appWindow.header->pack_start(*addButton);
+		appWindow.titleWidgets.push_back(addButton.get());
 
 		sortButton = std::make_unique<Gtk::Button>();
 		sortButton->set_icon_name("view-sort-descending-symbolic");
 		sortButton->set_tooltip_text("Sort processors");
 		sortButton->signal_clicked().connect(sigc::mem_fun(*this, &ConversionTab::sort));
-		app.header->pack_start(*sortButton);
-		app.titleWidgets.push_back(sortButton.get());
+		appWindow.header->pack_start(*sortButton);
+		appWindow.titleWidgets.push_back(sortButton.get());
 
 		distributeButton = std::make_unique<Gtk::Button>();
 		distributeButton->set_icon_name("emblem-shared-symbolic");
 		distributeButton->set_tooltip_text("Distribute resource among all processors of a given type");
 		distributeButton->signal_clicked().connect(sigc::mem_fun(*this, &ConversionTab::distribute));
-		app.header->pack_start(*distributeButton);
-		app.titleWidgets.push_back(distributeButton.get());
+		appWindow.header->pack_start(*distributeButton);
+		appWindow.titleWidgets.push_back(distributeButton.get());
 
 		automationButton = std::make_unique<Gtk::Button>();
 		automationButton->signal_clicked().connect(sigc::mem_fun(*this, &ConversionTab::toggleAutomation));
-		app.header->pack_start(*automationButton);
-		app.titleWidgets.push_back(automationButton.get());
+		appWindow.header->pack_start(*automationButton);
+		appWindow.titleWidgets.push_back(automationButton.get());
 		updateAutomationButton();
 	}
 
@@ -178,12 +179,12 @@ namespace Game2 {
 	}
 
 	void ConversionTab::updateAutomationButton() {
-		if (!app.game || !automationButton)
+		if (!appWindow.game || !automationButton)
 			return;
 
-		auto lock = app.lockGame();
+		auto lock = appWindow.lockGame();
 
-		if (app.game->automationEnabled) {
+		if (appWindow.game->automationEnabled) {
 			automationButton->set_icon_name("media-playback-pause-symbolic");
 			automationButton->set_tooltip_text("Pause automation");
 		} else {
@@ -196,20 +197,20 @@ namespace Game2 {
 		removeChildren(vbox);
 		processorWidgets.clear();
 
-		auto lock = app.lockGame();
-		if (!app.game)
+		auto lock = appWindow.lockGame();
+		if (!appWindow.game)
 			return;
 
-		for (auto &processor: app.game->processors) {
+		for (auto &processor: appWindow.game->processors) {
 			ProcessorWidget *widget = nullptr;
 			switch (processor->getType()) {
-				case Processor::Type::Centrifuge:    widget = new    CentrifugeWidget(app, *processor); break;
-				case Processor::Type::Crusher:       widget = new       CrusherWidget(app, *processor); break;
-				case Processor::Type::Electrolyzer:  widget = new  ElectrolyzerWidget(app, *processor); break;
-				case Processor::Type::Fermenter:     widget = new     FermenterWidget(app, *processor); break;
-				case Processor::Type::Furnace:       widget = new       FurnaceWidget(app, *processor); break;
-				case Processor::Type::Refinery:      widget = new      RefineryWidget(app, *processor); break;
-				case Processor::Type::RocketFurnace: widget = new RocketFurnaceWidget(app, *processor); break;
+				case Processor::Type::Centrifuge:    widget = new    CentrifugeWidget(appWindow, *processor); break;
+				case Processor::Type::Crusher:       widget = new       CrusherWidget(appWindow, *processor); break;
+				case Processor::Type::Electrolyzer:  widget = new  ElectrolyzerWidget(appWindow, *processor); break;
+				case Processor::Type::Fermenter:     widget = new     FermenterWidget(appWindow, *processor); break;
+				case Processor::Type::Furnace:       widget = new       FurnaceWidget(appWindow, *processor); break;
+				case Processor::Type::Refinery:      widget = new      RefineryWidget(appWindow, *processor); break;
+				case Processor::Type::RocketFurnace: widget = new RocketFurnaceWidget(appWindow, *processor); break;
 				default:;
 			}
 

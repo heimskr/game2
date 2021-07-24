@@ -1,22 +1,31 @@
-CPP      := g++
-CPPFLAGS := -Wall -Wextra -g -O0 -std=c++20 -Iinclude -rdynamic
-INCLUDES := $(shell pkg-config --cflags gtk4 gtkmm-4.0 x11)
-LIBS     := $(shell pkg-config --libs   gtk4 gtkmm-4.0 x11)
-LDFLAGS  := -rdynamic -pthread
-OUTPUT   := game
-SOURCES  := $(shell find src -name \*.cpp)
-OBJECTS  := $(SOURCES:.cpp=.o)
+CPP        := g++
+ifeq ($(BUILD),release)
+	BUILDFLAGS := -O3
+else
+	BUILDFLAGS := -g -O0
+endif
+CPPFLAGS   := -Wall -Wextra $(BUILDFLAGS) -std=c++20 -Iinclude -rdynamic
+INCLUDES   := $(shell pkg-config --cflags gtk4 gtkmm-4.0 x11)
+LIBS       := $(shell pkg-config --libs   gtk4 gtkmm-4.0 x11)
+LDFLAGS    := -rdynamic -pthread
+OUTPUT     := game
+SOURCES    := $(shell find src -name \*.cpp) src/resources.cpp
+OBJECTS    := $(SOURCES:.cpp=.o)
+GLIB_COMPILE_RESOURCES = $(shell pkg-config --variable=glib_compile_resources gio-2.0)
 
 .PHONY: all
 
 all: $(OUTPUT)
 
+src/resources.cpp: game2.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=src --generate-dependencies game2.gresource.xml)
+	$(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=src --generate-source $<
+
 %.o: %.cpp
-	@ echo "\e[2m[\e[22;32mCC\e[39;2m]\e[22m $<"
+	@ printf "\e[2m[\e[22;32mCC\e[39;2m]\e[22m $< $(BUILDFLAGS)\n"
 	@ $(CPP) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT): $(OBJECTS)
-	@ echo "\e[2m[\e[22;36mLD\e[39;2m]\e[22m $@"
+	@ printf "\e[2m[\e[22;36mLD\e[39;2m]\e[22m $@\n"
 	@ $(CPP) $^ -o $@ $(LIBS) $(LDFLAGS)
 
 test: $(OUTPUT)
@@ -26,7 +35,7 @@ run: $(OUTPUT)
 	./$(OUTPUT)
 
 clean:
-	@ echo rm -f $$\(OBJECTS\) $(OUTPUT)
+	@ echo rm -f $$\(OBJECTS\) $(OUTPUT) src/resources.cpp
 	@ rm -f $(OBJECTS) $(OUTPUT)
 
 install: $(OUTPUT)
@@ -38,6 +47,10 @@ count:
 
 countbf:
 	cloc --by-file . --exclude-dir=.vscode
+
+install-desktop-file:
+	@ mkdir -p ~/.local/share/applications
+	sed -e "s#@bindir@#$$PWD#" desktop.in > ~/.local/share/applications/game2.desktop
 
 DEPFILE  := .dep
 DEPTOKEN := "\# MAKEDEPENDS"

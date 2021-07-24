@@ -1,4 +1,5 @@
-#include "App.h"
+#include "Game.h"
+#include "ui/AppWindow.h"
 #include "ui/CrusherWidget.h"
 
 namespace Game2 {
@@ -7,12 +8,13 @@ namespace Game2 {
 		fillButton.set_icon_name("folder-download-symbolic");
 		fillButton.set_tooltip_text("Fill with crushable items");
 		fillButton.signal_clicked().connect([this] {
-			for (auto &[name, amount]: app.game->inventory)
-				if (app.game->resources.at(name).hasType("crushable")) {
+			auto lock = appWindow.lockGame();
+			for (auto &[name, amount]: appWindow.game->inventory)
+				if (appWindow.game->resources.at(name).hasType("crushable")) {
 					processor.input[name] += amount;
 					amount = 0;
 				}
-			shrink(app.game->inventory);
+			shrink(appWindow.game->inventory);
 		});
 	}
 }

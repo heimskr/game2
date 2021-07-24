@@ -12,12 +12,12 @@
 #include "Util.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 	class Processor;
 
 	class Game {
 		public:
-			App &app;
+			AppWindow &window;
 			bool ready = false;
 			std::map<std::string, Resource> resources;
 			std::map<Processor::Type, Resource::Map> processorCosts;
@@ -36,7 +36,7 @@ namespace Game2 {
 			std::string path;
 
 			Game() = delete;
-			Game(App &, const std::string &path_ = DEFAULT_PATH);
+			Game(AppWindow &, const std::string &path_ = DEFAULT_PATH);
 
 			void add(const Resource &);
 			void addResources();
@@ -58,15 +58,15 @@ namespace Game2 {
 
 			void tick(double delta);
 
-			static std::shared_ptr<Game> loadDefaults(App &);
+			static std::shared_ptr<Game> loadDefaults(AppWindow &);
 
 			Extraction & extract(Area &, const std::string &name, double amount, double minimum);
 			Extraction & extract(Area &, const std::string &name, double amount, double minimum, double rate);
 
 			std::string toString() const;
-			static std::shared_ptr<Game> fromString(App &, const std::string &text,
+			static std::shared_ptr<Game> fromString(AppWindow &, const std::string &text,
 			                                        const std::string &path = DEFAULT_PATH);
-			static std::shared_ptr<Game> load(App &, const std::string &path = DEFAULT_PATH);
+			static std::shared_ptr<Game> load(AppWindow &, const std::string &path = DEFAULT_PATH);
 			void save();
 
 			Game & operator+=(std::unique_ptr<Region> &&);

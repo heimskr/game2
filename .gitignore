@@ -4,3 +4,4 @@ game
 .vscode
 *~
 save*.txt
+src/resources.cpp

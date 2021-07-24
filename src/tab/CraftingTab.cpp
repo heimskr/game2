@@ -1,13 +1,14 @@
-#include "App.h"
+#include "Game.h"
 #include "UI.h"
 #include "tab/CraftingTab.h"
+#include "ui/AppWindow.h"
 #include "ui/EntryDialog.h"
 #include "ui/InventoryDialog.h"
 #include "ui/NumericEntry.h"
 #include "ui/RecipesDialog.h"
 
 namespace Game2 {
-	CraftingTab::CraftingTab(App &app_): app(app_) {
+	CraftingTab::CraftingTab(AppWindow &app_window): appWindow(app_window) {
 		scrolled.set_child(treeBox);
 		scrolled.set_vexpand(true);
 		treeBox.set_homogeneous(true);
@@ -40,15 +41,15 @@ namespace Game2 {
 		inputRows.clear();
 		outputRows.clear();
 
-		if (!app.game)
+		if (!appWindow.game)
 			return;
 
-		auto lock = app.lockGame();
+		auto lock = appWindow.lockGame();
 
 		if (compute_crafting)
 			computeCraftingOutput();
 
-		for (const auto &[name, amount]: app.game->craftingInventory)
+		for (const auto &[name, amount]: appWindow.game->craftingInventory)
 			addInput(name, amount);
 
 		for (const auto *recipe: craftingOutput)
@@ -73,20 +74,20 @@ namespace Game2 {
 	}
 
 	void CraftingTab::update() {
-		auto lock = app.lockGame();
+		auto lock = appWindow.lockGame();
 		computeCraftingOutput();
 
 		auto input_children = inputModel->children();
 		for (auto iter = input_children.begin(); iter != input_children.end();) {
 			const Glib::ustring resource_name = (*iter)[columns.resource];
-			if (app.game->craftingInventory.count(resource_name) == 0) {
+			if (appWindow.game->craftingInventory.count(resource_name) == 0) {
 				inputRows.erase(resource_name);
 				inputModel->erase(iter++);
 			} else
 				++iter;
 		}
 
-		for (const auto &[name, amount]: app.game->craftingInventory)
+		for (const auto &[name, amount]: appWindow.game->craftingInventory)
 			if (inputRows.count(name) == 0)
 				addInput(name, amount);
 			else
@@ -108,56 +109,56 @@ namespace Game2 {
 	}
 
 	void CraftingTab::craft(const CraftingRecipe *recipe) {
-		auto lock = app.lockGame();
+		auto lock = appWindow.lockGame();
 		for (const auto &[name, amount]: recipe->inputs)
-			app.game->craftingInventory[name] -= amount;
-		app.game->inventory[recipe->output] += recipe->amount;
-		shrink(app.game->craftingInventory);
+			appWindow.game->craftingInventory[name] -= amount;
+		appWindow.game->inventory[recipe->output] += recipe->amount;
+		shrink(appWindow.game->craftingInventory);
 		update();
 	}
 
 	void CraftingTab::add() {
-		auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
-		app.dialog.reset(dialog);
+		auto *dialog = new InventoryDialog("Resource Selector", appWindow, appWindow);
+		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](const Glib::ustring &name) {
 			if (name.empty())
 				return;
-			app.delay([this, name] {
-				auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow, "Amount to add:");
-				app.dialog.reset(dialog);
+			appWindow.delay([this, name] {
+				auto *dialog = new EntryDialog<NumericEntry>("Amount", appWindow, "Amount to add:");
+				appWindow.dialog.reset(dialog);
 				dialog->signal_submit().connect([this, name](const Glib::ustring &amount_str) {
 					double amount;
 					try {
 						amount = parseDouble(amount_str);
 					} catch (std::invalid_argument &) {
-						app.delay([this] { app.error("Invalid amount."); });
+						appWindow.delay([this] { appWindow.error("Invalid amount."); });
 						return;
 					}
-					auto lock = app.lockGame();
+					auto lock = appWindow.lockGame();
 					if (amount == 0)
-						amount = app.game->inventory[name];
-					if (amount <= 0 || ltna(app.game->inventory[name], amount)) {
-						app.delay([this] { app.error("Invalid amount."); });
+						amount = appWindow.game->inventory[name];
+					if (amount <= 0 || ltna(appWindow.game->inventory[name], amount)) {
+						appWindow.delay([this] { appWindow.error("Invalid amount."); });
 						return;
 					}
-					app.game->inventory[name] -= amount;
-					app.game->craftingInventory[name] += amount;
-					shrink(app.game->inventory);
+					appWindow.game->inventory[name] -= amount;
+					appWindow.game->craftingInventory[name] += amount;
+					shrink(appWindow.game->inventory);
 					reset();
 				});
-				app.dialog->show();
+				appWindow.dialog->show();
 			});
 		});
-		app.dialog->show();
+		appWindow.dialog->show();
 	}
 
 	void CraftingTab::remove() {
 		if (auto iter = inputView.get_selection()->get_selected()) {
-			auto lock = app.lockGame();
+			auto lock = appWindow.lockGame();
 			auto name = iter->get_value(columns.resource);
 			auto amount = iter->get_value(columns.amount);
-			app.game->inventory[name] += amount;
-			app.game->craftingInventory.erase(name);
+			appWindow.game->inventory[name] += amount;
+			appWindow.game->craftingInventory.erase(name);
 			update();
 		}
 	}
@@ -169,38 +170,38 @@ namespace Game2 {
 
 	void CraftingTab::computeCraftingOutput() {
 		craftingOutput.clear();
-		for (const CraftingRecipe &recipe: app.game->recipes.crafting)
-			if (contains(app.game->craftingInventory, recipe.inputs))
+		for (const CraftingRecipe &recipe: appWindow.game->recipes.crafting)
+			if (contains(appWindow.game->craftingInventory, recipe.inputs))
 				craftingOutput.insert(&recipe);
 	}
 
 	void CraftingTab::onFocus() {
-		if (!app.game)
+		if (!appWindow.game)
 			return;
 
 		addButton = std::make_unique<Gtk::Button>();
 		addButton->set_icon_name("list-add-symbolic");
 		addButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::add));
-		app.header->pack_start(*addButton);
-		app.titleWidgets.push_back(addButton.get());
+		appWindow.header->pack_start(*addButton);
+		appWindow.titleWidgets.push_back(addButton.get());
 
 		removeButton = std::make_unique<Gtk::Button>();
 		removeButton->set_icon_name("list-remove-symbolic");
 		removeButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::remove));
-		app.header->pack_start(*removeButton);
-		app.titleWidgets.push_back(removeButton.get());
+		appWindow.header->pack_start(*removeButton);
+		appWindow.titleWidgets.push_back(removeButton.get());
 
 		craftButton = std::make_unique<Gtk::Button>();
 		craftButton->set_icon_name("applications-engineering-symbolic"); // Probably confusing with other icon sets.
 		craftButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::craftClicked));
-		app.header->pack_start(*craftButton);
-		app.titleWidgets.push_back(craftButton.get());
+		appWindow.header->pack_start(*craftButton);
+		appWindow.titleWidgets.push_back(craftButton.get());
 
 		helpButton = std::make_unique<Gtk::Button>();
 		helpButton->set_icon_name("help-browser-symbolic");
 		helpButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::showHelp));
-		app.header->pack_start(*helpButton);
-		app.titleWidgets.push_back(helpButton.get());
+		appWindow.header->pack_start(*helpButton);
+		appWindow.titleWidgets.push_back(helpButton.get());
 	}
 
 	void CraftingTab::onBlur() {
@@ -211,20 +212,20 @@ namespace Game2 {
 	}
 
 	void CraftingTab::showHelp() {
-		auto *dialog = new RecipesDialog("Recipes", *app.mainWindow, app);
-		app.dialog.reset(dialog);
+		auto *dialog = new RecipesDialog("Recipes", appWindow, appWindow);
+		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](const CraftingRecipe &recipe) {
-			auto lock = app.lockGame();
-			if (contains(app.game->inventory, recipe.inputs)) {
+			auto lock = appWindow.lockGame();
+			if (contains(appWindow.game->inventory, recipe.inputs)) {
 				for (const auto &[name, amount]: recipe.inputs) {
-					app.game->inventory[name] -= amount;
-					app.game->craftingInventory[name] += amount;
+					appWindow.game->inventory[name] -= amount;
+					appWindow.game->craftingInventory[name] += amount;
 					reset();
 				}
 			} else {
-				app.delay([this] { app.error("You don't have enough resources."); });
+				appWindow.delay([this] { appWindow.error("You don't have enough resources."); });
 			}
 		});
-		app.dialog->show();
+		appWindow.dialog->show();
 	}
 }

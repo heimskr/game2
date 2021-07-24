@@ -8,7 +8,7 @@
 #include "tab/Tab.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 
 	class ExtractionsTab: public Tab {
 		public:
@@ -25,12 +25,12 @@ namespace Game2 {
 				Gtk::TreeModelColumn<decltype(Game::extractions)::iterator> iter;
 			};
 
-			App &app;
+			AppWindow &appWindow;
 
 			ExtractionsTab() = delete;
 			ExtractionsTab(const ExtractionsTab &) = delete;
 			ExtractionsTab(ExtractionsTab &&) = delete;
-			ExtractionsTab(App &);
+			ExtractionsTab(AppWindow &);
 
 			ExtractionsTab & operator=(const ExtractionsTab &) = delete;
 			ExtractionsTab & operator=(ExtractionsTab &&) = delete;

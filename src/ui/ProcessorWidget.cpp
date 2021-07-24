@@ -1,6 +1,7 @@
-#include <iostream>
-
+#include "Game.h"
 #include "UI.h"
+#include "Util.h"
+#include "ui/AppWindow.h"
 #include "ui/BasicEntry.h"
 #include "ui/EntryDialog.h"
 #include "ui/InventoryDialog.h"
@@ -8,8 +9,8 @@
 #include "ui/ProcessorWidget.h"
 
 namespace Game2 {
-	ProcessorWidget::ProcessorWidget(App &app_, Processor &processor_):
-	Gtk::Box(Gtk::Orientation::VERTICAL), app(app_), processor(processor_) {
+	ProcessorWidget::ProcessorWidget(AppWindow &app_window, Processor &processor_):
+	Gtk::Box(Gtk::Orientation::VERTICAL), appWindow(app_window), processor(processor_) {
 		addResourceButton.set_tooltip_text("Add resource to processor");
 		addResourceButton.set_icon_name("list-add-symbolic");
 		addResourceButton.signal_clicked().connect(sigc::mem_fun(*this, &ProcessorWidget::addResource));
@@ -153,28 +154,28 @@ namespace Game2 {
 	}
 
 	void ProcessorWidget::addResource() {
-		auto *dialog = new InventoryDialog("Resource Selector", *app.mainWindow);
-		app.dialog.reset(dialog);
+		auto *dialog = new InventoryDialog("Resource Selector", appWindow, appWindow);
+		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](const Glib::ustring &resource_name) {
-			app.delay([this, resource_name]() {
-				auto *dialog = new EntryDialog<NumericEntry>("Amount", *app.mainWindow,
+			appWindow.delay([this, resource_name]() {
+				auto *dialog = new EntryDialog<NumericEntry>("Amount", appWindow,
 					"Amount of " + resource_name + " to transfer:");
 				dialog->signal_submit().connect([this, resource_name](const Glib::ustring &amount_text) {
 					double amount;
 					try {
 						amount = parseDouble(amount_text);
 					} catch (std::invalid_argument &) {
-						app.delay([this] { app.error("Invalid amount."); });
+						appWindow.delay([this] { appWindow.error("Invalid amount."); });
 						return;
 					}
 					if (insert(resource_name, amount))
 						updateTrees();
 				});
-				app.dialog.reset(dialog);
-				app.dialog->show();
+				appWindow.dialog.reset(dialog);
+				appWindow.dialog->show();
 			});
 		});
-		app.dialog->show();
+		appWindow.dialog->show();
 	}
 
 	void ProcessorWidget::toggleAutoExtract() {
@@ -183,41 +184,41 @@ namespace Game2 {
 	}
 
 	void ProcessorWidget::rename() {
-		auto *dialog = new EntryDialog<BasicEntry>("Rename", *app.mainWindow, "New processor name:");
-		app.dialog.reset(dialog);
+		auto *dialog = new EntryDialog<BasicEntry>("Rename", appWindow, "New processor name:");
+		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](const Glib::ustring &new_name) {
 			processor.setName(new_name);
 			nameLabel.set_text(new_name);
 		});
-		app.dialog->show();
+		appWindow.dialog->show();
 	}
 
 	bool ProcessorWidget::insert(const std::string &resource_name, double amount) {
 		try {
 			if (amount <= 0) {
-				app.error("Invalid amount.");
+				appWindow.error("Invalid amount.");
 				return false;
 			}
 
-			if (app.game->inventory.count(resource_name) == 0) {
-				app.error("You don't have any of that resource.");
+			if (appWindow.game->inventory.count(resource_name) == 0) {
+				appWindow.error("You don't have any of that resource.");
 				return false;
 			}
 
-			double &in_inventory = app.game->inventory.at(resource_name);
+			double &in_inventory = appWindow.game->inventory.at(resource_name);
 			if (ltna(in_inventory, amount)) {
-				app.error("You don't have enough of that resource.");
+				appWindow.error("You don't have enough of that resource.");
 				return false;
 			}
 
 			if ((in_inventory -= amount) < Resource::MIN_AMOUNT)
-				app.game->inventory.erase(resource_name);
+				appWindow.game->inventory.erase(resource_name);
 
 			processor.input[resource_name] += amount;
 			return true;
 		} catch (const std::exception &err) {
 			std::cerr << "??? " << err.what() << "\n";
-			app.error("??? " + std::string(err.what()));
+			appWindow.error("??? " + std::string(err.what()));
 			return false;
 		}
 	}

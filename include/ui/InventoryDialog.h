@@ -3,11 +3,13 @@
 #include <iostream>
 
 #include "UpdatingDialog.h"
-#include "App.h"
 
 namespace Game2 {
+	class AppWindow;
+
 	class InventoryDialog: public UpdatingDialog {
 		public:
+			AppWindow &appWindow;
 			std::vector<std::unique_ptr<Gtk::Widget>> widgets;
 			std::unordered_map<std::string, Gtk::Label> nameLabels, amountLabels;
 			std::unordered_map<std::string, Gtk::Button> buttons;
@@ -17,7 +19,7 @@ namespace Game2 {
 
 			sigc::signal<void(const Glib::ustring &)> signal_submit() const { return signal_submit_; }
 
-			InventoryDialog(const Glib::ustring &title, Gtk::Window &parent, bool modal = true);;
+			InventoryDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &, bool modal = true);;
 
 			void updateContent();
 			void updateData() override;

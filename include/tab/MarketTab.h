@@ -10,7 +10,7 @@
 #include "tab/Tab.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 
 	class MarketTab: public Tab {
 		public:
@@ -25,12 +25,12 @@ namespace Game2 {
 				Gtk::TreeModelColumn<double> amount, price;
 			};
 
-			App &app;
+			AppWindow &appWindow;
 
 			MarketTab() = delete;
 			MarketTab(const MarketTab &) = delete;
 			MarketTab(MarketTab &&) = delete;
-			MarketTab(App &);
+			MarketTab(AppWindow &);
 
 			MarketTab & operator=(const MarketTab &) = delete;
 			MarketTab & operator=(MarketTab &&) = delete;

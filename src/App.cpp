@@ -3,251 +3,55 @@
 
 #include "App.h"
 #include "UI.h"
-#include "ui/UpdatingDialog.h"
-#include "tab/RegionTab.h"
-#include "tab/TravelTab.h"
-#include "tab/InventoryTab.h"
-#include "tab/ExtractionsTab.h"
-#include "tab/ConversionTab.h"
-#include "tab/MarketTab.h"
-#include "tab/AutomationTab.h"
-#include "tab/CraftingTab.h"
-
-#ifdef __linux__
-#include <gtk-4.0/gdk/x11/gdkx.h>
-#endif
 
 namespace Game2 {
-	std::unique_ptr<App> app;
+	Glib::RefPtr<App> global_app;
 
-	App::App(Glib::RefPtr<Gtk::Application> gtk_app): gtkApp(gtk_app) {
-		updateDispatcher.connect(sigc::mem_fun(*this, &App::update));
+	App::App(): Gtk::Application("com.heimskr.game2", Gio::Application::Flags::HANDLES_OPEN) {}
 
-		mainWindow = std::make_unique<Gtk::ApplicationWindow>();
-		builder = Gtk::Builder::create();
-		builder->add_from_file("main.ui");
-
-		cssProvider = Gtk::CssProvider::create();
-		cssProvider->load_from_path("style.css");
-		Gtk::StyleContext::add_provider_for_display(Gdk::Display::get_default(), cssProvider,
-			GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-		header = builder->get_widget<Gtk::HeaderBar>("headerbar");
-		mainWindow->set_titlebar(*header);
-
-		notebook = std::make_unique<Gtk::Notebook>();
-		mainWindow->set_child(*notebook);
-		mainWindow->set_default_size(1000, 600);
-		notebook->hide();
-
-		mainWindow->add_action("new", Gio::ActionMap::ActivateSlot([this] {
-			resetTitle();
-			activeTab->onBlur();
-			notebook->show();
-			auto lock = lockGame();
-			game = Game::loadDefaults(*this);
-			init();
-		}));
-
-		mainWindow->add_action("open", Gio::ActionMap::ActivateSlot([this] {
-			resetTitle();
-			activeTab->onBlur();
-			notebook->show();
-			auto lock = lockGame();
-			auto *chooser = new Gtk::FileChooserDialog(*mainWindow, "Choose File", Gtk::FileChooser::Action::OPEN, true);
-			dialog.reset(chooser);
-			chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path()));
-			chooser->set_transient_for(*mainWindow);
-			chooser->set_modal(true);
-			chooser->add_button("_Cancel", Gtk::ResponseType::CANCEL);
-			chooser->add_button("_Open", Gtk::ResponseType::OK);
-			chooser->signal_response().connect([this, chooser](int response) {
-				chooser->hide();
-				if (response == Gtk::ResponseType::OK)
-					delay([this, chooser] {
-						try {
-							auto lock = lockGame();
-							game = Game::load(*this, chooser->get_file()->get_path());
-							init();
-						} catch (std::exception &err) {
-							error("Error loading save: " + std::string(err.what()));
-						}
-					});
-			});
-			chooser->show();
-		}));
-
-		// mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
-
-		activeTab = regionTab = std::make_shared<RegionTab>(*this);
-		travelTab = std::make_shared<TravelTab>(*this);
-		inventoryTab = std::make_shared<InventoryTab>(*this);
-		extractionsTab = std::make_shared<ExtractionsTab>(*this);
-		conversionTab = std::make_shared<ConversionTab>(*this);
-		marketTab = std::make_shared<MarketTab>(*this);
-		automationTab = std::make_shared<AutomationTab>(*this);
-		craftingTab = std::make_shared<CraftingTab>(*this);
-
-		addTab(regionTab);
-		addTab(travelTab);
-		addTab(inventoryTab);
-		addTab(extractionsTab);
-		addTab(conversionTab);
-		addTab(marketTab);
-		addTab(automationTab);
-		addTab(craftingTab);
-
-		notebook->signal_unmap().connect([this] {
-			notebookConnection.disconnect();
-		});
-
-		notebook->signal_show().connect([this] {
-			notebookConnection = notebook->signal_switch_page().connect([this](Gtk::Widget *, guint page_number) {
-				resetTitle();
-				activeTab->onBlur();
-				activeTab = tabs.at(page_number);
-				activeTab->onFocus();
-			});
-		});
-
-		moneyDispatcher.connect([this] {
-			marketTab->updateMoney();
-		});
+	Glib::RefPtr<App> App::create() {
+		return Glib::make_refptr_for_instance<App>(new App());
 	}
 
-	void App::init() {
-		onTravel();
-		regionTab->reset();
-		travelTab->reset();
-		inventoryTab->update();
-		extractionsTab->reset();
-		conversionTab->reset();
-		marketTab->reset();
-		automationTab->reset();
-		craftingTab->reset();
-		activeTab->onFocus();
-		connectSave();
-	}
-
-	void App::resetTitle() {
-		for (auto &child: titleWidgets)
-			header->remove(*child);
-		titleWidgets.clear();
-	}
-
-	void App::connectSave() {
-		mainWindow->add_action("save", Gio::ActionMap::ActivateSlot([this] {
-			auto lock = lockGame();
-			if (game) {
-				if (game->path.empty()) {
-					auto *chooser = new Gtk::FileChooserDialog(*mainWindow, "Save Location",
-						Gtk::FileChooser::Action::SAVE, true);
-					dialog.reset(chooser);
-					chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path()));
-					chooser->set_transient_for(*mainWindow);
-					chooser->set_modal(true);
-					chooser->add_button("_Cancel", Gtk::ResponseType::CANCEL);
-					chooser->add_button("_Save", Gtk::ResponseType::OK);
-					chooser->signal_response().connect([this, chooser](int response) {
-						chooser->hide();
-						if (response == Gtk::ResponseType::OK) {
-							auto lock = lockGame();
-							game->path = chooser->get_file()->get_path();
-						}
-					});
-					chooser->show();
-				}
-
-				delay([this] {
-					try {
-						game->save();
-					} catch (std::exception &err) {
-						error("Couldn't save game: " + std::string(err.what()));
+	AppWindow * App::create_window() {
+		AppWindow *window = AppWindow::create();
+		add_window(*window);
+		window->tickThread = std::thread([window] {
+			while (window->alive) {
+				{
+					auto lock = window->lockGame();
+					if (window->game) {
+						window->game->tick(UPDATE_PERIOD / 1000.);
+						window->updateDispatcher.emit();
 					}
-				});
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_PERIOD));
 			}
-		}));
-	}
-
-	void App::addTab(std::shared_ptr<Tab> tab) {
-		notebook->append_page(tab->getWidget(), tab->getName());
-		tabs.push_back(tab);
-	}
-
-	void App::quit() {
-		gtkApp->quit();
-	}
-
-	void App::delay(std::function<void()> fn) {
-		mainWindow->add_tick_callback([fn](const auto &) {
-			fn();
-			return false;
 		});
+		window->signal_hide().connect(sigc::bind(sigc::mem_fun(*this, &App::on_hide_window), window));
+		return window;
 	}
 
-	void App::alert(const Glib::ustring &message, Gtk::MessageType type, bool modal, bool use_markup) {
-		dialog.reset(new Gtk::MessageDialog(*mainWindow, message, use_markup, type, Gtk::ButtonsType::OK, modal));
-		dialog->signal_response().connect([this](int) {
-			dialog->close();
-		});
-		dialog->show();
+	void App::on_startup() {
+		Gtk::Application::on_startup();
 	}
 
-	void App::error(const Glib::ustring &message, bool modal, bool use_markup) {
-		alert(message, Gtk::MessageType::ERROR, modal, use_markup);
-	}
-
-	int App::run(int argc, char **argv) {
-		gtkApp->signal_activate().connect([this] {
-			gtkApp->add_window(*mainWindow);
-
-			mainWindow->signal_show().connect([this] {
-				delay(sigc::mem_fun(*this, &App::hackWindow));
+	void App::on_activate() {
+		try {
+			auto window = create_window();
+			window->signal_show().connect([this, window] {
+				window->delay(sigc::mem_fun(*window, &AppWindow::hackWindow));
 			});
 
-			mainWindow->show();
-		});
-		return gtkApp->run(argc, argv);
-	}
-
-	void App::onTravel() {
-		regionTab->update();
-		travelTab->reset();
-		extractionsTab->reset();
-		marketTab->reset();
-	}
-
-	void App::update() {
-		if (dialog)
-			if (auto *udialog = dynamic_cast<UpdatingDialog *>(dialog.get()))
-				udialog->updateData();
-		travelTab->reset();
-		inventoryTab->update();
-		regionTab->update();
-		conversionTab->update();
-		marketTab->update();
-	}
-
-	void App::hackWindow() {
-#ifdef __linux__
-		if (mainWindow->get_width() == 0 && mainWindow->get_height() == 0) {
-			delay(sigc::mem_fun(*this, &App::hackWindow));
-		} else {
-			Display *display = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-			Window window = gdk_x11_surface_get_xid(mainWindow->get_surface()->gobj());
-			XWindowAttributes attrs;
-			int status = XGetWindowAttributes(display, window, &attrs);
-			if (status == 0) {
-				std::cerr << "XGetWindowAttributes failed\n";
-			} else {
-				const int screen = DefaultScreen(display);
-				const int window_width = attrs.width;
-				const int window_height = attrs.height;
-				const int display_width = DisplayWidth(display, screen);
-				const int display_height = DisplayHeight(display, screen);
-				XMoveWindow(display, window, (display_width - window_width) / 2, (display_height - window_height) / 2);
-			}
+			window->present();
+		} catch (const Glib::Error &err) {
+			std::cerr << "App::on_activate(): " << err.what() << std::endl;
+		} catch (const std::exception &err) {
+			std::cerr << "App::on_activate(): " << err.what() << std::endl;
 		}
-#endif
+	}
+
+	void App::on_hide_window(Gtk::Window *window) {
+		delete window;
 	}
 }

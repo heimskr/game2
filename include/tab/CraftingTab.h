@@ -8,7 +8,7 @@
 #include "tab/Tab.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 	class CraftingRecipe;
 
 	class CraftingTab: public Tab {
@@ -25,12 +25,12 @@ namespace Game2 {
 				Gtk::TreeModelColumn<const CraftingRecipe *> recipe;
 			};
 
-			App &app;
+			AppWindow &appWindow;
 
 			CraftingTab() = delete;
 			CraftingTab(const CraftingTab &) = delete;
 			CraftingTab(CraftingTab &&) = delete;
-			CraftingTab(App &);
+			CraftingTab(AppWindow &);
 
 			CraftingTab & operator=(const CraftingTab &) = delete;
 			CraftingTab & operator=(CraftingTab &&) = delete;

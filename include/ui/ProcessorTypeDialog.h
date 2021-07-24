@@ -8,7 +8,7 @@
 #include "Processor.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 
 	class ProcessorTypeDialog: public Gtk::Dialog {
 		public:
@@ -17,10 +17,10 @@ namespace Game2 {
 			Gtk::Box processorsBox {Gtk::Orientation::VERTICAL};
 			sigc::signal<void(std::optional<Processor::Type>)> signal_submit() const { return signal_submit_; }
 
-			ProcessorTypeDialog(const Glib::ustring &title, Gtk::Window &parent, App &, bool modal = true);
+			ProcessorTypeDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &, bool modal = true);
 
 		private:
-			App &app;
+			AppWindow &appWindow;
 			bool done = false;
 			std::vector<Gtk::Label> labels;
 			std::vector<Glib::RefPtr<Gtk::GestureClick>> gestures;

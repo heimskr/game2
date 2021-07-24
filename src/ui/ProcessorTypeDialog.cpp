@@ -1,9 +1,11 @@
-#include "App.h"
+#include "Game.h"
+#include "ui/AppWindow.h"
 #include "ui/ProcessorTypeDialog.h"
 
 namespace Game2 {
-	ProcessorTypeDialog::ProcessorTypeDialog(const Glib::ustring &title, Gtk::Window &parent, App &app_, bool modal):
-	Dialog(title, parent, modal), app(app_) {
+	ProcessorTypeDialog::ProcessorTypeDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &app_window,
+	                                         bool modal):
+	Dialog(title, parent, modal), appWindow(app_window) {
 		set_default_size(300, -1);
 		auto &area = *get_content_area();
 		area.set_orientation(Gtk::Orientation::VERTICAL);
@@ -21,7 +23,7 @@ namespace Game2 {
 		for (Processor::Type type: Processor::TYPES) {
 			auto &label = labels.emplace_back(Processor::typeName(type), Gtk::Align::START);
 			std::vector<std::string> pieces;
-			for (const auto &[name, amount]: app.game->processorCosts.at(type))
+			for (const auto &[name, amount]: appWindow.game->processorCosts.at(type))
 				pieces.push_back(name + " x " + niceDouble(amount));
 			label.set_tooltip_text(join(pieces, "\n"));
 			auto &gesture = gestures.emplace_back(Gtk::GestureClick::create());

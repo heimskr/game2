@@ -8,7 +8,7 @@
 #include "tab/Tab.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 
 	class InventoryTab: public Tab {
 		public:
@@ -23,12 +23,12 @@ namespace Game2 {
 				Gtk::TreeModelColumn<double> amount;
 			};
 
-			App &app;
+			AppWindow &appWindow;
 
 			InventoryTab() = delete;
 			InventoryTab(const InventoryTab &) = delete;
 			InventoryTab(InventoryTab &&) = delete;
-			InventoryTab(App &);
+			InventoryTab(AppWindow &);
 
 			InventoryTab & operator=(const InventoryTab &) = delete;
 			InventoryTab & operator=(InventoryTab &&) = delete;

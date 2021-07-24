@@ -25,12 +25,12 @@ namespace Game2 {
 				Gtk::TreeModelColumn<decltype(Game::automationLinks)::iterator> iter;
 			};
 
-			App &app;
+			AppWindow &window;
 
 			AutomationTab() = delete;
 			AutomationTab(const AutomationTab &) = delete;
 			AutomationTab(AutomationTab &&) = delete;
-			AutomationTab(App &);
+			AutomationTab(AppWindow &);
 
 			AutomationTab & operator=(const AutomationTab &) = delete;
 			AutomationTab & operator=(AutomationTab &&) = delete;

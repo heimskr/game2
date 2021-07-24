@@ -4,7 +4,6 @@
 #include <utility>
 #include "platform.h"
 
-#include "App.h"
 #include "FS.h"
 #include "Game.h"
 #include "NameGen.h"
@@ -12,9 +11,10 @@
 #include "Processor.h"
 #include "area/Areas.h"
 #include "processor/Processors.h"
+#include "ui/AppWindow.h"
 
 namespace Game2 {
-	Game::Game(App &app_, const std::string &path_): app(app_), path(path_) {
+	Game::Game(AppWindow &window_, const std::string &path_): window(window_), path(path_) {
 		addAll();
 	}
 
@@ -204,7 +204,7 @@ namespace Game2 {
 	void Game::setMoney(size_t new_money) {
 		if (money != new_money) {
 			money = new_money;
-			app.moneyDispatcher.emit();
+			window.moneyDispatcher.emit();
 		}
 	}
 
@@ -268,8 +268,8 @@ namespace Game2 {
 				link.tick();
 	}
 
-	std::shared_ptr<Game> Game::loadDefaults(App &app) {
-		std::shared_ptr<Game> game = std::make_shared<Game>(app, "");
+	std::shared_ptr<Game> Game::loadDefaults(AppWindow &window) {
+		std::shared_ptr<Game> game = std::make_shared<Game>(window, "");
 		game->regions.clear();
 		Region &home = *game->regions.insert({Position(0, 0), std::make_unique<Region>(*game, NameGen::makeRandomLanguage().makeName(), Position(0, 0), 128)}).first->second;
 		home.greed = 0.25;
@@ -329,13 +329,13 @@ namespace Game2 {
 		return out.str();
 	}
 
-	std::shared_ptr<Game> Game::fromString(App &app, const std::string &str, const std::string &path) {
+	std::shared_ptr<Game> Game::fromString(AppWindow &window, const std::string &str, const std::string &path) {
 		std::vector<std::string> lines = split(str, "\n", true);
 		/** Compliant saves must follow this order beginning at Regions. */
 		enum class Mode {None, Regions, Inventory, CraftingInventory, Position, Extractions, Processors, Automations};
 		Mode mode = Mode::None;
 
-		std::shared_ptr<Game> out = std::make_shared<Game>(app, path);
+		std::shared_ptr<Game> out = std::make_shared<Game>(window, path);
 
 		for (std::string &line: lines) {
 			if (line.empty() || line == "\r")
@@ -411,10 +411,10 @@ namespace Game2 {
 		return out;
 	}
 
-	std::shared_ptr<Game> Game::load(App &app, const std::string &path) {
+	std::shared_ptr<Game> Game::load(AppWindow &window, const std::string &path) {
 		if (!FS::fileExists(path))
 			throw std::runtime_error("Save data doesn't exist");
-		return fromString(app, FS::readFile(path));
+		return fromString(window, FS::readFile(path));
 	}
 
 	void Game::save() {

@@ -1,9 +1,12 @@
+#include "Game.h"
 #include "UI.h"
+#include "ui/AppWindow.h"
 #include "ui/InventoryDialog.h"
 
 namespace Game2 {
-	InventoryDialog::InventoryDialog(const Glib::ustring &title, Gtk::Window &parent, bool modal):
-	UpdatingDialog(title, parent, modal) {
+	InventoryDialog::InventoryDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &app_window,
+	                                 bool modal):
+	UpdatingDialog(title, parent, modal), appWindow(app_window) {
 		set_default_size(500, -1);
 
 		get_content_area()->set_orientation(Gtk::Orientation::VERTICAL);
@@ -34,20 +37,20 @@ namespace Game2 {
 		amountLabels.clear();
 		widgets.clear();
 
-		auto lock = app->lockGame();
+		auto lock = appWindow.lockGame();
 
 		unsigned row = 0;
-		for (const auto &[name, amount]: app->game->inventory)
+		for (const auto &[name, amount]: appWindow.game->inventory)
 			insertRow(name, amount, row++);
 	}
 
 	void InventoryDialog::updateData() {
-		auto lock = app->lockGame();
+		auto lock = appWindow.lockGame();
 
 		std::vector<std::string> removed;
 
 		for (const auto &[name, label]: nameLabels)
-			if (app->game->inventory.count(name) == 0)
+			if (appWindow.game->inventory.count(name) == 0)
 				removed.push_back(name);
 
 		for (const std::string &name: removed) {
@@ -61,7 +64,7 @@ namespace Game2 {
 		}
 
 		unsigned row = 0;
-		for (const auto &[name, amount]: app->game->inventory) {
+		for (const auto &[name, amount]: appWindow.game->inventory) {
 			if (nameLabels.count(name) == 0) {
 				grid.insert_row(row);
 				insertRow(name, amount, row);

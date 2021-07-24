@@ -1,9 +1,10 @@
-#include "App.h"
+#include "Game.h"
 #include "UI.h"
 #include "tab/TravelTab.h"
+#include "ui/AppWindow.h"
 
 namespace Game2 {
-	TravelTab::TravelTab(App &app_): app(app_) {
+	TravelTab::TravelTab(AppWindow &app_window): appWindow(app_window) {
 		grid.set_row_homogeneous(true);
 		grid.set_column_homogeneous(true);
 		grid.set_row_spacing(5);
@@ -14,27 +15,27 @@ namespace Game2 {
 				Gtk::Button &button = buttons[row * COLUMNS + column];
 				grid.attach(button, column, row);
 				button.signal_clicked().connect([this, row, column] {
-					std::shared_ptr<Region> region = app.game->currentRegionPointer();
+					std::shared_ptr<Region> region = appWindow.game->currentRegionPointer();
 					if (!region)
 						return;
 					const Position pos = getPosition(*region, row, column);
-					if (app.game->regions.count(pos) != 0)
-						app.game->position = pos;
+					if (appWindow.game->regions.count(pos) != 0)
+						appWindow.game->position = pos;
 					else
-						*app.game += Region::generate(*app.game, pos);
-					app.onTravel();
+						*appWindow.game += Region::generate(*appWindow.game, pos);
+					appWindow.onTravel();
 				});
 			}
 		reset();
 	}
 
 	void TravelTab::reset() {
-		if (!app.game)
+		if (!appWindow.game)
 			return;
 
-		auto lock = app.lockGame();
+		auto lock = appWindow.lockGame();
 
-		auto region = app.game->currentRegionPointer();
+		auto region = appWindow.game->currentRegionPointer();
 		if (!region)
 			return;
 
@@ -44,8 +45,8 @@ namespace Game2 {
 				button.set_label("");
 				if (region) {
 					const Position pos = getPosition(*region, row, column);
-					if (app.game->regions.count(pos) != 0)
-						button.set_label(app.game->regions.at(pos)->name);
+					if (appWindow.game->regions.count(pos) != 0)
+						button.set_label(appWindow.game->regions.at(pos)->name);
 				}
 			}
 	}

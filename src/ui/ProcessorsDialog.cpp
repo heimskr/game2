@@ -1,9 +1,11 @@
-#include "App.h"
+#include "Game.h"
+#include "ui/AppWindow.h"
 #include "ui/ProcessorsDialog.h"
 
 namespace Game2 {
-	ProcessorsDialog::ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, App &app_, bool modal):
-	Dialog(title, parent, modal), app(app_) {
+	ProcessorsDialog::ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &app_window,
+	                                   bool modal):
+	Dialog(title, parent, modal), appWindow(app_window) {
 		set_default_size(300, -1);
 		auto &area = *get_content_area();
 		area.set_orientation(Gtk::Orientation::VERTICAL);
@@ -19,7 +21,7 @@ namespace Game2 {
 		grid.set_column_spacing(5);
 		scrolled.set_vexpand(true);
 		scrolled.set_child(grid);
-		auto lock = app.lockGame();
+		auto lock = appWindow.lockGame();
 		auto &name_label = labels.emplace_back("Name");
 		name_label.add_css_class("table-header");
 		name_label.set_xalign(0);
@@ -30,7 +32,7 @@ namespace Game2 {
 		type_label.set_xalign(0);
 		grid.attach(type_label, 1, 0);
 		int row = 0;
-		for (auto &processor: app.game->processors) {
+		for (auto &processor: appWindow.game->processors) {
 			auto &name_label = labels.emplace_back(processor->name);
 			auto &name_gesture = gestures.emplace_back(Gtk::GestureClick::create());
 			name_gesture->signal_pressed().connect([this, processor](int, double, double) {

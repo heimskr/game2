@@ -12,7 +12,7 @@
 #include "tab/Tab.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 	class Area;
 	class Extraction;
 	class Region;
@@ -22,12 +22,12 @@ namespace Game2 {
 			class Rbox: public Gtk::Box {
 				public:
 					Rbox() = delete;
-					Rbox(App &, std::shared_ptr<Area>, const std::string &resource_name, double amount, Extraction *,
-					     std::list<Extraction>::iterator);
+					Rbox(AppWindow &, std::shared_ptr<Area>, const std::string &resource_name, double amount,
+					     Extraction *, std::list<Extraction>::iterator);
 					void updateLabel(const std::string &resource_name, double amount);
 
 				private:
-					App &app;
+					AppWindow &appWindow;
 					std::shared_ptr<Area> area;
 					Gtk::Button extractButton {"Extract"};
 					Gtk::Box labelBox {Gtk::Orientation::HORIZONTAL, 5};
@@ -37,7 +37,7 @@ namespace Game2 {
 					Glib::RefPtr<Gtk::GestureClick> extractionGesture;
 			};
 
-			App &app;
+			AppWindow &appWindow;
 			Gtk::ScrolledWindow scrolled;
 			Gtk::Box box {Gtk::Orientation::VERTICAL}, expandersBox {Gtk::Orientation::VERTICAL};
 			Gtk::Box labelBox {Gtk::Orientation::VERTICAL};
@@ -57,7 +57,7 @@ namespace Game2 {
 			RegionTab() = delete;
 			RegionTab(const RegionTab &) = delete;
 			RegionTab(RegionTab &&) = delete;
-			RegionTab(App &);
+			RegionTab(AppWindow &);
 
 			RegionTab & operator=(const RegionTab &) = delete;
 			RegionTab & operator=(RegionTab &&) = delete;

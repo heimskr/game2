@@ -6,7 +6,7 @@
 #include "defs/RefineryMode.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 	struct CraftingRecipe;
 
 	class RefineryModesDialog: public Gtk::Dialog {
@@ -14,12 +14,11 @@ namespace Game2 {
 			Gtk::ScrolledWindow scrolled;
 			Gtk::Box modesBox {Gtk::Orientation::VERTICAL};
 
-			RefineryModesDialog(const Glib::ustring &title, Gtk::Window &parent, App &, bool modal = true);
+			RefineryModesDialog(const Glib::ustring &title, Gtk::Window &parent, bool modal = true);
 
 			sigc::signal<void(RefineryMode)> signal_submit() const { return signal_submit_; }
 
 		private:
-			App &app;
 			std::vector<Gtk::Label> labels;
 			std::vector<Glib::RefPtr<Gtk::GestureClick>> gestures;
 			sigc::signal<void(RefineryMode)> signal_submit_;

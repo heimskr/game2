@@ -9,7 +9,7 @@
 #include "Processor.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 
 	class ProcessorWidget: public Gtk::Box {
 		public:
@@ -23,7 +23,7 @@ namespace Game2 {
 				Gtk::TreeModelColumn<double> amount;
 			};
 
-			ProcessorWidget(App &, Processor &);
+			ProcessorWidget(AppWindow &, Processor &);
 
 			ProcessorWidget & init();
 			void resetTrees();
@@ -32,7 +32,7 @@ namespace Game2 {
 			virtual void update() {}
 
 		protected:
-			App &app;
+			AppWindow &appWindow;
 			Processor &processor;
 			Gtk::Box topBox {Gtk::Orientation::HORIZONTAL};
 			Gtk::Button addResourceButton;

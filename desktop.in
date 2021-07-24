@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Trade Game
+GenericName=Trade Game
+Comment=
+Icon=
+StartupNotify=true
+Exec=@bindir@/game2 %U
+Categories=GNOME;GTK;Game

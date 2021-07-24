@@ -1,10 +1,9 @@
-#include "App.h"
 #include "UI.h"
 #include "ui/RefineryModesDialog.h"
 
 namespace Game2 {
-	RefineryModesDialog::RefineryModesDialog(const Glib::ustring &title, Gtk::Window &parent, App &app_, bool modal):
-	Dialog(title, parent, modal), app(app_) {
+	RefineryModesDialog::RefineryModesDialog(const Glib::ustring &title, Gtk::Window &parent, bool modal):
+	Dialog(title, parent, modal) {
 		set_default_size(200, 100);
 		scrolled.set_vexpand(true);
 		scrolled.set_child(modesBox);

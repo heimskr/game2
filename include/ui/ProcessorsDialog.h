@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 	class Processor;
 
 	class ProcessorsDialog: public Gtk::Dialog {
@@ -16,10 +16,10 @@ namespace Game2 {
 			Gtk::Grid grid;
 			sigc::signal<void(std::shared_ptr<Processor>)> signal_submit() const { return signal_submit_; }
 
-			ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, App &, bool modal = true);
+			ProcessorsDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &, bool modal = true);
 
 		private:
-			App &app;
+			AppWindow &appWindow;
 			bool done = false;
 			std::vector<Gtk::Label> labels;
 			std::vector<Glib::RefPtr<Gtk::GestureClick>> gestures;

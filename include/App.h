@@ -1,79 +1,34 @@
 #pragma once
 
 #include "Toolkit.h"
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <unordered_set>
 
 #include "Game.h"
+#include "ui/AppWindow.h"
 
 namespace Game2 {
-	class Tab;
-	class RegionTab;
-	class TravelTab;
-	class InventoryTab;
-	class ExtractionsTab;
-	class ConversionTab;
-	class MarketTab;
-	class AutomationTab;
-	class CraftingTab;
-
-	class App {
+	class App: public Gtk::Application {
 		public:
-			Glib::RefPtr<Gtk::Application> gtkApp;
 			Glib::RefPtr<Gtk::Builder> builder;
-			Glib::RefPtr<Gtk::CssProvider> cssProvider;
 
-			std::unique_ptr<Gtk::ApplicationWindow> mainWindow;
-			Gtk::HeaderBar *header;
-			std::unique_ptr<Gtk::Notebook> notebook;
+			static Glib::RefPtr<App> create();
 
-			Glib::Dispatcher updateDispatcher, moneyDispatcher;
-			std::shared_ptr<Game> game;
-			std::unique_ptr<Gtk::Dialog> dialog;
-			std::recursive_mutex gameMutex;
-			std::thread tickThread;
-			std::shared_ptr<RegionTab> regionTab;
-			std::shared_ptr<TravelTab> travelTab;
-			std::shared_ptr<InventoryTab> inventoryTab;
-			std::shared_ptr<ExtractionsTab> extractionsTab;
-			std::shared_ptr<ConversionTab> conversionTab;
-			std::shared_ptr<MarketTab> marketTab;
-			std::shared_ptr<AutomationTab> automationTab;
-			std::shared_ptr<CraftingTab> craftingTab;
-			bool alive = true;
+			void on_startup() override;
+			void on_activate() override;
 
-			std::vector<Gtk::Button> travelButtons;
-			std::vector<std::unique_ptr<Gtk::Widget>> areaWidgets;
-			std::vector<Gtk::Widget *> titleWidgets;
+			AppWindow * create_window();
 
-			App(Glib::RefPtr<Gtk::Application>);
-
-			void quit();
-			void delay(std::function<void()>);
-			void alert(const Glib::ustring &message, Gtk::MessageType = Gtk::MessageType::INFO, bool modal = true,
-					bool use_markup = false);
-			void error(const Glib::ustring &message, bool modal = true, bool use_markup = false);
-
-			std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }
-
-			int run(int argc, char **argv);
-			void resetTitle();
-			void onTravel();
-			void update();
+		protected:
+			App();
 
 		private:
-			static constexpr int ROWS = 5, COLUMNS = 5;
-
-			std::vector<std::shared_ptr<Tab>> tabs;
-			std::shared_ptr<Tab> activeTab;
-			sigc::connection notebookConnection;
-
-			void init();
-			void connectSave();
-			void addTab(std::shared_ptr<Tab>);
-			void hackWindow();
+			static constexpr int64_t UPDATE_PERIOD = 25;
+			void on_hide_window(Gtk::Window *window);
 	};
 
-	extern std::unique_ptr<App> app;
+	extern Glib::RefPtr<App> global_app;
 }
