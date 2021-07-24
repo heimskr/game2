@@ -63,7 +63,7 @@ namespace Game2 {
 		if (path.size() != 1)
 			return;
 
-		// I could just use outputModel->children(), but that would require creating a new container,
+		// I could just use inputModel->children(), but that would require creating a new container,
 		// whereas this (presumably) doesn't.
 		if (auto iter = inputView.get_selection()->get_selected())
 			remove(iter->get_value(columns.resource), processor.input);
