@@ -45,7 +45,6 @@ namespace Game2 {
 		add_action("open", Gio::ActionMap::ActivateSlot([this] {
 			resetTitle();
 			activeTab->onBlur();
-			notebook.show();
 			auto lock = lockGame();
 			auto *chooser = new Gtk::FileChooserDialog(*this, "Choose File", Gtk::FileChooser::Action::OPEN, true);
 			dialog.reset(chooser);
@@ -62,6 +61,7 @@ namespace Game2 {
 							auto lock = lockGame();
 							game = Game::load(*this, chooser->get_file()->get_path());
 							init();
+							notebook.show();
 						} catch (std::exception &err) {
 							error("Error loading save: " + std::string(err.what()));
 						}
