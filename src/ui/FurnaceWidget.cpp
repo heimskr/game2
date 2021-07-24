@@ -1,4 +1,7 @@
+#include <cassert>
+
 #include "Game.h"
+#include "processor/Furnace.h"
 #include "ui/AppWindow.h"
 #include "ui/FurnaceWidget.h"
 
@@ -15,5 +18,15 @@ namespace Game2 {
 				}
 			shrink(appWindow.game->inventory);
 		});
+		topBox.append(fuelLabel);
+	}
+
+	void FurnaceWidget::update() {
+		Furnace *furnace = dynamic_cast<Furnace *>(&processor);
+		assert(furnace);
+		if (furnace->fuel != lastFuel) {
+			lastFuel = furnace->fuel;
+			fuelLabel.set_text("(" + niceDouble(furnace->fuel) + " fuel)");
+		}
 	}
 }
