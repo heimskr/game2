@@ -33,9 +33,10 @@ namespace Game2 {
 			size_t money = 0;
 			bool cheatsEnabled = false;
 			bool automationEnabled = true;
+			std::string path;
 
 			Game() = delete;
-			Game(App &);
+			Game(App &, const std::string &path_ = DEFAULT_PATH);
 
 			void add(const Resource &);
 			void addResources();
@@ -63,8 +64,9 @@ namespace Game2 {
 			Extraction & extract(Area &, const std::string &name, double amount, double minimum, double rate);
 
 			std::string toString() const;
-			static std::shared_ptr<Game> fromString(App &, const std::string &);
-			static std::shared_ptr<Game> load(App &, const std::string &path = "save.txt");
+			static std::shared_ptr<Game> fromString(App &, const std::string &text,
+			                                        const std::string &path = DEFAULT_PATH);
+			static std::shared_ptr<Game> load(App &, const std::string &path = DEFAULT_PATH);
 			void save();
 
 			Game & operator+=(std::unique_ptr<Region> &&);
@@ -73,6 +75,7 @@ namespace Game2 {
 			const Extraction * getExtraction(const Area &, const std::string &) const;
 
 		private:
+			static constexpr const char *DEFAULT_PATH = "save.txt";
 			double adjust(double to_extract, double in_region, const Extraction &);
 	};
 }

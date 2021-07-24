@@ -14,7 +14,7 @@
 #include "processor/Processors.h"
 
 namespace Game2 {
-	Game::Game(App &app_): app(app_) {
+	Game::Game(App &app_, const std::string &path_): app(app_), path(path_) {
 		addAll();
 	}
 
@@ -329,13 +329,13 @@ namespace Game2 {
 		return out.str();
 	}
 
-	std::shared_ptr<Game> Game::fromString(App &app, const std::string &str) {
+	std::shared_ptr<Game> Game::fromString(App &app, const std::string &str, const std::string &path) {
 		std::vector<std::string> lines = split(str, "\n", true);
 		/** Compliant saves must follow this order beginning at Regions. */
 		enum class Mode {None, Regions, Inventory, CraftingInventory, Position, Extractions, Processors, Automations};
 		Mode mode = Mode::None;
 
-		std::shared_ptr<Game> out = std::make_shared<Game>(app);
+		std::shared_ptr<Game> out = std::make_shared<Game>(app, path);
 
 		for (std::string &line: lines) {
 			if (line.empty() || line == "\r")
@@ -418,7 +418,7 @@ namespace Game2 {
 	}
 
 	void Game::save() {
-		FS::writeFile("save.txt", toString());
+		FS::writeFile(path, toString());
 	}
 
 	Game & Game::operator+=(std::unique_ptr<Region> &&ptr) {
