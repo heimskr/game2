@@ -9,13 +9,31 @@
 
 namespace Game2 {
 	RegionTab::Rbox::Rbox(App &app_, std::shared_ptr<Area> area_, const std::string &resource_name, double amount,
-	                      Extraction *extraction_):
-	Box(Gtk::Orientation::HORIZONTAL, 5), app(app_), area(area_), extraction(extraction_) {
+	                      Extraction *extraction_, std::list<Extraction>::iterator extraction_iter):
+	Box(Gtk::Orientation::HORIZONTAL, 5), app(app_), area(area_), extraction(extraction_),
+	extractionIter(extraction_iter) {
 		append(extractButton);
-		append(label);
+		append(labelBox);
+		labelBox.append(mainLabel);
+		labelBox.append(extractionLabel);
+		labelBox.set_hexpand(true);
 		updateLabel(resource_name, amount);
-		label.set_halign(Gtk::Align::START);
-		label.set_hexpand(true);
+		mainLabel.set_halign(Gtk::Align::START);
+		extractionLabel.set_halign(Gtk::Align::START);
+		extractionLabel.add_css_class("red");
+		extractionGesture = Gtk::GestureClick::create();
+		extractionGesture->signal_pressed().connect([this](int count, double, double) {
+			if (extraction && count == 2) {
+				auto lock = app.lockGame();
+				const std::string resource_name = extraction->resourceName;
+				app.game->extractions.erase(extractionIter);
+				extraction = nullptr;
+				extractionIter = app.game->extractions.end();
+				extractionLabel.set_text("");
+				extractionLabel.hide();
+			}
+		});
+		extractionLabel.add_controller(extractionGesture);
 		extractButton.signal_clicked().connect([this, resource_name] {
 			if (extraction)
 				return;
@@ -60,10 +78,12 @@ namespace Game2 {
 	}
 
 	void RegionTab::Rbox::updateLabel(const std::string &resource_name, double amount) {
-		Glib::ustring markup = Glib::Markup::escape_text(resource_name) + " x " + niceDouble(amount);
-		if (extraction)
-			markup += " <span foreground=\"red\">- " + niceDouble(extraction->rate) + "/s</span>";
-		label.set_markup(markup);
+		mainLabel.set_text(resource_name + " x " + niceDouble(amount));
+		if (extraction) {
+			extractionLabel.set_text("- " + niceDouble(extraction->rate) + "/s");
+			extractionLabel.show();
+		} else
+			extractionLabel.hide();
 	}
 
 	RegionTab::RegionTab(App &app_): app(app_) {
@@ -255,9 +275,10 @@ namespace Game2 {
 					const auto &resource_name = pair.first;
 					const auto &amount = pair.second;
 					resourceSets[area_name].insert(resource_name);
-					Extraction *extraction = app.game->getExtraction(*area, resource_name);
+					decltype(Game::extractions)::iterator extraction_iter;
+					Extraction *extraction = app.game->getExtraction(*area, resource_name, extraction_iter);
 					ebox->append(*(boxMaps[area_name][resource_name] = std::make_shared<Rbox>(app, area, resource_name,
-						amount, extraction)));
+						amount, extraction, extraction_iter)));
 				}
 			}
 		} else {
@@ -288,10 +309,11 @@ namespace Game2 {
 				Rbox *last_rbox = nullptr;
 
 				for (const auto &[resource_name, amount]: area->resources) {
-					Extraction *extraction = app.game->getExtraction(*area, resource_name);
+					decltype(Game::extractions)::iterator extraction_iter;
+					Extraction *extraction = app.game->getExtraction(*area, resource_name, extraction_iter);
 					std::shared_ptr<Rbox> rbox;
 					if (resource_set.count(resource_name) == 0) {
-						rbox = std::make_shared<Rbox>(app, area, resource_name, amount, extraction);
+						rbox = std::make_shared<Rbox>(app, area, resource_name, amount, extraction, extraction_iter);
 						if (!last_rbox) {
 							map.emplace(resource_name, rbox);
 							rbox->insert_after(ebox, *ebox.get_first_child());

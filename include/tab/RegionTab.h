@@ -19,15 +19,22 @@ namespace Game2 {
 
 	class RegionTab: public Tab {
 		public:
-			struct Rbox: public Gtk::Box {
-				App &app;
-				std::shared_ptr<Area> area;
-				Gtk::Button extractButton {"Extract"};
-				Gtk::Label label;
-				Extraction *extraction;
-				Rbox() = delete;
-				Rbox(App &, std::shared_ptr<Area>, const std::string &resource_name, double amount, Extraction *);
-				void updateLabel(const std::string &resource_name, double amount);
+			class Rbox: public Gtk::Box {
+				public:
+					Rbox() = delete;
+					Rbox(App &, std::shared_ptr<Area>, const std::string &resource_name, double amount, Extraction *,
+					     std::list<Extraction>::iterator);
+					void updateLabel(const std::string &resource_name, double amount);
+
+				private:
+					App &app;
+					std::shared_ptr<Area> area;
+					Gtk::Button extractButton {"Extract"};
+					Gtk::Box labelBox {Gtk::Orientation::HORIZONTAL, 5};
+					Gtk::Label mainLabel, extractionLabel;
+					Extraction *extraction;
+					std::list<Extraction>::iterator extractionIter;
+					Glib::RefPtr<Gtk::GestureClick> extractionGesture;
 			};
 
 			App &app;

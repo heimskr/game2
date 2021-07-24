@@ -435,6 +435,17 @@ namespace Game2 {
 		return nullptr;
 	}
 
+	Extraction * Game::getExtraction(const Area &area, const std::string &name,
+	                                 decltype(extractions)::iterator &iter_out) {
+		for (auto iter = extractions.begin(), end = extractions.end(); iter != end; ++iter)
+			if (iter->area == &area && iter->resourceName == name) {
+				iter_out = iter;
+				return &*iter;
+			}
+		iter_out = extractions.end();
+		return nullptr;
+	}
+
 	const Extraction * Game::getExtraction(const Area &area, const std::string &name) const {
 		for (const Extraction &extraction: extractions)
 			if (extraction.area == &area && extraction.resourceName == name)

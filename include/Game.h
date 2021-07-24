@@ -69,6 +69,7 @@ namespace Game2 {
 
 			Game & operator+=(std::unique_ptr<Region> &&);
 			Extraction * getExtraction(const Area &, const std::string &);
+			Extraction * getExtraction(const Area &, const std::string &, decltype(extractions)::iterator &);
 			const Extraction * getExtraction(const Area &, const std::string &) const;
 
 		private:
