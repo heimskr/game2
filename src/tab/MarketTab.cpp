@@ -301,7 +301,7 @@ namespace Game2 {
 					return;
 				}
 
-				auto *dialog = new Gtk::MessageDialog(appWindow, "Amount: " + std::to_string(total_price), false,
+				auto *dialog = new Gtk::MessageDialog(appWindow, "Price: " + std::to_string(total_price), false,
 					Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true);
 				appWindow.dialog.reset(dialog);
 				dialog->signal_response().connect([this, resource_name, total_price, amount, region](int response) {
