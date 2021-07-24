@@ -37,8 +37,6 @@ namespace Game2 {
 
 			Gtk::Widget & getWidget() override { return box; }
 			Glib::ustring getName() override { return "Market"; }
-			void onFocus() override;
-			void onBlur() override;
 
 			void reset();
 			void updateMoney();
@@ -54,7 +52,6 @@ namespace Game2 {
 			Glib::RefPtr<Gtk::ListStore> sellModel, buyModel;
 			Gtk::Label regionMoneyLabel {"Region money"}, yourMoneyLabel {"Your money"}, regionMoney, yourMoney,
 			           errorLabel {"Region has no market."};
-			std::unique_ptr<Gtk::Button> sellButton, buyButton;
 			Columns columns;
 			std::unordered_map<std::string, Gtk::TreeModel::iterator> sellRows, buyRows;
 			std::unordered_set<std::string> previousInventory, previousNonOwned;

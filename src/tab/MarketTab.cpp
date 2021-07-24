@@ -50,27 +50,17 @@ namespace Game2 {
 				column->set_resizable(true);
 			}
 
+		sellView.signal_row_activated().connect([this](const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *) {
+			if (path.size() == 1)
+				sellRow();
+		});
+
+		buyView.signal_row_activated().connect([this](const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *) {
+			if (path.size() == 1)
+				buyRow();
+		});
+
 		reset();
-	}
-
-	void MarketTab::onFocus() {
-		if (!appWindow.game)
-			return;
-
-		sellButton = std::make_unique<Gtk::Button>("Sell");
-		sellButton->signal_clicked().connect(sigc::mem_fun(*this, &MarketTab::sellRow));
-		appWindow.header->pack_start(*sellButton);
-		appWindow.titleWidgets.push_back(sellButton.get());
-
-		buyButton = std::make_unique<Gtk::Button>("Buy");
-		buyButton->signal_clicked().connect(sigc::mem_fun(*this, &MarketTab::buyRow));
-		appWindow.header->pack_start(*buyButton);
-		appWindow.titleWidgets.push_back(buyButton.get());
-	}
-
-	void MarketTab::onBlur() {
-		sellButton.reset();
-		buyButton.reset();
 	}
 
 	void MarketTab::sellRow() {
