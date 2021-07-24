@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <iostream>
 
 #include "App.h"
@@ -53,8 +54,27 @@ namespace Game2 {
 			activeTab->onBlur();
 			notebook->show();
 			auto lock = lockGame();
-			game = Game::load(*this);
-			init();
+			auto *chooser = new Gtk::FileChooserDialog(*mainWindow, "Choose File", Gtk::FileChooser::Action::OPEN, true);
+			dialog.reset(chooser);
+			chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path()));
+			chooser->set_transient_for(*mainWindow);
+			chooser->set_modal(true);
+			chooser->add_button("_Cancel", Gtk::ResponseType::CANCEL);
+			chooser->add_button("_Open", Gtk::ResponseType::OK);
+			chooser->signal_response().connect([this, chooser](int response) {
+				chooser->hide();
+				if (response == Gtk::ResponseType::OK)
+					delay([this, chooser] {
+						try {
+							auto lock = lockGame();
+							game = Game::load(*this, chooser->get_file()->get_path());
+							init();
+						} catch (std::exception &err) {
+							error("Error loading save: " + std::string(err.what()));
+						}
+					});
+			});
+			chooser->show();
 		}));
 
 		// mainWindow->add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));

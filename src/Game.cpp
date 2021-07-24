@@ -411,10 +411,10 @@ namespace Game2 {
 		return out;
 	}
 
-	std::shared_ptr<Game> Game::load(App &app) {
-		if (!FS::fileExists("save.txt"))
+	std::shared_ptr<Game> Game::load(App &app, const std::string &path) {
+		if (!FS::fileExists(path))
 			throw std::runtime_error("Save data doesn't exist");
-		return fromString(app, FS::readFile("save.txt"));
+		return fromString(app, FS::readFile(path));
 	}
 
 	void Game::save() {

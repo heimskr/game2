@@ -13,9 +13,17 @@ namespace FS {
 		return stat(path, &buffer) == 0 && (buffer.st_mode & S_IFDIR) == 0;
 	}
 
+	bool fileExists(const std::string &path) {
+		return fileExists(path.c_str());
+	}
+
 	bool dirExists(const char *path) {
 		struct stat buffer;
 		return stat(path, &buffer) == 0 && (buffer.st_mode & S_IFDIR) == S_IFDIR;
+	}
+
+	bool dirExists(const std::string &path) {
+		return dirExists(path.c_str());
 	}
 
 	std::string readFile(const char *path) {
@@ -29,9 +37,17 @@ namespace FS {
 		return buffer;
 	}
 
+	std::string readFile(const std::string &path) {
+		return readFile(path.c_str());
+	}
+
 	void writeFile(const char *path, const std::string &text) {
 		std::ofstream stream(path);
 		stream << text;
 		stream.close();
+	}
+
+	void writeFile(const std::string &path, const std::string &text) {
+		writeFile(path.c_str(), text);
 	}
 }

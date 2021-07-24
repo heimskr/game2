@@ -64,7 +64,7 @@ namespace Game2 {
 
 			std::string toString() const;
 			static std::shared_ptr<Game> fromString(App &, const std::string &);
-			static std::shared_ptr<Game> load(App &);
+			static std::shared_ptr<Game> load(App &, const std::string &path = "save.txt");
 			void save();
 
 			Game & operator+=(std::unique_ptr<Region> &&);
