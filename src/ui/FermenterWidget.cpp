@@ -1,4 +1,7 @@
+#include <cassert>
+
 #include "Game.h"
+#include "processor/Fermenter.h"
 #include "ui/AppWindow.h"
 #include "ui/FermenterWidget.h"
 
@@ -15,5 +18,15 @@ namespace Game2 {
 				}
 			shrink(appWindow.game->inventory);
 		});
+		topBox.append(yeastLabel);
+	}
+
+	void FermenterWidget::update() {
+		Fermenter *fermenter = dynamic_cast<Fermenter *>(&processor);
+		assert(fermenter);
+		if (fermenter->yeast != lastYeast) {
+			lastYeast = fermenter->yeast;
+			yeastLabel.set_text("(" + niceDouble(fermenter->yeast) + " yeast)");
+		}
 	}
 }

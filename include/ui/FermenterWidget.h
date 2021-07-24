@@ -7,10 +7,14 @@ namespace Game2 {
 		public:
 			using ProcessorWidget::ProcessorWidget;
 
+			void update() override;
+
 		protected:
 			void addExtraButtons() override;
 
 		private:
+			double lastYeast = -1.;
 			Gtk::Button fillButton;
+			Gtk::Label yeastLabel;
 	};
 }
