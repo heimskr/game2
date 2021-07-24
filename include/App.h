@@ -26,7 +26,6 @@ namespace Game2 {
 			App();
 
 		private:
-			static constexpr int64_t UPDATE_PERIOD = 25;
 			void on_hide_window(Gtk::Window *window);
 	};
 

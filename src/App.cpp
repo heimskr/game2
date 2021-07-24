@@ -21,11 +21,11 @@ namespace Game2 {
 				{
 					auto lock = window->lockGame();
 					if (window->game) {
-						window->game->tick(UPDATE_PERIOD / 1000.);
+						window->game->tick(window->updatePeriod / 1000.);
 						window->updateDispatcher.emit();
 					}
 				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_PERIOD));
+				std::this_thread::sleep_for(std::chrono::milliseconds(window->updatePeriod));
 			}
 		});
 		window->signal_hide().connect(sigc::bind(sigc::mem_fun(*this, &App::on_hide_window), window));
@@ -42,7 +42,6 @@ namespace Game2 {
 			window->signal_show().connect([this, window] {
 				window->delay(sigc::mem_fun(*window, &AppWindow::hackWindow));
 			});
-
 			window->present();
 		} catch (const Glib::Error &err) {
 			std::cerr << "App::on_activate(): " << err.what() << std::endl;

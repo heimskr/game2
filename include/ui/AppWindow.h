@@ -40,15 +40,15 @@ namespace Game2 {
 			std::shared_ptr<MarketTab> marketTab;
 			std::shared_ptr<AutomationTab> automationTab;
 			std::shared_ptr<CraftingTab> craftingTab;
+			int64_t updatePeriod = 25;
 
 			AppWindow(BaseObjectType *, const Glib::RefPtr<Gtk::Builder> &);
+
+			~AppWindow();
 
 			static AppWindow * create();
 
 			std::unique_lock<std::recursive_mutex> lockGame() { return std::unique_lock(gameMutex); }
-
-			~AppWindow();
-
 			void init();
 			void update();
 			void resetTitle();
