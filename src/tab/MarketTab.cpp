@@ -269,17 +269,20 @@ namespace Game2 {
 		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
 			appWindow.delay([this, resource_name, response] {
-				double amount;
-				try {
-					amount = parseDouble(response);
-				} catch (std::invalid_argument &) {
-					appWindow.error("Invalid amount.");
-					return;
-				}
-
 				appWindow.gameMutex.lock();
 				auto region = appWindow.game->currentRegionPointer();
-				double in_region = region->allNonOwnedResources()[resource_name];
+				double amount, in_region = region->allNonOwnedResources()[resource_name];
+
+				if (response.empty())
+					amount = in_region;
+				else
+					try {
+						amount = parseDouble(response);
+					} catch (std::invalid_argument &) {
+						appWindow.gameMutex.unlock();
+						appWindow.error("Invalid amount.");
+						return;
+					}
 
 				if (lte(amount, 0) || ltna(in_region, amount)) {
 					appWindow.gameMutex.unlock();
@@ -289,8 +292,8 @@ namespace Game2 {
 
 				const size_t total_price = Stonks::totalBuyPrice(*region, resource_name, amount);
 				if (appWindow.game->money < total_price) {
-					appWindow.error("You don't have enough money.");
 					appWindow.gameMutex.unlock();
+					appWindow.error("You don't have enough money.");
 					return;
 				}
 
