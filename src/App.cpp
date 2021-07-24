@@ -138,8 +138,34 @@ namespace Game2 {
 	void App::connectSave() {
 		mainWindow->add_action("save", Gio::ActionMap::ActivateSlot([this] {
 			auto lock = lockGame();
-			if (game)
-				game->save();
+			if (game) {
+				if (game->path.empty()) {
+					auto *chooser = new Gtk::FileChooserDialog(*mainWindow, "Save Location",
+						Gtk::FileChooser::Action::SAVE, true);
+					dialog.reset(chooser);
+					chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path()));
+					chooser->set_transient_for(*mainWindow);
+					chooser->set_modal(true);
+					chooser->add_button("_Cancel", Gtk::ResponseType::CANCEL);
+					chooser->add_button("_Save", Gtk::ResponseType::OK);
+					chooser->signal_response().connect([this, chooser](int response) {
+						chooser->hide();
+						if (response == Gtk::ResponseType::OK) {
+							auto lock = lockGame();
+							game->path = chooser->get_file()->get_path();
+						}
+					});
+					chooser->show();
+				}
+
+				delay([this] {
+					try {
+						game->save();
+					} catch (std::exception &err) {
+						error("Couldn't save game: " + std::string(err.what()));
+					}
+				});
+			}
 		}));
 	}
 

@@ -269,7 +269,7 @@ namespace Game2 {
 	}
 
 	std::shared_ptr<Game> Game::loadDefaults(App &app) {
-		std::shared_ptr<Game> game = std::make_shared<Game>(app);
+		std::shared_ptr<Game> game = std::make_shared<Game>(app, "");
 		game->regions.clear();
 		Region &home = *game->regions.insert({Position(0, 0), std::make_unique<Region>(*game, NameGen::makeRandomLanguage().makeName(), Position(0, 0), 128)}).first->second;
 		home.greed = 0.25;
