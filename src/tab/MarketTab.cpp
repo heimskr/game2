@@ -45,12 +45,11 @@ namespace Game2 {
 		appendColumn(buyView, "Amount", columns.amount);
 		appendColumn(buyView, "Price", columns.price);
 
-		for (auto *view: {&sellView, &buyView})
-			for (int i = 0, columns = view->get_n_columns(); i < columns; ++i) {
-				auto *column = view->get_column(i);
-				column->set_expand(true);
-				column->set_resizable(true);
-			}
+		for (auto *view: {&sellView, &buyView}) {
+			view->get_column(0)->set_expand(true);
+			for (int i = 0, columns = view->get_n_columns(); i < columns; ++i)
+				view->get_column(i)->set_resizable(true);
+		}
 
 		sellView.signal_row_activated().connect([this](const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *) {
 			if (path.size() == 1)
