@@ -35,7 +35,7 @@ namespace Game2 {
 			CraftingTab & operator=(const CraftingTab &) = delete;
 			CraftingTab & operator=(CraftingTab &&) = delete;
 
-			Gtk::Widget & getWidget() override { return scrolled; }
+			Gtk::Widget & getWidget() override { return treeBox; }
 			Glib::ustring getName() override { return "Crafting"; }
 			void onFocus() override;
 			void onBlur() override;
@@ -44,7 +44,7 @@ namespace Game2 {
 			void update();
 
 		private:
-			Gtk::ScrolledWindow scrolled;
+			Gtk::ScrolledWindow inputScrolled, outputScrolled;
 			Gtk::Box treeBox {Gtk::Orientation::HORIZONTAL};
 			Gtk::TreeView inputView, outputView;
 			Glib::RefPtr<Gtk::ListStore> inputModel, outputModel;

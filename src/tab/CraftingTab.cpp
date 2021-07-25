@@ -9,11 +9,9 @@
 
 namespace Game2 {
 	CraftingTab::CraftingTab(AppWindow &app_window): appWindow(app_window) {
-		scrolled.set_child(treeBox);
-		scrolled.set_vexpand(true);
 		treeBox.set_homogeneous(true);
-		treeBox.append(inputView);
-		treeBox.append(outputView);
+		treeBox.append(inputScrolled);
+		treeBox.append(outputScrolled);
 
 		inputModel = Gtk::ListStore::create(columns);
 		inputView.set_model(inputModel);
@@ -25,12 +23,16 @@ namespace Game2 {
 		appendColumn(outputView, "Output", columns.resource);
 		appendColumn(outputView, "Amount", columns.amount);
 
-		for (auto *view: {&inputView, &outputView})
-			for (int i = 0, columns = view->get_n_columns(); i < columns; ++i) {
-				auto *column = view->get_column(i);
-				column->set_expand(true);
-				column->set_resizable(true);
-			}
+		inputScrolled.set_child(inputView);
+		inputScrolled.set_vexpand(true);
+		outputScrolled.set_child(outputView);
+		outputScrolled.set_vexpand(true);
+
+		for (auto *view: {&inputView, &outputView}) {
+			view->get_column(0)->set_expand(true);
+			for (int i = 0, columns = view->get_n_columns(); i < columns; ++i)
+				view->get_column(i)->set_resizable(true);
+		}
 
 		inputView.signal_row_activated().connect([this](const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *) {
 			if (path.size() == 1)
