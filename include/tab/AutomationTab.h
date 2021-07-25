@@ -8,7 +8,7 @@
 #include "tab/Tab.h"
 
 namespace Game2 {
-	class App;
+	class AppWindow;
 
 	class AutomationTab: public Tab {
 		public:
@@ -25,7 +25,7 @@ namespace Game2 {
 				Gtk::TreeModelColumn<decltype(Game::automationLinks)::iterator> iter;
 			};
 
-			AppWindow &window;
+			AppWindow &appWindow;
 
 			AutomationTab() = delete;
 			AutomationTab(const AutomationTab &) = delete;

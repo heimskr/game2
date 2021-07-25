@@ -10,8 +10,7 @@
 #include "ui/ResourcesDialog.h"
 
 namespace Game2 {
-
-	AutomationTab::AutomationTab(AppWindow &window_): window(window_) {
+	AutomationTab::AutomationTab(AppWindow &app_window): appWindow(app_window) {
 		scrolled.set_vexpand(true);
 		scrolled.set_child(treeView);
 		treeModel = Gtk::ListStore::create(columns);
@@ -29,20 +28,20 @@ namespace Game2 {
 	}
 	
 	void AutomationTab::onFocus() {
-		if (!window.game)
+		if (!appWindow.game)
 			return;
 
 		addButton = std::make_unique<Gtk::Button>();
 		addButton->set_icon_name("list-add-symbolic");
 		addButton->signal_clicked().connect(sigc::mem_fun(*this, &AutomationTab::addLink));
-		window.header->pack_start(*addButton);
-		window.titleWidgets.push_back(addButton.get());
+		appWindow.header->pack_start(*addButton);
+		appWindow.titleWidgets.push_back(addButton.get());
 
 		removeButton = std::make_unique<Gtk::Button>();
 		removeButton->set_icon_name("list-remove-symbolic");
 		removeButton->signal_clicked().connect(sigc::mem_fun(*this, &AutomationTab::removeLink));
-		window.header->pack_start(*removeButton);
-		window.titleWidgets.push_back(removeButton.get());
+		appWindow.header->pack_start(*removeButton);
+		appWindow.titleWidgets.push_back(removeButton.get());
 	}
 
 	void AutomationTab::onBlur() {
@@ -53,11 +52,11 @@ namespace Game2 {
 	void AutomationTab::reset() {
 		treeModel->clear();
 
-		if (!window.game)
+		if (!appWindow.game)
 			return;
 
-		auto lock = window.lockGame();
-		auto &links = window.game->automationLinks;
+		auto lock = appWindow.lockGame();
+		auto &links = appWindow.game->automationLinks;
 
 		for (auto iter = links.begin(), end = links.end(); iter != end; ++iter) {
 			AutomationLink &link = *iter;
@@ -71,62 +70,62 @@ namespace Game2 {
 	}
 
 	void AutomationTab::addLink() {
-		auto *dialog = new ProcessorsDialog("Source Processor", window, window);
-		window.dialog.reset(dialog);
+		auto *dialog = new ProcessorsDialog("Source Processor", appWindow, appWindow);
+		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this](std::shared_ptr<Processor> src) {
 			if (!src)
 				return;
-			window.delay([this, src] {
-				auto *dialog = new ResourcesDialog("Resource", window, window);
-				window.dialog.reset(dialog);
+			appWindow.delay([this, src] {
+				auto *dialog = new ResourcesDialog("Resource", appWindow, appWindow);
+				appWindow.dialog.reset(dialog);
 				dialog->signal_submit().connect([this, src](std::string rtype) {
 					if (rtype.empty())
 						return;
 					// Oh god I'm in callback hell
-					window.delay([this, src, rtype] {
-						auto *dialog = new ProcessorsDialog("Destination Processor", window, window);
-						window.dialog.reset(dialog);
+					appWindow.delay([this, src, rtype] {
+						auto *dialog = new ProcessorsDialog("Destination Processor", appWindow, appWindow);
+						appWindow.dialog.reset(dialog);
 						dialog->signal_submit().connect([this, src, rtype](std::shared_ptr<Processor> dest) {
 							if (!dest)
 								return;
-							window.delay([this, src, rtype, dest] {
-								auto *dialog = new EntryDialog<NumericEntry>("Weight", window, "Weight:");
-								window.dialog.reset(dialog);
+							appWindow.delay([this, src, rtype, dest] {
+								auto *dialog = new EntryDialog<NumericEntry>("Weight", appWindow, "Weight:");
+								appWindow.dialog.reset(dialog);
 								dialog->signal_submit().connect([this, src, rtype, dest](const Glib::ustring &str) {
 									double weight;
 									try {
 										if (lte(weight = parseDouble(str), 0))
 											throw std::invalid_argument("Invalid weight.");
 									} catch (std::invalid_argument &) {
-										window.delay([this] { window.error("Invalid weight."); });
+										appWindow.delay([this] { appWindow.error("Invalid weight."); });
 										return;
 									}
-									auto lock = window.lockGame();
-									window.game->automationLinks.emplace_back(*window.game, src, dest, rtype,
+									auto lock = appWindow.lockGame();
+									appWindow.game->automationLinks.emplace_back(*appWindow.game, src, dest, rtype,
 										weight).setup();
-									window.delay([this, src, rtype, dest] {
-										window.alert("Linked " + src->name + " to " + dest->name + " for " + rtype
+									appWindow.delay([this, src, rtype, dest] {
+										appWindow.alert("Linked " + src->name + " to " + dest->name + " for " + rtype
 											+ ".");
 									});
 									reset();
 								});
-								window.dialog->show();
+								appWindow.dialog->show();
 							});
 						});
-						window.dialog->show();
+						appWindow.dialog->show();
 					});
 				});
-				window.dialog->show();
+				appWindow.dialog->show();
 			});
 		});
-		window.dialog->show();
+		appWindow.dialog->show();
 	}
 
 	void AutomationTab::removeLink() {
 		if (auto iter = treeView.get_selection()->get_selected()) {
 			auto link_iter = iter->get_value(columns.iter);
 			link_iter->cleanup();
-			window.game->automationLinks.erase(link_iter);
+			appWindow.game->automationLinks.erase(link_iter);
 			treeModel->erase(iter);
 		}
 	}
