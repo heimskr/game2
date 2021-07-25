@@ -45,8 +45,14 @@ namespace Game2 {
 				button.set_label("");
 				if (region) {
 					const Position pos = getPosition(*region, row, column);
-					if (appWindow.game->regions.count(pos) != 0)
-						button.set_label(appWindow.game->regions.at(pos)->name);
+					if (appWindow.game->regions.count(pos) != 0) {
+						auto &region = appWindow.game->regions.at(pos);
+						button.set_label(region->name);
+						if (region->occupied())
+							button.add_css_class("bold");
+						else
+							button.remove_css_class("bold");
+					}
 				}
 			}
 	}
