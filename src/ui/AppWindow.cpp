@@ -132,15 +132,15 @@ namespace Game2 {
 
 	void AppWindow::init() {
 		onTravel();
-		regionTab->reset();
-		travelTab->reset();
-		inventoryTab->update();
+		     regionTab->reset();
+		     travelTab->reset();
+		  inventoryTab->update();
 		extractionsTab->reset();
-		conversionTab->reset();
-		marketTab->reset();
-		automationTab->reset();
-		craftingTab->reset();
-		activeTab->onFocus();
+		 conversionTab->reset();
+		     marketTab->reset();
+		 automationTab->reset();
+		   craftingTab->reset();
+		     activeTab->onFocus();
 		connectSave();
 	}
 
@@ -148,11 +148,12 @@ namespace Game2 {
 		if (dialog)
 			if (auto *udialog = dynamic_cast<UpdatingDialog *>(dialog.get()))
 				udialog->updateData();
-		travelTab->reset();
-		inventoryTab->update();
-		regionTab->update();
+
+		    travelTab->reset();
+		 inventoryTab->update();
+		    regionTab->update();
 		conversionTab->update();
-		marketTab->update();
+		    marketTab->update();
 	}
 
 	void AppWindow::resetTitle() {
@@ -181,10 +182,10 @@ namespace Game2 {
 	}
 
 	void AppWindow::onTravel() {
-		regionTab->update();
-		travelTab->reset();
+		     regionTab->update();
+		     travelTab->reset();
 		extractionsTab->reset();
-		marketTab->reset();
+		     marketTab->reset();
 	}
 
 	void AppWindow::hackWindow() {
