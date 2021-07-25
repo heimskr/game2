@@ -10,10 +10,6 @@ namespace Game2 {
 
 	class ResourcesDialog: public Gtk::Dialog {
 		public:
-			Gtk::Button cancel {"Cancel"};
-			Gtk::ScrolledWindow scrolled;
-			Gtk::Box resourcesBox {Gtk::Orientation::VERTICAL};
-
 			ResourcesDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &, bool modal = true);
 
 			sigc::signal<void(const std::string &)> signal_submit() const { return signal_submit_; }
@@ -21,6 +17,9 @@ namespace Game2 {
 		private:
 			AppWindow &appWindow;
 			bool done = false;
+			Gtk::Button cancel {"Cancel"};
+			Gtk::ScrolledWindow scrolled;
+			Gtk::Box resourcesBox {Gtk::Orientation::VERTICAL};
 			std::vector<Gtk::Label> labels;
 			std::vector<Glib::RefPtr<Gtk::GestureClick>> gestures;
 			sigc::signal<void(const std::string &)> signal_submit_;
