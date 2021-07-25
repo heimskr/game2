@@ -100,7 +100,7 @@ namespace Game2 {
 							return;
 						}
 
-						auto *dialog = new ProcessorTypeDialog("Procesors", appWindow, appWindow);
+						auto *dialog = new ProcessorTypeDialog("Processors", appWindow, appWindow);
 						appWindow.dialog.reset(dialog);
 						dialog->signal_submit().connect([this, resource_name, amount, &in_inventory](auto type) {
 							if (!type.has_value()) {
@@ -125,7 +125,7 @@ namespace Game2 {
 									if (processor->getType() == *type)
 										processor->input[resource_name] += amount / count;
 								in_inventory -= amount;
-								shrink(appWindow.game->inventory);
+								shrink(appWindow.game->inventory, resource_name);
 								appWindow.gameMutex.unlock();
 							});
 						});
