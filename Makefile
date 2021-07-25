@@ -17,8 +17,8 @@ GLIB_COMPILE_RESOURCES = $(shell pkg-config --variable=glib_compile_resources gi
 
 all: $(OUTPUT)
 
-src/resources.cpp: game2.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=src --generate-dependencies game2.gresource.xml)
-	$(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=src --generate-source $<
+src/resources.cpp: game2.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=resources --generate-dependencies game2.gresource.xml)
+	$(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=resources --generate-source $<
 
 %.o: %.cpp
 	@ printf "\e[2m[\e[22;32mCC\e[39;2m]\e[22m $< \e[2m$(BUILDFLAGS)\e[22m\n"
