@@ -189,7 +189,7 @@ namespace Game2 {
 			for (const auto &pair: region.areas) {
 				const std::string &area_name = pair.first;
 				std::shared_ptr<Area> area = pair.second;
-				Glib::ustring expander_text = area->name;
+				Glib::ustring expander_text = Glib::Markup::escape_text(area->name);
 				if (area->playerOwned)
 					expander_text = "<span foreground=\"green\">" + expander_text + "</span>";
 				expander_text += " (" + std::to_string(area->size) + ")";
