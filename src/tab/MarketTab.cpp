@@ -23,12 +23,14 @@ namespace Game2 {
 		topGrid.set_row_spacing(5);
 		topGrid.set_column_spacing(10);
 		box.append(topGrid);
-		scrolled.set_child(tableBox);
+		sellScrolled.set_child(sellView);
+		buyScrolled.set_child(buyView);
 		tableBox.set_homogeneous(true);
-		tableBox.append(sellView);
-		tableBox.append(buyView);
-		scrolled.set_vexpand(true);
-		box.append(scrolled);
+		tableBox.append(sellScrolled);
+		tableBox.append(buyScrolled);
+		sellScrolled.set_vexpand(true);
+		buyScrolled.set_vexpand(true);
+		box.append(tableBox);
 		setMargins(topGrid, 5);
 
 		sellModel = Gtk::ListStore::create(columns);
@@ -87,13 +89,16 @@ namespace Game2 {
 			housing = region->getHousing();
 
 		if (!housing) {
-			scrolled.set_child(errorLabel);
+			removeChildren(tableBox);
+			tableBox.append(errorLabel);
 			regionMoneyLabel.hide();
 			regionMoney.hide();
 			return;
 		}
 
-		scrolled.set_child(tableBox);
+		removeChildren(tableBox);
+		tableBox.append(sellScrolled);
+		tableBox.append(buyScrolled);
 		regionMoneyLabel.show();
 		regionMoney.show();
 

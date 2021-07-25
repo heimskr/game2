@@ -46,7 +46,7 @@ namespace Game2 {
 
 		private:
 			Gtk::Box box {Gtk::Orientation::VERTICAL}, tableBox {Gtk::Orientation::HORIZONTAL};
-			Gtk::ScrolledWindow scrolled;
+			Gtk::ScrolledWindow sellScrolled, buyScrolled;
 			Gtk::Grid topGrid;
 			Gtk::TreeView sellView, buyView;
 			Glib::RefPtr<Gtk::ListStore> sellModel, buyModel;
