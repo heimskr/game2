@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Toolkit.h"
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -71,6 +72,8 @@ namespace Game2 {
 			sigc::connection notebookConnection;
 
 			void connectSave();
+			void saveGame();
+			void choosePath(std::function<void()> after);
 			void addTab(std::shared_ptr<Tab>);
 	};
 }

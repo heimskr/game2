@@ -79,8 +79,6 @@ namespace Game2 {
 			chooser->show();
 		}));
 
-		// add_action("save_as", Gio::ActionMap::ActivateSlot([&] {}));
-
 		     activeTab = regionTab = std::make_shared<RegionTab>(*this);
 		     travelTab = std::make_shared<TravelTab>(*this);
 		  inventoryTab = std::make_shared<InventoryTab>(*this);
@@ -215,35 +213,51 @@ namespace Game2 {
 	void AppWindow::connectSave() {
 		add_action("save", Gio::ActionMap::ActivateSlot([this] {
 			auto lock = lockGame();
-			if (game) {
-				if (game->path.empty()) {
-					auto *chooser = new Gtk::FileChooserDialog(*this, "Save Location", Gtk::FileChooser::Action::SAVE,
-						true);
-					dialog.reset(chooser);
-					chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path().string()));
-					chooser->set_transient_for(*this);
-					chooser->set_modal(true);
-					chooser->add_button("_Cancel", Gtk::ResponseType::CANCEL);
-					chooser->add_button("_Save", Gtk::ResponseType::OK);
-					chooser->signal_response().connect([this, chooser](int response) {
-						chooser->hide();
-						if (response == Gtk::ResponseType::OK) {
-							auto lock = lockGame();
-							game->path = chooser->get_file()->get_path();
-						}
-					});
-					chooser->show();
-				}
-
-				delay([this] {
-					try {
-						game->save();
-					} catch (std::exception &err) {
-						error("Couldn't save game: " + std::string(err.what()));
-					}
-				});
+			if (!game)
+				return;
+			if (game->path.empty()) {
+				choosePath(sigc::mem_fun(*this, &AppWindow::saveGame));
+			} else {
+				auto lock = lockGame();
+				game->save();
 			}
 		}));
+
+		add_action("save_as", Gio::ActionMap::ActivateSlot([this] {
+			auto lock = lockGame();
+			if (!game)
+				return;
+			choosePath(sigc::mem_fun(*this, &AppWindow::saveGame));
+		}));
+	}
+
+	void AppWindow::saveGame() {
+		auto lock = lockGame();
+		try {
+			game->save();
+		} catch (std::exception &err) {
+			const std::string what = err.what();
+			delay([this, what] { error("Couldn't save game: " + what); });
+		}
+	}
+
+	void AppWindow::choosePath(std::function<void()> after) {
+		auto *chooser = new Gtk::FileChooserDialog(*this, "Save Location", Gtk::FileChooser::Action::SAVE, true);
+		dialog.reset(chooser);
+		chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path().string()));
+		chooser->set_transient_for(*this);
+		chooser->set_modal(true);
+		chooser->add_button("_Cancel", Gtk::ResponseType::CANCEL);
+		chooser->add_button("_Save", Gtk::ResponseType::OK);
+		chooser->signal_response().connect([this, chooser, after](int response) {
+			chooser->hide();
+			if (response == Gtk::ResponseType::OK) {
+				auto lock = lockGame();
+				game->path = chooser->get_file()->get_path();
+				after();
+			}
+		});
+		chooser->show();
 	}
 
 	void AppWindow::addTab(std::shared_ptr<Tab> tab) {
