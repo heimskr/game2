@@ -227,7 +227,7 @@ namespace Game2 {
 
 		if (chance(0.36)) {
 			populated = true;
-			const size_t housing_size = randomRange(std::min(5ul, remaining_size), remaining_size / 2);
+			const size_t housing_size = randomRange(std::min(5ull, remaining_size), remaining_size / 2);
 			auto housing = std::make_shared<HousingArea>(region.get(), housing_size);
 			housing->setName("Town").setPlayerOwned(false);
 			*region += housing;
@@ -235,7 +235,7 @@ namespace Game2 {
 		}
 
 		if (remaining_size && chance(0.8)) {
-			const size_t forest_size = randomRange(std::min(4ul, remaining_size), remaining_size / 2);
+			const size_t forest_size = randomRange(std::min(4ull, remaining_size), remaining_size / 2);
 			auto forest = std::make_shared<ForestArea>(region.get(), forest_size);
 			const char *types[] = {"Forest", "Woods", "Weald"};
 			forest->setName(language.makeName() + " " + types[randomRange(0ul, sizeof(types) / sizeof(types[0]) - 1)]);
@@ -245,7 +245,7 @@ namespace Game2 {
 		}
 
 		if (remaining_size && chance(0.5)) {
-			const size_t mountain_size = randomRange(std::min(5ul, remaining_size), remaining_size / 2);
+			const size_t mountain_size = randomRange(std::min(5ull, remaining_size), remaining_size / 2);
 			auto mountain = std::make_shared<MountainArea>(region.get(), mountain_size);
 			mountain->setName("Mountain").setPlayerOwned(!populated);
 			*region += mountain;

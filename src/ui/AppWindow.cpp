@@ -47,7 +47,7 @@ namespace Game2 {
 			auto lock = lockGame();
 			auto *chooser = new Gtk::FileChooserDialog(*this, "Choose File", Gtk::FileChooser::Action::OPEN, true);
 			dialog.reset(chooser);
-			chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path()));
+			chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path().string()));
 			chooser->set_transient_for(*this);
 			chooser->set_modal(true);
 			chooser->add_button("_Cancel", Gtk::ResponseType::CANCEL);
@@ -212,7 +212,7 @@ namespace Game2 {
 					auto *chooser = new Gtk::FileChooserDialog(*this, "Save Location", Gtk::FileChooser::Action::SAVE,
 						true);
 					dialog.reset(chooser);
-					chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path()));
+					chooser->set_current_folder(Gio::File::create_for_path(std::filesystem::current_path().string()));
 					chooser->set_transient_for(*this);
 					chooser->set_modal(true);
 					chooser->add_button("_Cancel", Gtk::ResponseType::CANCEL);

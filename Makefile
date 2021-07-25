@@ -1,14 +1,22 @@
-CPP        := g++
 ifeq ($(BUILD),release)
-	BUILDFLAGS := -O3
+BUILDFLAGS := -O3
 else
-	BUILDFLAGS := -g -O0
+BUILDFLAGS := -g -O0
 endif
-CPPFLAGS   := -Wall -Wextra $(BUILDFLAGS) -std=c++20 -Iinclude -rdynamic
-INCLUDES   := $(shell pkg-config --cflags gtk4 gtkmm-4.0 x11)
-LIBS       := $(shell pkg-config --libs   gtk4 gtkmm-4.0 x11)
-LDFLAGS    := -rdynamic -pthread
+
+ifeq ($(OS),Windows_NT)
+DEPS       := gtk4 gtkmm-4.0
+OUTPUT     := game.exe
+else
+DEPS       := gtk4 gtkmm-4.0 x11
 OUTPUT     := game
+endif
+
+CPP        := g++
+CPPFLAGS   := -Wall -Wextra $(BUILDFLAGS) -std=c++20 -Iinclude
+INCLUDES   := $(shell pkg-config --cflags $(DEPS))
+LIBS       := $(shell pkg-config --libs   $(DEPS))
+LDFLAGS    := -pthread
 SOURCES    := $(shell find src -name \*.cpp) src/resources.cpp
 OBJECTS    := $(SOURCES:.cpp=.o)
 GLIB_COMPILE_RESOURCES = $(shell pkg-config --variable=glib_compile_resources gio-2.0)
