@@ -73,9 +73,20 @@ namespace Game2 {
 	void AutomationTab::rowActivated(const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *column) {
 		auto iter = treeModel->get_iter(path);
 		switch (column->get_sort_column_id()) {
-			case 0: // Source
-
+			case 0: { // Source
+				auto *dialog = new ProcessorsDialog("Source Processor", appWindow, appWindow);
+				appWindow.dialog.reset(dialog);
+				dialog->signal_submit().connect([this, iter](std::shared_ptr<Processor> source) {
+					if (!source)
+						return;
+					appWindow.dialog->hide();
+					auto lock = appWindow.lockGame();
+					iter->set_value(columns.source, Glib::ustring(source->name));
+					iter->get_value(columns.iter)->producer = source;
+				});
+				dialog->show();
 				break;
+			}
 			case 1: // Destination
 
 				break;
