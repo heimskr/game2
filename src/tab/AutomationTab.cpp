@@ -19,7 +19,7 @@ namespace Game2 {
 		appendColumn(treeView, "Destination", columns.destination);
 		appendColumn(treeView, "Resource", columns.resource);
 		appendColumn(treeView, "Weight", columns.weight);
-		for (int i = 0, columns = treeView.get_n_columns(); i < columns; ++i) {
+		for (int i = 0, columns = treeView.get_n_columns(); i < columns && i < 3; ++i) {
 			auto *column = treeView.get_column(i);
 			column->set_expand(true);
 			column->set_resizable(true);
