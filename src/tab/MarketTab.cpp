@@ -79,6 +79,7 @@ namespace Game2 {
 		buyModel->clear();
 		sellModel->clear();
 		updateMoney();
+		valid = false;
 
 		auto lock = appWindow.lockGame();
 		if (!appWindow.game)
@@ -96,6 +97,7 @@ namespace Game2 {
 			return;
 		}
 
+		valid = true;
 		removeChildren(tableBox);
 		tableBox.append(sellScrolled);
 		tableBox.append(buyScrolled);
@@ -207,8 +209,10 @@ namespace Game2 {
 	}
 
 	void MarketTab::update() {
-		updateSell();
-		updateBuy();
+		if (valid) {
+			updateSell();
+			updateBuy();
+		}
 	}
 
 	void MarketTab::sell(const std::string &resource_name) {

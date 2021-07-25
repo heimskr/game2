@@ -45,6 +45,7 @@ namespace Game2 {
 			void update();
 
 		private:
+			bool valid = false;
 			Gtk::Box box {Gtk::Orientation::VERTICAL}, tableBox {Gtk::Orientation::HORIZONTAL};
 			Gtk::ScrolledWindow sellScrolled, buyScrolled;
 			Gtk::Grid topGrid;
