@@ -26,6 +26,8 @@ namespace Game2 {
 		extractionGesture->signal_pressed().connect([this](int count, double, double) {
 			if (extraction && count == 2) {
 				auto lock = appWindow.lockGame();
+				if (extractionIter == appWindow.game->extractions.end())
+					return;
 				const std::string resource_name = extraction->resourceName;
 				appWindow.game->extractions.erase(extractionIter);
 				extraction = nullptr;
@@ -72,6 +74,7 @@ namespace Game2 {
 							return;
 						}
 						extraction = &appWindow.game->extract(*area, resource_name, chosen, minimum);
+						extractionIter = std::next(appWindow.game->extractions.end(), -1);
 					});
 					appWindow.dialog->show();
 				});
