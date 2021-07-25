@@ -1,4 +1,6 @@
 #include "Game.h"
+#include "UI.h"
+
 #include "ui/AppWindow.h"
 #include "ui/ProcessorsDialog.h"
 
@@ -7,62 +9,53 @@ namespace Game2 {
 	                                   bool modal):
 	Dialog(title, parent, modal), appWindow(app_window) {
 		set_default_size(300, -1);
-		auto &area = *get_content_area();
-		area.set_orientation(Gtk::Orientation::VERTICAL);
-		area.set_spacing(5);
-		area.set_margin_top(5);
-		area.set_margin_start(5);
-		area.set_margin_end(5);
-		area.set_margin_bottom(5);
-		cancel.set_halign(Gtk::Align::END);
-		cancel.signal_clicked().connect(sigc::mem_fun(*this, &ProcessorsDialog::hide));
-		scrolled.set_size_request(-1, 150);
-		grid.set_row_spacing(5);
-		grid.set_column_spacing(5);
-		scrolled.set_vexpand(true);
-		scrolled.set_child(grid);
-		auto lock = appWindow.lockGame();
-		auto &name_label = labels.emplace_back("Name");
-		name_label.add_css_class("table-header");
-		name_label.set_xalign(0);
-		name_label.set_hexpand(true);
-		grid.attach(name_label, 0, 0);
-		auto &type_label = labels.emplace_back("Type");
-		type_label.add_css_class("table-header");
-		type_label.set_xalign(0);
-		grid.attach(type_label, 1, 0);
-		int row = 0;
-		for (auto &processor: appWindow.game->processors) {
-			auto &name_label = labels.emplace_back(processor->name);
-			auto &name_gesture = gestures.emplace_back(Gtk::GestureClick::create());
-			name_gesture->signal_pressed().connect([this, processor](int, double, double) {
-				signal_submit_.emit(processor);
-			});
-			name_label.add_controller(name_gesture);
-			name_label.set_xalign(0);
-			grid.attach(name_label, 0, ++row);
 
-			auto &type_label = labels.emplace_back(Processor::typeName(processor->getType()));
-			auto &type_gesture = gestures.emplace_back(Gtk::GestureClick::create());
-			type_gesture->signal_pressed().connect([this, processor](int, double, double) {
-				signal_submit_.emit(processor);
-			});
-			type_label.add_controller(type_gesture);
-			type_label.set_xalign(0);
-			grid.attach(type_label, 1, row);
-			
-		}
+		scrolled.set_size_request(-1, 300);
+		scrolled.set_hexpand(true);
+		scrolled.set_vexpand(true);
+		scrolled.set_child(treeView);
+
+		treeModel = Gtk::ListStore::create(columns);
+		treeView.set_model(treeModel);
+		treeView.signal_row_activated().connect(sigc::mem_fun(*this, &ProcessorsDialog::rowActivated));
+
+		auto *column = appendColumn(treeView, "Name", columns.name);
+		column->set_expand(true);
+		column->set_resizable(true);
+		column = appendColumn(treeView, "Type", columns.type);
+		column->set_resizable(true);
+
 		signal_hide().connect([this] {
 			if (!done) {
 				done = true;
 				signal_submit_.emit(nullptr);
 			}
 		});
+
 		signal_close_request().connect([this] {
 			signal_submit_.emit(nullptr);
 			return false;
 		}, true);
-		area.append(scrolled);
-		area.append(cancel);
+
+		reset();
+
+		get_content_area()->append(scrolled);
+	}
+
+	void ProcessorsDialog::reset() {
+		auto lock = appWindow.lockGame();
+		for (auto &processor: appWindow.game->processors) {
+			auto row = *treeModel->append();
+			row[columns.name] = processor->name;
+			row[columns.type] = Processor::typeName(processor->getType());
+			row[columns.processor] = processor;
+		}
+	}
+
+	void ProcessorsDialog::rowActivated(const Gtk::TreeModel::Path &, Gtk::TreeViewColumn *) {
+		if (auto iter = treeView.get_selection()->get_selected()) {
+			hide();
+			signal_submit_.emit(iter->get_value(columns.processor));
+		}
 	}
 }

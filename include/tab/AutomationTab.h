@@ -46,9 +46,9 @@ namespace Game2 {
 		private:
 			Gtk::ScrolledWindow scrolled;
 			std::unique_ptr<Gtk::Button> addButton, removeButton;
-			Columns columns;
 			Gtk::TreeView treeView;
 			Glib::RefPtr<Gtk::ListStore> treeModel;
+			Columns columns;
 
 			void rowActivated(const Gtk::TreeModel::Path &, Gtk::TreeViewColumn *);
 			void addLink();
