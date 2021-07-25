@@ -13,5 +13,3 @@ Tips:
  - If you see a red extraction label (e.g., "<span foreground="red">- 1/s</span>") next to a resource in the Region tab, you can double click it to cancel that extraction.
 
  - Areas you own are colored green in the Region tab.
-
- - It's currently possible to extract resources from regions you don't own. This will be changed later.

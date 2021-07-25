@@ -35,6 +35,8 @@ namespace Game2 {
 			}
 		});
 		extractionLabel.add_controller(extractionGesture);
+		if (!area->playerOwned)
+			extractButton.set_sensitive(false);
 		extractButton.signal_clicked().connect([this, resource_name] {
 			if (extraction)
 				return;
