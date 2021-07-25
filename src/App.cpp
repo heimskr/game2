@@ -13,6 +13,24 @@ namespace Game2 {
 		return Glib::make_refptr_for_instance<App>(new App());
 	}
 
+	void App::on_startup() {
+		Gtk::Application::on_startup();
+	}
+
+	void App::on_activate() {
+		try {
+			auto window = create_window();
+			window->signal_show().connect([this, window] {
+				window->delay(sigc::mem_fun(*window, &AppWindow::hackWindow));
+			});
+			window->present();
+		} catch (const Glib::Error &err) {
+			std::cerr << "App::on_activate(): " << err.what() << std::endl;
+		} catch (const std::exception &err) {
+			std::cerr << "App::on_activate(): " << err.what() << std::endl;
+		}
+	}
+
 	AppWindow * App::create_window() {
 		AppWindow *window = AppWindow::create();
 		add_window(*window);
@@ -32,22 +50,13 @@ namespace Game2 {
 		return window;
 	}
 
-	void App::on_startup() {
-		Gtk::Application::on_startup();
+	const char * App::get_text(const std::string &path, gsize &size) {
+		return reinterpret_cast<const char *>(Gio::Resource::lookup_data_global(path)->get_data(size));
 	}
 
-	void App::on_activate() {
-		try {
-			auto window = create_window();
-			window->signal_show().connect([this, window] {
-				window->delay(sigc::mem_fun(*window, &AppWindow::hackWindow));
-			});
-			window->present();
-		} catch (const Glib::Error &err) {
-			std::cerr << "App::on_activate(): " << err.what() << std::endl;
-		} catch (const std::exception &err) {
-			std::cerr << "App::on_activate(): " << err.what() << std::endl;
-		}
+	const char * App::get_text(const std::string &path) {
+		gsize size;
+		return get_text(path, size);
 	}
 
 	void App::on_hide_window(Gtk::Window *window) {

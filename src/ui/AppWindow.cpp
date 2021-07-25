@@ -11,6 +11,7 @@
 #include "tab/MarketTab.h"
 #include "tab/AutomationTab.h"
 #include "tab/CraftingTab.h"
+#include "tab/HelpTab.h"
 
 #ifdef __linux__
 #include <gtk-4.0/gdk/x11/gdkx.h>
@@ -80,6 +81,7 @@ namespace Game2 {
 		     marketTab = std::make_shared<MarketTab>(*this);
 		 automationTab = std::make_shared<AutomationTab>(*this);
 		   craftingTab = std::make_shared<CraftingTab>(*this);
+		       helpTab = std::make_shared<HelpTab>(*this);
 
 		addTab(regionTab);
 		addTab(travelTab);
@@ -89,6 +91,7 @@ namespace Game2 {
 		addTab(marketTab);
 		addTab(automationTab);
 		addTab(craftingTab);
+		addTab(helpTab);
 
 		notebook.signal_unmap().connect([this] {
 			notebookConnection.disconnect();

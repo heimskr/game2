@@ -22,6 +22,9 @@ namespace Game2 {
 
 			AppWindow * create_window();
 
+			static const char * get_text(const std::string &path, gsize &);
+			static const char * get_text(const std::string &path);
+
 		protected:
 			App();
 

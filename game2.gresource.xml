@@ -3,5 +3,6 @@
 	<gresource prefix="/com/heimskr/game2">
 		<file preprocess="xml-stripblanks">window.ui</file>
 		<file>style.css</file>
+		<file>help.txt</file>
 	</gresource>
 </gresources>
