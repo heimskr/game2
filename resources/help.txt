@@ -8,6 +8,10 @@ Tips:
 
  - Some resources won't replenish in an area if they drop below a certain threshold. For fish and humans, the threshold is two. Wood replenishes in a forest as long as there's some amount left, but the replenishment speed is proportional to the amount of wood present.
 
+ - Double click a resource in the Market tab to sell/buy it. Double click a resource in the input table of the Crafting tab to move it back to your inventory, or in the output table to craft it. Double click a resource in the Conversion tab to move it to your inventory.
+
+ - If you see a red extraction label (e.g., "<span foreground="red">- 1/s</span>") next to a resource in the Region tab, you can double click it to cancel that extraction.
+
  - Areas you own are colored green in the Region tab.
 
  - It's currently possible to extract resources from regions you don't own. This will be changed later.
