@@ -189,7 +189,12 @@ namespace Game2 {
 			for (const auto &pair: region.areas) {
 				const std::string &area_name = pair.first;
 				std::shared_ptr<Area> area = pair.second;
-				Gtk::Expander &expander = expanders.emplace_back(area->name + " (" + std::to_string(area->size) + ")");
+				Glib::ustring expander_text = area->name;
+				if (area->playerOwned)
+					expander_text = "<span foreground=\"green\">" + expander_text + "</span>";
+				expander_text += " (" + std::to_string(area->size) + ")";
+				Gtk::Expander &expander = expanders.emplace_back(expander_text);
+				expander.set_use_markup(true);
 				expandersBox.append(expander);
 				expander.set_margin_bottom(10);
 				expander.set_expanded(true);

@@ -8,4 +8,6 @@ Tips:
 
  - Some resources won't replenish in an area if they drop below a certain threshold. For fish and humans, the threshold is two. Wood replenishes in a forest as long as there's some amount left, but the replenishment speed is proportional to the amount of wood present.
 
+ - Areas you own are colored green in the Region tab.
+
  - It's currently possible to extract resources from regions you don't own. This will be changed later.
