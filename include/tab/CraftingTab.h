@@ -49,7 +49,7 @@ namespace Game2 {
 			Gtk::TreeView inputView, outputView;
 			Glib::RefPtr<Gtk::ListStore> inputModel, outputModel;
 			Columns columns;
-			std::unique_ptr<Gtk::Button> addButton, removeButton, craftButton, helpButton;
+			std::unique_ptr<Gtk::Button> addButton, helpButton;
 			std::unordered_set<const CraftingRecipe *> craftingOutput;
 			std::unordered_map<std::string, Gtk::TreeModel::iterator> inputRows;
 			std::unordered_map<const CraftingRecipe *, Gtk::TreeModel::iterator> outputRows;
@@ -58,7 +58,7 @@ namespace Game2 {
 			void craft(const CraftingRecipe *);
 			void add();
 			void remove();
-			void craftClicked();
+			void craftRow();
 			void computeCraftingOutput();
 			void showHelp();
 	};

@@ -32,6 +32,16 @@ namespace Game2 {
 				column->set_resizable(true);
 			}
 
+		inputView.signal_row_activated().connect([this](const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *) {
+			if (path.size() == 1)
+				remove();
+		});
+
+		outputView.signal_row_activated().connect([this](const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *) {
+			if (path.size() == 1)
+				craftRow();
+		});
+
 		reset(false);
 	}
 
@@ -163,7 +173,7 @@ namespace Game2 {
 		}
 	}
 
-	void CraftingTab::craftClicked() {
+	void CraftingTab::craftRow() {
 		if (auto iter = outputView.get_selection()->get_selected())
 			craft(iter->get_value(columns.recipe));
 	}
@@ -185,18 +195,6 @@ namespace Game2 {
 		appWindow.header->pack_start(*addButton);
 		appWindow.titleWidgets.push_back(addButton.get());
 
-		removeButton = std::make_unique<Gtk::Button>();
-		removeButton->set_icon_name("list-remove-symbolic");
-		removeButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::remove));
-		appWindow.header->pack_start(*removeButton);
-		appWindow.titleWidgets.push_back(removeButton.get());
-
-		craftButton = std::make_unique<Gtk::Button>();
-		craftButton->set_icon_name("applications-engineering-symbolic"); // Probably confusing with other icon sets.
-		craftButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::craftClicked));
-		appWindow.header->pack_start(*craftButton);
-		appWindow.titleWidgets.push_back(craftButton.get());
-
 		helpButton = std::make_unique<Gtk::Button>();
 		helpButton->set_icon_name("help-browser-symbolic");
 		helpButton->signal_clicked().connect(sigc::mem_fun(*this, &CraftingTab::showHelp));
@@ -206,8 +204,6 @@ namespace Game2 {
 
 	void CraftingTab::onBlur() {
 		addButton.reset();
-		removeButton.reset();
-		craftButton.reset();
 		helpButton.reset();
 	}
 
