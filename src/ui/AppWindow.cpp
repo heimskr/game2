@@ -68,17 +68,11 @@ namespace Game2 {
 						}
 					});
 			});
-			chooser->signal_show().connect([chooser] {
-				std::thread th = std::thread([chooser] {
-					if (std::filesystem::exists("save.txt")) {
-						// Hopefully this should be enough.
-						// If I don't use a delay, something causes an "Operation was cancelled" error.
-						std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			chooser->signal_show().connect([this, chooser] {
+				delay([chooser] {
+					if (std::filesystem::exists("save.txt"))
 						chooser->set_file(Gio::File::create_for_path("save.txt"));
-					}
 				});
-
-				th.detach();
 			});
 			chooser->show();
 		}));
