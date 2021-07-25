@@ -77,9 +77,9 @@ namespace Game2 {
 				auto *dialog = new ProcessorsDialog("Source Processor", appWindow, appWindow);
 				appWindow.dialog.reset(dialog);
 				dialog->signal_submit().connect([this, iter](std::shared_ptr<Processor> source) {
+					appWindow.dialog->hide();
 					if (!source)
 						return;
-					appWindow.dialog->hide();
 					auto lock = appWindow.lockGame();
 					iter->set_value(columns.source, Glib::ustring(source->name));
 					iter->get_value(columns.iter)->producer = source;
@@ -87,9 +87,20 @@ namespace Game2 {
 				dialog->show();
 				break;
 			}
-			case 1: // Destination
-
+			case 1: { // Destination
+				auto *dialog = new ProcessorsDialog("Destination Processor", appWindow, appWindow);
+				appWindow.dialog.reset(dialog);
+				dialog->signal_submit().connect([this, iter](std::shared_ptr<Processor> destination) {
+					appWindow.dialog->hide();
+					if (!destination)
+						return;
+					auto lock = appWindow.lockGame();
+					iter->set_value(columns.destination, Glib::ustring(destination->name));
+					iter->get_value(columns.iter)->consumer = destination;
+				});
+				dialog->show();
 				break;
+			}
 			case 2: { // Resource
 				auto *dialog = new ResourcesDialog("Resource", appWindow, appWindow);
 				appWindow.dialog.reset(dialog);
