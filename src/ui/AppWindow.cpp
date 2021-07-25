@@ -69,6 +69,8 @@ namespace Game2 {
 					});
 			});
 			chooser->signal_show().connect([this, chooser] {
+				chooser->set_default_size(get_width() - 40, get_height() - 40);
+				chooser->set_size_request(get_width() - 40, get_height() - 40);
 				delay([chooser] {
 					if (std::filesystem::exists("save.txt"))
 						chooser->set_file(Gio::File::create_for_path("save.txt"));
