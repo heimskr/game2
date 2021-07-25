@@ -75,25 +75,31 @@ namespace Game2 {
 					"Amount of " + resource_name + " to distribute:");
 				dialog->signal_submit().connect([this, resource_name](const Glib::ustring &amount_text) {
 					appWindow.delay([this, resource_name, amount_text] {
-						double amount;
-						try {
-							amount = parseDouble(amount_text);
-						} catch (std::invalid_argument &) {
-							appWindow.error("Invalid amount.");
-							return;
-						}
 						appWindow.gameMutex.lock();
 						if (appWindow.game->inventory.count(resource_name) == 0) {
 							appWindow.gameMutex.unlock();
 							appWindow.error("You don't have any of that resource.");
 							return;
 						}
-						double &in_inventory = appWindow.game->inventory.at(resource_name);
+
+						double amount, &in_inventory = appWindow.game->inventory.at(resource_name);
+						if (amount_text.empty())
+							amount = in_inventory;
+						else
+							try {
+								amount = parseDouble(amount_text);
+							} catch (std::invalid_argument &) {
+								appWindow.gameMutex.unlock();
+								appWindow.error("Invalid amount.");
+								return;
+							}
+
 						if (lte(amount, 0) || ltna(in_inventory, amount)) {
 							appWindow.gameMutex.unlock();
 							appWindow.error("You don't have enough of that resource.");
 							return;
 						}
+
 						auto *dialog = new ProcessorTypeDialog("Procesors", appWindow, appWindow);
 						appWindow.dialog.reset(dialog);
 						dialog->signal_submit().connect([this, resource_name, amount, &in_inventory](auto type) {
