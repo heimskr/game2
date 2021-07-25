@@ -24,6 +24,7 @@ namespace Game2 {
 			column->set_expand(true);
 			column->set_resizable(true);
 		}
+		treeView.signal_row_activated().connect(sigc::mem_fun(*this, &AutomationTab::rowActivated));
 		reset();
 	}
 	
@@ -69,6 +70,32 @@ namespace Game2 {
 		}
 	}
 
+	void AutomationTab::rowActivated(const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *column) {
+		auto iter = treeModel->get_iter(path);
+		switch (column->get_sort_column_id()) {
+			case 0: // Source
+
+				break;
+			case 1: // Destination
+
+				break;
+			case 2: { // Resource
+				auto *dialog = new ResourcesDialog("Resource", appWindow, appWindow);
+				appWindow.dialog.reset(dialog);
+				dialog->signal_submit().connect([this, iter](const std::string &rtype) {
+					auto lock = appWindow.lockGame();
+					iter->set_value(columns.resource, Glib::ustring(rtype));
+					iter->get_value(columns.iter)->resourceName = rtype;
+				});
+				dialog->show();
+				break;
+			}
+			case 3: // Weight
+
+				break;
+		}
+	}
+
 	void AutomationTab::addLink() {
 		auto *dialog = new ProcessorsDialog("Source Processor", appWindow, appWindow);
 		appWindow.dialog.reset(dialog);
@@ -78,7 +105,7 @@ namespace Game2 {
 			appWindow.delay([this, src] {
 				auto *dialog = new ResourcesDialog("Resource", appWindow, appWindow);
 				appWindow.dialog.reset(dialog);
-				dialog->signal_submit().connect([this, src](std::string rtype) {
+				dialog->signal_submit().connect([this, src](const std::string &rtype) {
 					if (rtype.empty())
 						return;
 					// Oh god I'm in callback hell

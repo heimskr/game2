@@ -16,13 +16,13 @@ namespace Game2 {
 
 			ResourcesDialog(const Glib::ustring &title, Gtk::Window &parent, AppWindow &, bool modal = true);
 
-			sigc::signal<void(std::string)> signal_submit() const { return signal_submit_; }
+			sigc::signal<void(const std::string &)> signal_submit() const { return signal_submit_; }
 
 		private:
 			AppWindow &appWindow;
 			bool done = false;
 			std::vector<Gtk::Label> labels;
 			std::vector<Glib::RefPtr<Gtk::GestureClick>> gestures;
-			sigc::signal<void(std::string)> signal_submit_;
+			sigc::signal<void(const std::string &)> signal_submit_;
 	};
 }

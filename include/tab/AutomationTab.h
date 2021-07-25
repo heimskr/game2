@@ -49,6 +49,7 @@ namespace Game2 {
 			Gtk::TreeView treeView;
 			Glib::RefPtr<Gtk::ListStore> treeModel;
 
+			void rowActivated(const Gtk::TreeModel::Path &, Gtk::TreeViewColumn *);
 			void addLink();
 			void removeLink();
 	};
