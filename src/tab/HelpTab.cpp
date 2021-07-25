@@ -10,10 +10,11 @@ namespace Game2 {
 		scrolled.set_child(textWidget);
 		scrolled.set_hexpand(true);
 		scrolled.set_vexpand(true);
-		textWidget.set_text(App::get_text("/com/heimskr/game2/help.txt"));
+		textWidget.set_markup(App::get_text("/com/heimskr/game2/help.txt"));
 		textWidget.set_halign(Gtk::Align::START);
 		textWidget.set_valign(Gtk::Align::START);
 		textWidget.set_selectable(true);
+		textWidget.set_justify(Gtk::Justification::FILL);
 		textWidget.set_wrap(true);
 		textWidget.set_focusable(false);
 		textWidget.set_hexpand(true);
