@@ -65,7 +65,7 @@ namespace Game2 {
 			row[columns.source] = link.producer->name;
 			row[columns.destination] = link.consumer->name;
 			row[columns.resource] = link.resourceName;
-			row[columns.weight] = niceDouble(link.weight);
+			row[columns.weight] = link.weight;
 			row[columns.iter] = iter;
 		}
 	}
@@ -112,9 +112,26 @@ namespace Game2 {
 				dialog->show();
 				break;
 			}
-			case 3: // Weight
-
+			case 3: { // Weight
+				auto *dialog = new EntryDialog<NumericEntry>("Weight", appWindow, "Weight:");
+				appWindow.dialog.reset(dialog);
+				dialog->signal_submit().connect([this, iter](const Glib::ustring &response) {
+					double weight = 1;
+					if (!response.empty())
+						try {
+							if (lte(weight = parseDouble(response), 0))
+								throw std::invalid_argument("Invalid weight.");
+						} catch (const std::invalid_argument &) {
+							appWindow.delay([this] { appWindow.error("Invalid weight."); });
+							return;
+						}
+					auto lock = appWindow.lockGame();
+					iter->set_value(columns.weight, weight);
+					iter->get_value(columns.iter)->weight = weight;
+				});
+				dialog->show();
 				break;
+			}
 		}
 	}
 

@@ -21,7 +21,8 @@ namespace Game2 {
 					add(iter);
 				}
 
-				Gtk::TreeModelColumn<Glib::ustring> source, destination, resource, weight;
+				Gtk::TreeModelColumn<Glib::ustring> source, destination, resource;
+				Gtk::TreeModelColumn<double> weight;
 				Gtk::TreeModelColumn<decltype(Game::automationLinks)::iterator> iter;
 			};
 
