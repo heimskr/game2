@@ -6,3 +6,7 @@ game
 save*.txt
 src/resources.cpp
 *.exe
+ldd.txt
+/game2
+/game2.zip
+
