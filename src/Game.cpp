@@ -289,7 +289,9 @@ namespace Game2 {
 		home += mountain;
 		home += lake;
 		home += farmland;
-		game->processors.push_back(std::make_shared<Furnace>(*game));
+		auto furnace = std::make_shared<Furnace>(*game);
+		furnace->setName("Furnace");
+		game->processors.push_back(furnace);
 		Logger::info("Loaded default data.");
 		return game;
 	}
