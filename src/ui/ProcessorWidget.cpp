@@ -210,12 +210,15 @@ namespace Game2 {
 					"Amount of " + resource_name + " to transfer:");
 				dialog->signal_submit().connect([this, resource_name](const Glib::ustring &amount_text) {
 					double amount;
-					try {
-						amount = parseDouble(amount_text);
-					} catch (std::invalid_argument &) {
-						appWindow.delay([this] { appWindow.error("Invalid amount."); });
-						return;
-					}
+					if (amount_text.empty())
+						amount = appWindow.game->inventory[resource_name];
+					else
+						try {
+							amount = parseDouble(amount_text);
+						} catch (std::invalid_argument &) {
+							appWindow.delay([this] { appWindow.error("Invalid amount."); });
+							return;
+						}
 					if (insert(resource_name, amount))
 						updateTrees();
 				});
