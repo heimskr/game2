@@ -31,10 +31,11 @@ namespace Game2 {
 	}
 
 	void Game::addResources() {
-		add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food", "centrifugable"));
+		add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food", "centrifugable").add(Processor::Type::Fermenter, {0.1, "Cider"}));
 		add(Resource(this, "Blood").setBasePrice(10.).addTypes("liquid", "electrolyzable"));
 		add(Resource(this, "Cellulose").setBasePrice(1.0).addTypes("molecule", "chemical", "electrolyzable"));
 		add(Resource(this, "Charcoal").setBasePrice(1.5).addTypes("fuel"));
+		add(Resource(this, "Cider").setBasePrice(18.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Coal").setBasePrice(2.).addTypes("fuel", "smeltable", "electrolyzable").setDefaultExtractionRate(0.5));
 		add(Resource(this, "Crude Oil").setBasePrice(5.));
 		add(Resource(this, "Fish").setBasePrice(5.).addTypes("living", "centrifugable"));
@@ -44,7 +45,7 @@ namespace Game2 {
 		add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron", "smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
 		add(Resource(this, "Lignin").setBasePrice(10.0).addTypes("molecule", "chemical", "electrolyzable"));
 		add(Resource(this, "Malic Acid").setBasePrice(1.0).addTypes("molecule", "chemical", "electrolyzable"));
-		add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol"));
+		add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Microchip").setBasePrice(300.).addTypes("rare spawnable"));
 		add(Resource(this, "Plastic").setBasePrice(2.5));
 		add(Resource(this, "Sand").setBasePrice(0.6).addTypes("smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.25, "Glass"}));
