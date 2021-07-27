@@ -215,7 +215,7 @@ namespace Game2 {
 	}
 
 	void MarketTab::sell(const std::string &resource_name) {
-		auto *dialog = new EntryDialog<NumericEntry>("Sell", appWindow, "Amount to sell:");
+		auto *dialog = new EntryDialog<NumericEntry>(resource_name, appWindow, "Amount to sell:");
 		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
 			appWindow.delay([this, resource_name, response] {
@@ -273,7 +273,7 @@ namespace Game2 {
 	}
 
 	void MarketTab::buy(const std::string &resource_name) {
-		auto *dialog = new EntryDialog<NumericEntry>("Buy", appWindow, "Amount to buy:");
+		auto *dialog = new EntryDialog<NumericEntry>(resource_name, appWindow, "Amount to buy:");
 		appWindow.dialog.reset(dialog);
 		dialog->signal_submit().connect([this, resource_name](const Glib::ustring &response) {
 			appWindow.delay([this, resource_name, response] {
