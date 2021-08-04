@@ -32,6 +32,7 @@ namespace Game2 {
 
 	void Game::addResources() {
 		add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food", "centrifugable").add(Processor::Type::Fermenter, {0.1, "Cider"}));
+		add(Resource(this, "Beer").setBasePrice(20.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Blood").setBasePrice(10.).addTypes("liquid", "electrolyzable"));
 		add(Resource(this, "Cellulose").setBasePrice(1.0).addTypes("molecule", "chemical", "electrolyzable"));
 		add(Resource(this, "Charcoal").setBasePrice(1.5).addTypes("fuel"));
@@ -41,6 +42,7 @@ namespace Game2 {
 		add(Resource(this, "Fish").setBasePrice(5.).addTypes("living", "centrifugable"));
 		add(Resource(this, "Glass").setBasePrice(1.));
 		add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "food").add(Processor::Type::Fermenter, {0.1, "Mead"}));
+		add(Resource(this, "Hops").setBasePrice(0.4).addTypes("farmable").add(Processor::Type::Fermenter, {0.1, "Beer"}));
 		add(Resource(this, "Human").setBasePrice(9999.).addTypes("alive", "sapient"));
 		add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron", "smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
 		add(Resource(this, "Lignin").setBasePrice(10.0).addTypes("molecule", "chemical", "electrolyzable"));

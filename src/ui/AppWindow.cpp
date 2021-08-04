@@ -19,7 +19,7 @@
 
 namespace Game2 {
 	AppWindow::AppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder_):
-		Gtk::ApplicationWindow(cobject), builder(builder_) {
+	Gtk::ApplicationWindow(cobject), builder(builder_) {
 		header = builder->get_widget<Gtk::HeaderBar>("headerbar");
 		set_titlebar(*header);
 

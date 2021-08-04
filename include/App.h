@@ -29,7 +29,7 @@ namespace Game2 {
 			App();
 
 		private:
-			void on_hide_window(Gtk::Window *window);
+			void on_hide_window(Gtk::Window *);
 	};
 
 	extern Glib::RefPtr<App> global_app;

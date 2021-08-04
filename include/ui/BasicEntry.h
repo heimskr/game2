@@ -12,6 +12,5 @@ namespace Game2 {
 
 		private:
 			sigc::signal<void()> signal_activate_;
-
 	};
 }
