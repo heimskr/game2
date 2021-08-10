@@ -60,6 +60,7 @@ namespace Game2 {
 		add(Resource(this, "Actinium").setBasePrice(29e12_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Aluminum").setBasePrice(1.79_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Antimony").setBasePrice(5.79_e).addTypes("element", "chemical", "metal"));
+		add(Resource(this, "Argon").setBasePrice(0.931_e).addTypes("element", "chemical", "gas"));
 		add(Resource(this, "Beryllium").setBasePrice(857._e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Calcium").setBasePrice(2.28_e).addTypes("element", "chemical"));
 		add(Resource(this, "Carbon").setBasePrice(0.122_e).addTypes("element", "chemical"));
@@ -71,7 +72,7 @@ namespace Game2 {
 		add(Resource(this, "Rubidium").setBasePrice(15'500._e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Magnesium").setBasePrice(2.32_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Manganese").setBasePrice(1.82_e).addTypes("element", "chemical", "metal"));
-		add(Resource(this, "Oxygen").setBasePrice(0.154_e).addTypes("element", "chemical"));
+		add(Resource(this, "Oxygen").setBasePrice(0.154_e).addTypes("element", "chemical", "gas"));
 		add(Resource(this, "Potassium").setBasePrice(12.85_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Silicon").setBasePrice(1.7_e).addTypes("element", "chemical"));
 
