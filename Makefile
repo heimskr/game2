@@ -21,7 +21,7 @@ SOURCES    := $(shell find src -name \*.cpp) src/resources.cpp
 OBJECTS    := $(SOURCES:.cpp=.o)
 GLIB_COMPILE_RESOURCES = $(shell pkg-config --variable=glib_compile_resources gio-2.0)
 
-.PHONY: all
+.PHONY: all clean test run
 
 all: $(OUTPUT)
 
@@ -47,7 +47,7 @@ run: $(OUTPUT)
 
 clean:
 	@ echo rm -f $$\(OBJECTS\) $(OUTPUT) src/resources.cpp
-	@ rm -f $(OBJECTS) $(OUTPUT)
+	@ rm -f $(OBJECTS) $(OUTPUT) src/resources.cpp
 
 install: $(OUTPUT)
 	mkdir -p ~/.cache/gnome-builder/install/game2/host/
