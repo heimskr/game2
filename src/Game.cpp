@@ -65,6 +65,7 @@ namespace Game2 {
 		add(Resource(this, "Barium").setBasePrice(0.2605_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Berkelium").setBasePrice(185e9_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Beryllium").setBasePrice(857._e).addTypes("element", "chemical", "metal"));
+		add(Resource(this, "Bismuth").setBasePrice(6.36_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Boron").setBasePrice(3.68_e).addTypes("element", "chemical", "metalloid"));
 		add(Resource(this, "Calcium").setBasePrice(2.28_e).addTypes("element", "chemical"));
 		add(Resource(this, "Carbon").setBasePrice(0.122_e).addTypes("element", "chemical"));
