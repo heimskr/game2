@@ -12,8 +12,9 @@ DEPS       := gtk4 gtkmm-4.0 x11
 OUTPUT     := game
 endif
 
+STANDARD   ?= -std=c++20
 CPP        := g++
-CPPFLAGS   := -Wall -Wextra $(BUILDFLAGS) -std=c++20 -Iinclude
+CPPFLAGS   := -Wall -Wextra $(BUILDFLAGS) $(STANDARD) -Iinclude
 INCLUDES   := $(shell pkg-config --cflags $(DEPS))
 LIBS       := $(shell pkg-config --libs   $(DEPS))
 LDFLAGS    := -pthread
