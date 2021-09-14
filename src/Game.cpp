@@ -80,6 +80,7 @@ namespace Game2 {
 		add(Resource(this, "Europium").setBasePrice(31.4_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Gadolinium").setBasePrice(28.6_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Gallium").setBasePrice(148._e).addTypes("element", "chemical", "metal"));
+		add(Resource(this, "Germanium").setBasePrice(962._e).addTypes("element", "chemical", "metalloid"));
 		add(Resource(this, "Calcium").setBasePrice(2.28_e).addTypes("element", "chemical"));
 		add(Resource(this, "Carbon").setBasePrice(0.122_e).addTypes("element", "chemical"));
 		add(Resource(this, "Copper").setBasePrice(6._e).addTypes("element", "chemical", "metal"));
@@ -92,7 +93,7 @@ namespace Game2 {
 		add(Resource(this, "Manganese").setBasePrice(1.82_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Oxygen").setBasePrice(0.154_e).addTypes("element", "chemical", "gas"));
 		add(Resource(this, "Potassium").setBasePrice(12.85_e).addTypes("element", "chemical", "metal"));
-		add(Resource(this, "Silicon").setBasePrice(1.7_e).addTypes("element", "chemical"));
+		add(Resource(this, "Silicon").setBasePrice(1.7_e).addTypes("element", "chemical", "metalloid"));
 
 		add(Resource(this, "Ammolite").setBasePrice(21.).addTypes("mineral", "electrolyzable").setDescription("CaCO₃"));
 		add(Resource(this, "Azurite").setBasePrice(158.).addTypes("mineral", "electrolyzable").setDescription("Cu₃(CO₃)₂(OH)₂"));
