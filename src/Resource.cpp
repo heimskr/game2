@@ -39,6 +39,13 @@ namespace Game2 {
 		return *this;
 	}
 
+	Resource & Resource::setBasePrice(const std::initializer_list<std::pair<double, std::string>> &pairs) {
+		basePrice = 0;
+		for (const auto &[multiplier, other_name]: pairs)
+			basePrice += multiplier * owner->resources.at(other_name).basePrice;
+		return *this;
+	}
+
 	Resource & Resource::setDescription(const std::string &description_) {
 		description = description_;
 		return *this;

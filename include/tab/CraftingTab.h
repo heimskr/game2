@@ -9,7 +9,7 @@
 
 namespace Game2 {
 	class AppWindow;
-	class CraftingRecipe;
+	struct CraftingRecipe;
 
 	class CraftingTab: public Tab {
 		public:

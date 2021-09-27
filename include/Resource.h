@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "Processor.h"
@@ -54,6 +55,7 @@ namespace Game2 {
 			Resource & setDiscrete(bool);
 			Resource & setDefaultExtractionRate(double);
 			Resource & setBasePrice(double);
+			Resource & setBasePrice(const std::initializer_list<std::pair<double, std::string>> &);
 			Resource & setDescription(const std::string &);
 
 			bool operator==(const Resource &other) { return name == other.name; }

@@ -14,7 +14,7 @@
 namespace Game2 {
 	class AppWindow;
 	class Area;
-	class Extraction;
+	struct Extraction;
 	class Region;
 
 	class RegionTab: public Tab {

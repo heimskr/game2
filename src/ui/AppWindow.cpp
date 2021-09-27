@@ -12,6 +12,7 @@
 #include "tab/AutomationTab.h"
 #include "tab/CraftingTab.h"
 #include "tab/HelpTab.h"
+#include "tab/ResourcesTab.h"
 
 #ifdef __linux__
 #include <gtk-4.0/gdk/x11/gdkx.h>
@@ -88,6 +89,7 @@ namespace Game2 {
 		 automationTab = std::make_shared<AutomationTab>(*this);
 		   craftingTab = std::make_shared<CraftingTab>(*this);
 		       helpTab = std::make_shared<HelpTab>(*this);
+		  resourcesTab = std::make_shared<ResourcesTab>(*this);
 
 		addTab(regionTab);
 		addTab(travelTab);
@@ -98,6 +100,7 @@ namespace Game2 {
 		addTab(automationTab);
 		addTab(craftingTab);
 		addTab(helpTab);
+		addTab(resourcesTab);
 
 		notebook.signal_unmap().connect([this] {
 			notebookConnection.disconnect();
@@ -141,6 +144,7 @@ namespace Game2 {
 		 automationTab->reset();
 		   craftingTab->reset();
 		     activeTab->onFocus();
+		  resourcesTab->reset();
 		connectSave();
 	}
 

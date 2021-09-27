@@ -117,6 +117,8 @@ namespace Game2 {
 		add(Resource(this, "Peridot").setBasePrice(56.).addTypes("mineral", "electrolyzable").setDescription("(Mg,Fe)₂SiO₄"));
 		add(Resource(this, "Pyrope").setBasePrice(124.).addTypes("mineral", "electrolyzable").setDescription("Mg₃Al₂(SiO₄)₃"));
 		add(Resource(this, "Rhodochrosite").setBasePrice(18.).addTypes("mineral", "electrolyzable").setDescription("MnCO₃"));
+
+		add(Resource(this, "Glucose").setBasePrice({{6, "Carbon"}, {12, "Hydrogen"}, {6, "Oxygen"}}).addTypes("food"));
 	}
 
 	void Game::add(Processor::Type type, const Resource::Map &cost) {

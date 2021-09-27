@@ -19,6 +19,7 @@ namespace Game2 {
 	class AutomationTab;
 	class CraftingTab;
 	class HelpTab;
+	class ResourcesTab;
 
 	class AppWindow: public Gtk::ApplicationWindow {
 		public:
@@ -43,6 +44,7 @@ namespace Game2 {
 			std::shared_ptr<AutomationTab> automationTab;
 			std::shared_ptr<CraftingTab> craftingTab;
 			std::shared_ptr<HelpTab> helpTab;
+			std::shared_ptr<ResourcesTab> resourcesTab;
 			int64_t updatePeriod = 25;
 
 			AppWindow(BaseObjectType *, const Glib::RefPtr<Gtk::Builder> &);
