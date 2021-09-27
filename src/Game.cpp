@@ -92,6 +92,7 @@ namespace Game2 {
 		add(Resource(this, "Lead").setBasePrice(2._e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Lutetium").setBasePrice(643._e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Mercury").setBasePrice(30.2_e).addTypes("element", "chemical", "metal"));
+		add(Resource(this, "Molybdenum").setBasePrice(40.1_e).addTypes("element", "chemical", "metal"));
 		add(Resource(this, "Calcium").setBasePrice(2.28_e).addTypes("element", "chemical"));
 		add(Resource(this, "Carbon").setBasePrice(0.122_e).addTypes("element", "chemical"));
 		add(Resource(this, "Copper").setBasePrice(6._e).addTypes("element", "chemical", "metal"));
