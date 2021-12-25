@@ -50,8 +50,10 @@ namespace Game2 {
 		add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Microchip").setBasePrice(300.).addTypes("rare spawnable"));
 		add(Resource(this, "Plastic").setBasePrice(2.5));
+		add(Resource(this, "Rum").setBasePrice(20.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Sand").setBasePrice(0.6).addTypes("smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.25, "Glass"}));
 		add(Resource(this, "Stone").setBasePrice(0.1).setDefaultExtractionRate(0.5).addTypes("centrifugable"));
+		add(Resource(this, "Sugarcane").setBasePrice(0.7).addTypes("farmable", "food", "centrifugable").add(Processor::Type::Fermenter, {0.1, "Rum"}));
 		add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid", "centrifugable", "electrolyzable"));
 		add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable"));
 		add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural", "centrifugable").add(Processor::Type::Furnace, {1., "Charcoal"}));

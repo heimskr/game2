@@ -20,10 +20,11 @@ namespace Game2 {
 			{"Peridot",     1., 1.},
 			{"Pyrope",      1., 1.},
 		});
-		centrifuge.emplace("Apple", ROV {{"", 0., 75.}, {"Malic Acid", 1., 25.}});
-		centrifuge.emplace("Wood",  ROV {{"Cellulose", 1., 98.}, {"Lignin", 1., 2.}});
-		centrifuge.emplace("Water", ROV {{"", 0., 95.}, {"Yeast", 1., 5.}});
-		centrifuge.emplace("Fish",  ROV {{"", 0., 80.}, {"Blood", 5., 20.}});
+		centrifuge.emplace("Apple",     ROV {{"", 0., 75.}, {"Malic Acid", 1., 25.}});
+		centrifuge.emplace("Wood",      ROV {{"Cellulose", 1., 98.}, {"Lignin", 1., 2.}});
+		centrifuge.emplace("Water",     ROV {{"", 0., 95.}, {"Yeast", 1., 5.}});
+		centrifuge.emplace("Fish",      ROV {{"", 0., 80.}, {"Blood", 5., 20.}});
+		centrifuge.emplace("Sugarcane", ROV {{"Glucose", 1., 100.}});
 
 		crusher.emplace("Stone", ROV {{"Sand", 2., 1.}});
 
