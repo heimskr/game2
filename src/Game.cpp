@@ -40,6 +40,7 @@ namespace Game2 {
 		add(Resource(this, "Coal").setBasePrice(2.).addTypes("fuel", "smeltable", "electrolyzable").setDefaultExtractionRate(0.5));
 		add(Resource(this, "Crude Oil").setBasePrice(5.));
 		add(Resource(this, "Fish").setBasePrice(5.).addTypes("living", "centrifugable"));
+		add(Resource(this, "Flour").setBasePrice(0.52).addTypes("ingredient"));
 		add(Resource(this, "Glass").setBasePrice(1.));
 		add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "food").add(Processor::Type::Fermenter, {0.1, "Mead"}));
 		add(Resource(this, "Hops").setBasePrice(0.4).addTypes("farmable").add(Processor::Type::Fermenter, {0.1, "Beer"}));
@@ -55,7 +56,7 @@ namespace Game2 {
 		add(Resource(this, "Stone").setBasePrice(0.1).setDefaultExtractionRate(0.5).addTypes("centrifugable"));
 		add(Resource(this, "Sugarcane").setBasePrice(0.7).addTypes("farmable", "food", "centrifugable").add(Processor::Type::Fermenter, {0.1, "Rum"}));
 		add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid", "centrifugable", "electrolyzable"));
-		add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable"));
+		add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable", "crushable"));
 		add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural", "centrifugable").add(Processor::Type::Furnace, {1., "Charcoal"}));
 		add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermentable"));
 

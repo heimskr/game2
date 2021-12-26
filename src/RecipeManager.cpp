@@ -27,6 +27,7 @@ namespace Game2 {
 		centrifuge.emplace("Sugarcane", ROV {{"Glucose", 1., 100.}});
 
 		crusher.emplace("Stone", ROV {{"Sand", 2., 1.}});
+		crusher.emplace("Wheat", ROV {{"Flour", 1., 1.}});
 
 		using RM = RefineryMode;
 		using RG = RefineryRecipe::Group;
