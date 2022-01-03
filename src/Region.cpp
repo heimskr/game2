@@ -293,6 +293,13 @@ namespace Game2 {
 	}
 
 	void to_json(nlohmann::json &json, const Region &region) {
-		
+		json = {
+			{"name", region.name},
+			{"position", region.position},
+			{"size", region.size},
+			{"money", region.money},
+			{"greed", region.greed},
+			{"areas", region.areas},
+		};
 	}
 }

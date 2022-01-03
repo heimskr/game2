@@ -518,6 +518,7 @@ namespace Game2 {
 			{"craftingInventory", {}},
 			{"position", game.position},
 			{"extractions", {}},
+			{"processors", {}},
 		};
 
 		for (const auto &[position, region]: game.regions)
@@ -531,6 +532,9 @@ namespace Game2 {
 
 		for (const auto &extraction: game.extractions)
 			json["extractions"] += extraction;
+
+		for (const auto &processor: game.processors)
+			json["processors"] += processor;
 
 		// out << "\n[Processors]\n";
 		// for (const std::shared_ptr<Processor> &processor: processors)

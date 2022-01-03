@@ -6,6 +6,8 @@
 #include <string>
 #include <unordered_set>
 
+#include "json.hpp"
+
 namespace Game2 {
 	class Context;
 	class Game;
@@ -54,4 +56,7 @@ namespace Game2 {
 			static Processor * ofType(Game &, Processor::Type);
 			static const char * typeName(Type);
 	};
+
+	void to_json(nlohmann::json &, const Processor &);
+	void to_json(nlohmann::json &, const std::shared_ptr<Processor> &);
 }

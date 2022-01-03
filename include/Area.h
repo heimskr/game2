@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 
+#include "json.hpp"
 #include "Resource.h"
 
 namespace Game2 {
@@ -44,4 +45,7 @@ namespace Game2 {
 			virtual std::string description() const = 0;
 			virtual void tick(double delta) = 0;
 	};
+
+	void to_json(nlohmann::json &, const Area &);
+	void to_json(nlohmann::json &, const std::shared_ptr<Area> &);
 }

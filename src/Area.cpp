@@ -107,4 +107,18 @@ namespace Game2 {
 		area->setName(std::move(name)).setSize(size).setPlayerOwned(player_owned).setResources(parseMap(pieces[4]));
 		return area;
 	}
+
+	void to_json(nlohmann::json &json, const Area &area) {
+		json = {
+			{"name", area.name},
+			{"size", area.size},
+			{"playerOwned", area.playerOwned},
+			{"type", int(area.getType())},
+			{"resources", area.resources},
+		};
+	}
+
+	void to_json(nlohmann::json &json, const std::shared_ptr<Area> &area) {
+		to_json(json, *area);
+	}
 }

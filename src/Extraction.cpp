@@ -5,6 +5,24 @@
 #include "Util.h"
 
 namespace Game2 {
+	Extraction::Extraction(const Game &game, const nlohmann::json &json): startAmount(json.at("startAmount")) {
+		const Region *region = nullptr;
+		const std::string &region_name = json.at("region");
+		const std::string &area_name = json.at("area");
+		for (const auto &pair: game.regions)
+			if (pair.second->name == region_name)
+				region = pair.second.get();
+		if (!region)
+			throw std::runtime_error("Couldn't find Region for extraction");
+		if (region->areas.count(area_name) == 0)
+			throw std::runtime_error("Couldn't find Area for extraction");
+		area = const_cast<Area *>(region->areas.at(area_name).get());
+		resourceName = json.at("resourceName");
+		amount = json.at("amount");
+		rate = json.at("rate");
+		minimum = json.at("minimum");
+	}
+
 	std::string Extraction::toString() const {
 		return area->parent->name + ":" + area->name + ":" + resourceName + ":" + std::to_string(amount) + ":"
 			+ std::to_string(rate) + ":" + std::to_string(startAmount) + ":" + std::to_string(minimum);
@@ -36,6 +54,14 @@ namespace Game2 {
 	}
 
 	void to_json(nlohmann::json &json, const Extraction &extraction) {
-
+		json = {
+			{"region", extraction.area->parent->name},
+			{"area", extraction.area->name},
+			{"resource", extraction.resourceName},
+			{"amount", extraction.amount},
+			{"rate", extraction.rate},
+			{"startAmount", extraction.startAmount},
+			{"minimum", extraction.minimum},
+		};
 	}
 }

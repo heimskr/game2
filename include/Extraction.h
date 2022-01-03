@@ -9,7 +9,7 @@ namespace Game2 {
 	class Game;
 
 	struct Extraction {
-		Area *area;
+		Area *area = nullptr;
 		std::string resourceName;
 		const double startAmount;
 		double amount;
@@ -21,6 +21,8 @@ namespace Game2 {
 		           double minimum_):
 			area(area_), resourceName(resource_name), startAmount(start_amount), amount(amount_), rate(rate_),
 			minimum(minimum_) {}
+
+		Extraction(const Game &, const nlohmann::json &);
 
 		std::string toString() const;
 		static Extraction fromString(const Game &, const std::string &);

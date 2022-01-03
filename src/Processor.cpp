@@ -143,4 +143,19 @@ namespace Game2 {
 			default: return "?";
 		}
 	}
+
+	void to_json(nlohmann::json &json, const Processor &processor) {
+		json = {
+			{"type", int(processor.getType())},
+			{"input", processor.input},
+			{"output", processor.output},
+			{"autoExtract", processor.autoExtract},
+			{"name", processor.name},
+			{"id", processor.id},
+		};
+	}
+
+	void to_json(nlohmann::json &json, const std::shared_ptr<Processor> &processor) {
+		to_json(json, *processor);
+	}
 }
