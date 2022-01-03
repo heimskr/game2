@@ -1,5 +1,6 @@
 #include "UI.h"
 #include "tab/ExtractionsTab.h"
+#include "tab/RegionTab.h"
 #include "ui/AppWindow.h"
 
 namespace Game2 {
@@ -75,6 +76,7 @@ namespace Game2 {
 		if (auto iter = treeView.get_selection()->get_selected()) {
 			auto extraction_iter = iter->get_value(columns.iter);
 			appWindow.game->extractions.erase(extraction_iter);
+			appWindow.regionTab->reset();
 			treeModel->erase(iter);
 		}
 	}
