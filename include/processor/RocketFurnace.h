@@ -10,8 +10,10 @@ namespace Game2 {
 			RocketFurnace & setHydrogen(double);
 			RocketFurnace & setOxygen(double);
 
-			std::string toString() const override;
 			double tick(double delta) override;
 			Type getType() const override { return Type::RocketFurnace; }
+
+			Processor * absorb(const nlohmann::json &) override;
+			nlohmann::json toJSON() const override;
 	};
 }

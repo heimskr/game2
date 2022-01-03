@@ -1,3 +1,4 @@
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -70,52 +71,37 @@ namespace Game2 {
 		return out;
 	}
 
-	std::string Area::toString() const {
-		std::stringstream out;
-		out.imbue(std::locale::classic());
-		out << name << ":" << size << ":" << (playerOwned? "1" : "0") << ":" << static_cast<unsigned>(getType()) << ":";
-		bool first = true;
-		for (const auto &pair: resources) {
-			if (first)
-				first = false;
-			else
-				out << "/";
-			out << pair.first << "/" << pair.second;
-		}
-		return out.str();
-	}
-
-	std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
-		std::vector<std::string> pieces = split(str, ":", false);
-		if (pieces.size() < 4)
-			throw std::runtime_error("Invalid Area string");
-		std::string &name = pieces[0];
-		const size_t size = parseLong(pieces[1]);
-		const bool player_owned = pieces[2] == "1";
-		const Type type = static_cast<Type>(parseLong(pieces[3]));
+	std::shared_ptr<Area> Area::fromJSON(Region &region, const nlohmann::json &json) {
 		std::shared_ptr<Area> area;
-		switch (type) {
+		const Type type = Type(json.at("type").get<int>());
+		switch (Type(type)) {
 			case Type::Housing:  area = std::make_shared<HousingArea>(&region);  break;
 			case Type::Forest:   area = std::make_shared<ForestArea>(&region);   break;
 			case Type::Mountain: area = std::make_shared<MountainArea>(&region); break;
 			case Type::Lake:     area = std::make_shared<LakeArea>(&region);     break;
 			case Type::Empty:    area = std::make_shared<EmptyArea>(&region);    break;
-			case Type::Farmland: area = std::make_shared<FarmlandArea>(&region, 0, pieces[5]); break;
+			case Type::Farmland: area = std::make_shared<FarmlandArea>(&region, 0, json.at("resource")); break;
 			case Type::OilField: area = std::make_shared<OilFieldArea>(&region); break;
-			default: throw std::invalid_argument("Unknown Area type: " + std::to_string(static_cast<unsigned>(type)));
+			default: throw std::invalid_argument("Unknown Area type: " + std::to_string(int(type)));
 		}
-		area->setName(std::move(name)).setSize(size).setPlayerOwned(player_owned).setResources(parseMap(pieces[4]));
+
+		area->setName(json.at("name")).setSize(json.at("size")).setPlayerOwned(json.at("playerOwned"));
+		area->setResources(json.at("resources"));
 		return area;
 	}
 
-	void to_json(nlohmann::json &json, const Area &area) {
-		json = {
-			{"name", area.name},
-			{"size", area.size},
-			{"playerOwned", area.playerOwned},
-			{"type", int(area.getType())},
-			{"resources", area.resources},
+	nlohmann::json Area::toJSON() const {
+		return {
+			{"name", name},
+			{"size", size},
+			{"playerOwned", playerOwned},
+			{"type", int(getType())},
+			{"resources", resources},
 		};
+	}
+
+	void to_json(nlohmann::json &json, const Area &area) {
+		json = area.toJSON();
 	}
 
 	void to_json(nlohmann::json &json, const std::shared_ptr<Area> &area) {

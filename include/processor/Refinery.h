@@ -10,8 +10,10 @@ namespace Game2 {
 
 			Refinery & setMode(RefineryMode);
 
-			std::string toString() const override;
 			double tick(double delta) override;
 			Type getType() const override { return Type::Refinery; }
+
+			Processor * absorb(const nlohmann::json &) override;
+			nlohmann::json toJSON() const override;
 	};
 }

@@ -11,8 +11,15 @@ namespace Game2 {
 		return *this;
 	}
 
-	std::string Refinery::toString() const {
-		return Processor::toString() + ":" + std::to_string(static_cast<int>(mode));
+	Processor * Refinery::absorb(const nlohmann::json &json) {
+		mode = json.at("mode");
+		return this;
+	}
+
+	nlohmann::json Refinery::toJSON() const {
+		auto out = Processor::toJSON();
+		out["mode"] = mode;
+		return out;
 	}
 
 	double Refinery::tick(double delta) {

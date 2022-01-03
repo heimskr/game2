@@ -382,87 +382,33 @@ namespace Game2 {
 	}
 
 	std::string Game::toString() const {
-		return nlohmann::json(*this).dump();
+		return nlohmann::json(*this).dump(1, '\t');
 	}
 
 	std::shared_ptr<Game> Game::fromString(AppWindow &window, const std::string &str, const std::string &path) {
-		std::vector<std::string> lines = split(str, "\n", true);
-		/** Compliant saves must follow this order beginning at Regions. */
-		enum class Mode {None, Regions, Inventory, CraftingInventory, Position, Extractions, Processors, Automations};
-		Mode mode = Mode::None;
+		return fromJSON(window, nlohmann::json::parse(str), path);
+	}
 
+	std::shared_ptr<Game> Game::fromJSON(AppWindow &window, const nlohmann::json &json, const std::string &path) {
 		std::shared_ptr<Game> out = std::make_shared<Game>(window, path);
 
-		for (std::string &line: lines) {
-			if (line.empty() || line == "\r")
-				continue;
-			if (line.back() == '\r')
-				line.pop_back();
-			if (line[0] == '[') {
-				if (line == "[Regions]")
-					mode = Mode::Regions;
-				else if (line == "[Inventory]")
-					mode = Mode::Inventory;
-				else if (line == "[CraftingInventory]")
-					mode = Mode::CraftingInventory;
-				else if (line == "[Position]")
-					mode = Mode::Position;
-				else if (line == "[Extractions]")
-					mode = Mode::Extractions;
-				else if (line == "[Processors]")
-					mode = Mode::Processors;
-				else if (line == "[Automations]")
-					mode = Mode::Automations;
-				else {
-					Logger::error("Invalid line: \"%s\"", line.c_str());
-					for (char ch: line)
-						Logger::info("%d / '%c'", ch, ch);
-					throw std::invalid_argument("Invalid line");
-				}
-			} else {
-				switch (mode) {
-					case Mode::Regions: {
-						auto region = Region::fromString(*out, line);
-						out->regions.emplace(region->position, std::move(region));
-						break;
-					}
-					case Mode::Inventory:
-					case Mode::CraftingInventory: {
-						const size_t equals = line.find('=');
-						if (equals == std::string::npos)
-							throw std::invalid_argument("Invalid Inventory line");
-						const std::string type = line.substr(0, equals);
-						const double amount = parseDouble(line.substr(equals + 1));
-						if (type == "money")
-							out->money = amount;
-						else
-							(mode == Mode::CraftingInventory? out->craftingInventory : out->inventory).emplace(type, amount);
-						break;
-					}
-					case Mode::Position: {
-						const size_t comma = line.find(',');
-						if (comma == std::string::npos)
-							throw std::invalid_argument("Invalid Position line");
-						out->position = {parseLong(line.substr(0, comma)), parseLong(line.substr(comma + 1))};
-						break;
-					}
-					case Mode::Extractions:
-						out->extractions.push_back(Extraction::fromString(*out, line));
-						break;
-					case Mode::Processors: {
-						std::shared_ptr<Processor> processor(Processor::fromString(*out, line));
-						out->processors.push_back(processor);
-						out->processorsByID.emplace(processor->id, processor);
-						break;
-					}
-					case Mode::Automations:
-						out->automationLinks.emplace_back(*out, line);
-						out->automationLinks.back().setup();
-						break;
-					default: throw std::runtime_error("Invalid mode: " + std::to_string(static_cast<int>(mode)));
-				}
-			}
+		for (const auto &region_json: json.at("regions")) {
+			auto region = std::make_shared<Region>(*out, region_json);
+			out->regions.emplace(region->position, region);
 		}
+		out->money = json.at("money");
+		out->inventory = json.at("inventory");
+		out->craftingInventory = json.at("craftingInventory");
+		out->position = json.at("position");
+		for (const auto &extraction: json.at("extractions"))
+			out->extractions.emplace_back(*out, extraction);
+		for (const auto &processor_json: json.at("processors")) {
+			auto processor = Processor::fromJSON(*out, processor_json);
+			out->processors.push_back(processor);
+			out->processorsByID.emplace(processor->id, processor);
+		}
+		for (const auto &link: json.at("automationLinks"))
+			out->automationLinks.emplace_back(*out, link);
 
 		return out;
 	}
@@ -512,36 +458,16 @@ namespace Game2 {
 	void to_json(nlohmann::json &json, const Game &game) {
 		json = {
 			{"regions", {}},
-			{"inventory", {
-				{"money", game.money},
-			}},
-			{"craftingInventory", {}},
+			{"money", game.money},
+			{"inventory", game.inventory},
+			{"craftingInventory", game.craftingInventory},
 			{"position", game.position},
-			{"extractions", {}},
-			{"processors", {}},
+			{"extractions", game.extractions},
+			{"processors", game.processors},
+			{"automationLinks", game.automationLinks},
 		};
 
 		for (const auto &[position, region]: game.regions)
-			json["regions"] += {position, *region};
-
-		for (const auto &[name, amount]: game.inventory)
-			json["inventory"] += {name, amount};
-
-		for (const auto &[name, amount]: game.craftingInventory)
-			json["craftingInventory"] += {name, amount};
-
-		for (const auto &extraction: game.extractions)
-			json["extractions"] += extraction;
-
-		for (const auto &processor: game.processors)
-			json["processors"] += processor;
-
-		// out << "\n[Processors]\n";
-		// for (const std::shared_ptr<Processor> &processor: processors)
-		// 	out << processor->toString() << "\n";
-		// out << "\n[Automations]\n";
-		// for (const AutomationLink &link: automationLinks)
-		// 	out << link.toString() << "\n";
-		// return out.str();
+			json["regions"] += *region;
 	}
 }

@@ -37,6 +37,9 @@ namespace Game2 {
 
 			virtual ~Processor() {}
 
+			virtual Processor * absorb(const nlohmann::json &) { return this; }
+			virtual nlohmann::json toJSON() const;
+
 			Processor & setInput(const std::map<std::string, double> &);
 			Processor & setOutput(const std::map<std::string, double> &);
 			Processor & setInput(std::map<std::string, double> &&);
@@ -47,12 +50,11 @@ namespace Game2 {
 			Processor & setID(const std::string &);
 			Processor & setID(std::string &&);
 
-			virtual std::string toString() const;
 			/** Returns the amount processed. */
 			virtual double tick(double delta);
 			void moveOutput();
 			virtual Type getType() const = 0;
-			static Processor * fromString(Game &, const std::string &);
+			static std::shared_ptr<Processor> fromJSON(Game &, const nlohmann::json &);
 			static Processor * ofType(Game &, Processor::Type);
 			static const char * typeName(Type);
 	};

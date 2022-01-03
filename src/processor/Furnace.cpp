@@ -10,8 +10,15 @@ namespace Game2 {
 		return *this;
 	}
 
-	std::string Furnace::toString() const {
-		return Processor::toString() + ":" + std::to_string(fuel);
+	Processor * Furnace::absorb(const nlohmann::json &json) {
+		setFuel(json.at("fuel"));
+		return this;
+	}
+
+	nlohmann::json Furnace::toJSON() const {
+		auto out = Processor::toJSON();
+		out["fuel"] = fuel;
+		return out;
 	}
 
 	double Furnace::tick(double delta) {

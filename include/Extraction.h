@@ -23,9 +23,6 @@ namespace Game2 {
 			minimum(minimum_) {}
 
 		Extraction(const Game &, const nlohmann::json &);
-
-		std::string toString() const;
-		static Extraction fromString(const Game &, const std::string &);
 	};
 
 	void to_json(nlohmann::json &, const Extraction &);

@@ -18,7 +18,7 @@ namespace Game2 {
 	}
 
 	void from_json(const nlohmann::json &json, Position &position) {
-		position.x = json["x"];
-		position.y = json["y"];
+		position.x = json.at(0);
+		position.y = json.at(1);
 	}
 }

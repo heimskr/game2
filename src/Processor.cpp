@@ -84,35 +84,35 @@ namespace Game2 {
 		}
 	}
 
-	std::string Processor::toString() const {
-		return std::to_string(static_cast<int>(getType())) + ":" + stringify(input) + ":" + stringify(output) + ":"
-			+ (autoExtract? "1" : "0") + ":" + name + ":" + id;
+	nlohmann::json Processor::toJSON() const {
+		return {
+			{"type", int(getType())},
+			{"input", input},
+			{"output", output},
+			{"autoExtract", autoExtract},
+			{"name", name},
+			{"id", id},
+		};
 	}
 
-	Processor * Processor::fromString(Game &game, const std::string &str) {
-		std::vector<std::string> pieces = split(str, ":", false);
-		Resource::Map input(parseMap(pieces[1])), output(parseMap(pieces[2]));
-		const bool auto_extract = parseLong(pieces[3]) != 0;
-		std::string &name = pieces[4];
-		std::string &id = pieces[5];
-		const std::string &extra = pieces[6];
-		const std::string &extra2 = pieces[7];
-		const Type type = static_cast<Type>(parseLong(pieces[0]));
+	std::shared_ptr<Processor> Processor::fromJSON(Game &game, const nlohmann::json &json) {
 		Processor *out = nullptr;
+		const Type type = json.at("type");
+
 		switch (type) {
-			case Type::Furnace:       out = &((new Furnace(game))->setFuel(parseDouble(extra))); break;
-			case Type::Centrifuge:    out = new Centrifuge(game); break;
-			case Type::Fermenter:     out = &((new Fermenter(game))->setYeast(parseDouble(extra))); break;
-			case Type::Crusher:       out = new Crusher(game); break;
-			case Type::Refinery:      out = &((new Refinery(game))->setMode(static_cast<RefineryMode>(parseLong(extra)))); break;
-			case Type::RocketFurnace: out = &((new RocketFurnace(game))->setHydrogen(parseDouble(extra)).setOxygen(parseDouble(extra2))); break;
-			case Type::Electrolyzer:  out = new Electrolyzer(game); break;
-			default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
+			case Type::Furnace:       out = (new       Furnace(game))->absorb(json); break;
+			case Type::Centrifuge:    out = (new    Centrifuge(game))->absorb(json); break;
+			case Type::Fermenter:     out = (new     Fermenter(game))->absorb(json); break;
+			case Type::Crusher:       out = (new       Crusher(game))->absorb(json); break;
+			case Type::Refinery:      out = (new      Refinery(game))->absorb(json); break;
+			case Type::RocketFurnace: out = (new RocketFurnace(game))->absorb(json); break;
+			case Type::Electrolyzer:  out = (new  Electrolyzer(game))->absorb(json); break;
+			default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(int(type)));
 		}
 
-		out->setInput(std::move(input)).setOutput(std::move(output)).setAutoExtract(auto_extract).setName(std::move(name));
-		out->setID(std::move(id));
-		return out;
+		out->setInput(json.at("input")).setOutput(json.at("output")).setAutoExtract(json.at("autoExtract"));
+		out->setName(json.at("name")).setID(json.at("id"));
+		return std::shared_ptr<Processor>(out);
 	}
 
 	Processor * Processor::ofType(Game &game, Type type) {
@@ -145,14 +145,7 @@ namespace Game2 {
 	}
 
 	void to_json(nlohmann::json &json, const Processor &processor) {
-		json = {
-			{"type", int(processor.getType())},
-			{"input", processor.input},
-			{"output", processor.output},
-			{"autoExtract", processor.autoExtract},
-			{"name", processor.name},
-			{"id", processor.id},
-		};
+		json = processor.toJSON();
 	}
 
 	void to_json(nlohmann::json &json, const std::shared_ptr<Processor> &processor) {

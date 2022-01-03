@@ -67,6 +67,8 @@ namespace Game2 {
 			std::string toString() const;
 			static std::shared_ptr<Game> fromString(AppWindow &, const std::string &text,
 			                                        const std::string &path = DEFAULT_PATH);
+			static std::shared_ptr<Game> fromJSON(AppWindow &, const nlohmann::json &,
+			                                      const std::string &path = DEFAULT_PATH);
 			static std::shared_ptr<Game> load(AppWindow &, const std::string &path = DEFAULT_PATH);
 			void save();
 
@@ -75,8 +77,9 @@ namespace Game2 {
 			Extraction * getExtraction(const Area &, const std::string &, decltype(extractions)::iterator &);
 			const Extraction * getExtraction(const Area &, const std::string &) const;
 
+			static constexpr const char *DEFAULT_PATH = "save.json";
+
 		private:
-			static constexpr const char *DEFAULT_PATH = "save.txt";
 			double adjust(double to_extract, double in_region, const Extraction &);
 	};
 

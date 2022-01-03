@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 
+#include "json.hpp"
+
 namespace Game2 {
 	class Game;
 	class Processor;
@@ -16,11 +18,13 @@ namespace Game2 {
 
 		AutomationLink(Game &, std::shared_ptr<Processor> producer_, std::shared_ptr<Processor> consumer_,
 		               const std::string &resource_name, double weight_);
-		AutomationLink(Game &, const std::string &);
+		AutomationLink(Game &, const nlohmann::json &);
 
 		std::string toString() const;
 		void tick();
 		void setup();
 		void cleanup();
 	};
+
+	void to_json(nlohmann::json &, const AutomationLink &);
 }

@@ -38,8 +38,8 @@ namespace Game2 {
 
 			size_t totalPopulation() const;
 
-			virtual std::string toString() const;
-			static std::shared_ptr<Area> fromString(Region &, const std::string &);
+			virtual nlohmann::json toJSON() const;
+			static std::shared_ptr<Area> fromJSON(Region &, const nlohmann::json &);
 
 			virtual Type getType() const = 0;
 			virtual std::string description() const = 0;

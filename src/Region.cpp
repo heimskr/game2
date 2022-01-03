@@ -8,7 +8,7 @@
 
 namespace Game2 {
 	Region::Region(Game &game_, const std::string &name_, const Position &position_, size_t size_):
-			game(&game_), name(), position(position_), size(size_) {
+			game(&game_), position(position_), size(size_) {
 		setName(name_);
 	}
 
@@ -184,36 +184,16 @@ namespace Game2 {
 		return *this;
 	}
 
-	std::string Region::toString() const {
-		std::stringstream out;
-		// Don't insert thousand separators
-		out.imbue(std::locale::classic());
-		out << name << ":" << position.x << ":" << position.y << ":" << size << ":" << money << ":" << greed << ";";
-		for (const auto &pair: areas)
-			out << pair.second->toString() << ";";
-		return out.str();
-	}
-
-	std::unique_ptr<Region> Region::fromString(Game &game, const std::string &str) {
-		const std::vector<std::string> by_semicolon = split(str, ";", false);
-		const std::vector<std::string> by_colon = split(by_semicolon[0], ":", false);
-		const std::string &name = by_colon[0];
-		const s64 x = parseLong(by_colon[1]);
-		const s64 y = parseLong(by_colon[2]);
-		const size_t size = parseUlong(by_colon[3]);
-		const size_t money = parseUlong(by_colon[4]);
-		const double greed = parseDouble(by_colon[5]);
-		std::unique_ptr<Region> region = std::make_unique<Region>(game, name, Position(x, y), size);
-		region->money = money;
-		region->greed = greed;
-		region->areas.clear();
-		for (size_t i = 1; i < by_semicolon.size(); ++i) {
-			if (by_semicolon[i].empty())
-				continue;
-			std::shared_ptr<Area> area = Area::fromString(*region, by_semicolon[i]);
-			region->areas.emplace(area->name, area);
+	Region::Region(Game &game_, const nlohmann::json &json): game(&game_) {
+		setName(json.at("name"));
+		position = json.at("position");
+		size = json.at("size");
+		money = json.at("money");
+		greed = json.at("greed");
+		for (const nlohmann::json &area_json: json.at("areas")) {
+			auto area = Area::fromJSON(*this, area_json);
+			areas.emplace(area->name, area);
 		}
-		return region;
 	}
 
 	std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t size) {
@@ -299,7 +279,10 @@ namespace Game2 {
 			{"size", region.size},
 			{"money", region.money},
 			{"greed", region.greed},
-			{"areas", region.areas},
+			{"areas", {}},
 		};
+
+		for (const auto &[name, area]: region.areas)
+			json["areas"] += area;
 	}
 }

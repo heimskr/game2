@@ -20,7 +20,9 @@ namespace Game2 {
 			resources[resourceName] = static_cast<double>(size) * FOOD_MAX;
 	}
 
-	std::string FarmlandArea::toString() const {
-		return Area::toString() + ":" + resourceName;
+	nlohmann::json FarmlandArea::toJSON() const {
+		auto out = Area::toJSON();
+		out["resource"] = resourceName;
+		return out;
 	}
 }

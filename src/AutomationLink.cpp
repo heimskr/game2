@@ -8,12 +8,11 @@ namespace Game2 {
 	const std::string &resource_name, double weight_):
 		game(&game_), producer(producer_), consumer(consumer_), resourceName(resource_name), weight(weight_) {}
 
-	AutomationLink::AutomationLink(Game &game_, const std::string &str): game(&game_) {
-		const std::vector<std::string> pieces = split(str, ":", false);
-		producer = game->processorsByID.at(pieces[0]);
-		consumer = game->processorsByID.at(pieces[1]);
-		resourceName = pieces[2];
-		weight = parseDouble(pieces[3]);
+	AutomationLink::AutomationLink(Game &game_, const nlohmann::json &json): game(&game_) {
+		producer = game->processorsByID.at(json.at("producer"));
+		consumer = game->processorsByID.at(json.at("consumer"));
+		resourceName = json.at("resource");
+		weight = json.at("weight");
 	}
 
 	std::string AutomationLink::toString() const {
@@ -33,5 +32,14 @@ namespace Game2 {
 
 	void AutomationLink::cleanup() {
 		producer->frozen.erase(resourceName);
+	}
+
+	void to_json(nlohmann::json &json, const AutomationLink &link) {
+		json = {
+			{"producer", link.producer->id},
+			{"consumer", link.consumer->id},
+			{"resource", link.resourceName},
+			{"weight", link.weight},
+		};
 	}
 }

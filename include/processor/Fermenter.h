@@ -9,8 +9,10 @@ namespace Game2 {
 
 			Fermenter & setYeast(double);
 
-			virtual std::string toString() const override;
 			double tick(double delta) override;
 			Type getType() const override { return Type::Fermenter; }
+
+			Processor * absorb(const nlohmann::json &) override;
+			nlohmann::json toJSON() const override;
 	};
 }

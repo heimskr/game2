@@ -10,8 +10,15 @@ namespace Game2 {
 		return *this;
 	}
 
-	std::string Fermenter::toString() const {
-		return Processor::toString() + ":" + std::to_string(yeast);
+	Processor * Fermenter::absorb(const nlohmann::json &json) {
+		yeast = json.at("yeast");
+		return this;
+	}
+
+	nlohmann::json Fermenter::toJSON() const {
+		auto out = Processor::toJSON();
+		out["yeast"] = yeast;
+		return out;
 	}
 
 	double Fermenter::tick(double delta) {

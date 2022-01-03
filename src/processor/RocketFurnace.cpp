@@ -15,8 +15,17 @@ namespace Game2 {
 		return *this;
 	}
 
-	std::string RocketFurnace::toString() const {
-		return Processor::toString() + ":" + std::to_string(hydrogen) + ":" + std::to_string(oxygen);
+	Processor * RocketFurnace::absorb(const nlohmann::json &json) {
+		hydrogen = json.at("hydrogen");
+		oxygen = json.at("oxygen");
+		return this;
+	}
+
+	nlohmann::json RocketFurnace::toJSON() const {
+		auto out = Processor::toJSON();
+		out["hydrogen"] = hydrogen;
+		out["oxygen"] = oxygen;
+		return out;
 	}
 
 	double RocketFurnace::tick(double delta) {

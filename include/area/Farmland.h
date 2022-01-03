@@ -14,6 +14,6 @@ namespace Game2 {
 			Type getType() const override { return Type::Farmland; }
 			std::string description() const override;
 			void tick(double delta) override;
-			std::string toString() const override;
+			nlohmann::json toJSON() const override;
 	};
 }

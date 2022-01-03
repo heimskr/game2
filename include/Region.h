@@ -37,6 +37,7 @@ namespace Game2 {
 			double greed = 0.5;
 
 			Region(Game &, const std::string &name_, const Position &, size_t size_);
+			Region(Game &, const nlohmann::json &);
 
 			void tick(double delta);
 
@@ -63,8 +64,6 @@ namespace Game2 {
 
 			Region & operator+=(std::shared_ptr<Area>);
 
-			std::string toString() const;
-			static std::unique_ptr<Region> fromString(Game &, const std::string &);
 			static std::unique_ptr<Region> generate(Game &, const Position &, size_t);
 			static std::unique_ptr<Region> generate(Game &, const Position &);
 	};
