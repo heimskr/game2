@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "json.hpp"
 
 namespace Game2 {
 	class Area;
@@ -24,4 +25,6 @@ namespace Game2 {
 		std::string toString() const;
 		static Extraction fromString(const Game &, const std::string &);
 	};
+
+	void to_json(nlohmann::json &, const Extraction &);
 }

@@ -382,30 +382,7 @@ namespace Game2 {
 	}
 
 	std::string Game::toString() const {
-		std::stringstream out;
-		out.imbue(std::locale::classic());
-		out << "[Regions]\n";
-		for (const auto &pair: regions)
-			out << pair.second->toString() << "\n";
-		out << "\n[Inventory]\n";
-		out << "money=" << money << "\n";
-		for (const auto &[name, amount]: inventory)
-			out << name << "=" << amount << "\n";
-		out << "\n[CraftingInventory]\n";
-		for (const auto &[name, amount]: craftingInventory)
-			out << name << "=" << amount << "\n";
-		out << "\n[Position]\n";
-		out << position.x << "," << position.y << "\n";
-		out << "\n[Extractions]\n";
-		for (const Extraction &extraction: extractions)
-			out << extraction.toString() << "\n";
-		out << "\n[Processors]\n";
-		for (const std::shared_ptr<Processor> &processor: processors)
-			out << processor->toString() << "\n";
-		out << "\n[Automations]\n";
-		for (const AutomationLink &link: automationLinks)
-			out << link.toString() << "\n";
-		return out.str();
+		return nlohmann::json(*this).dump();
 	}
 
 	std::shared_ptr<Game> Game::fromString(AppWindow &window, const std::string &str, const std::string &path) {
@@ -530,5 +507,37 @@ namespace Game2 {
 			if (extraction.area == &area && extraction.resourceName == name)
 				return &extraction;
 		return nullptr;
+	}
+
+	void to_json(nlohmann::json &json, const Game &game) {
+		json = {
+			{"regions", {}},
+			{"inventory", {
+				{"money", game.money},
+			}},
+			{"craftingInventory", {}},
+			{"position", game.position},
+			{"extractions", {}},
+		};
+
+		for (const auto &[position, region]: game.regions)
+			json["regions"] += {position, *region};
+
+		for (const auto &[name, amount]: game.inventory)
+			json["inventory"] += {name, amount};
+
+		for (const auto &[name, amount]: game.craftingInventory)
+			json["craftingInventory"] += {name, amount};
+
+		for (const auto &extraction: game.extractions)
+			json["extractions"] += extraction;
+
+		// out << "\n[Processors]\n";
+		// for (const std::shared_ptr<Processor> &processor: processors)
+		// 	out << processor->toString() << "\n";
+		// out << "\n[Automations]\n";
+		// for (const AutomationLink &link: automationLinks)
+		// 	out << link.toString() << "\n";
+		// return out.str();
 	}
 }

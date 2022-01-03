@@ -12,4 +12,13 @@ namespace Game2 {
 			default: throw std::invalid_argument("Invalid Direction");
 		}
 	}
+
+	void to_json(nlohmann::json &json, const Position &position) {
+		json = {position.x, position.y};
+	}
+
+	void from_json(const nlohmann::json &json, Position &position) {
+		position.x = json["x"];
+		position.y = json["y"];
+	}
 }

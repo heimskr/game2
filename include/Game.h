@@ -6,6 +6,7 @@
 
 #include "AutomationLink.h"
 #include "Extraction.h"
+#include "json.hpp"
 #include "RecipeManager.h"
 #include "Region.h"
 #include "Resource.h"
@@ -78,4 +79,6 @@ namespace Game2 {
 			static constexpr const char *DEFAULT_PATH = "save.txt";
 			double adjust(double to_extract, double in_region, const Extraction &);
 	};
+
+	void to_json(nlohmann::json &, const Game &);
 }

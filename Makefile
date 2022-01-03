@@ -12,9 +12,9 @@ DEPS       := gtk4 gtkmm-4.0 x11
 OUTPUT     := game
 endif
 
-STANDARD   ?= -std=c++20
+STANDARD   ?= -std=c++2a
 CPP        := g++
-CPPFLAGS   := -Wall -Wextra $(BUILDFLAGS) $(STANDARD) -Iinclude
+CPPFLAGS   := -Wall -Wextra $(BUILDFLAGS) $(STANDARD) -Iinclude -Ijson/single_include/nlohmann
 INCLUDES   := $(shell pkg-config --cflags $(DEPS))
 LIBS       := $(shell pkg-config --libs   $(DEPS))
 LDFLAGS    := -pthread

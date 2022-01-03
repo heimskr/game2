@@ -34,4 +34,8 @@ namespace Game2 {
 			parseDouble(pieces[6])    // Minimum
 		};
 	}
+
+	void to_json(nlohmann::json &json, const Extraction &extraction) {
+
+	}
 }

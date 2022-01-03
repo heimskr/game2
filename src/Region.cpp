@@ -291,4 +291,8 @@ namespace Game2 {
 	std::unique_ptr<Region> Region::generate(Game &game, const Position &pos) {
 		return generate(game, pos, randomRange(50, 150));
 	}
+
+	void to_json(nlohmann::json &json, const Region &region) {
+		
+	}
 }

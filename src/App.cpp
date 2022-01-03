@@ -24,7 +24,7 @@ namespace Game2 {
 	void App::on_activate() {
 		try {
 			auto window = create_window();
-			window->signal_show().connect([this, window] {
+			window->signal_show().connect([window] {
 				window->delay(sigc::mem_fun(*window, &AppWindow::hackWindow));
 			});
 			window->present();

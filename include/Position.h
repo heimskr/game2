@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "Direction.h"
+#include "json.hpp"
 
 namespace Game2 {
 	struct Position {
@@ -21,4 +22,7 @@ namespace Game2 {
 			return std::pair<int64_t, int64_t>(*this) < std::pair<int64_t, int64_t>(other);
 		}
 	};
+
+	void to_json(nlohmann::json &, const Position &);
+	void from_json(const nlohmann::json &, Position &);
 }

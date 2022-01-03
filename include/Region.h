@@ -10,6 +10,7 @@
 
 #include "Area.h"
 #include "Direction.h"
+#include "json.hpp"
 #include "Position.h"
 #include "Resource.h"
 
@@ -67,4 +68,6 @@ namespace Game2 {
 			static std::unique_ptr<Region> generate(Game &, const Position &, size_t);
 			static std::unique_ptr<Region> generate(Game &, const Position &);
 	};
+
+	void to_json(nlohmann::json &, const Region &);
 }
