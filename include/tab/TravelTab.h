@@ -24,7 +24,7 @@ namespace Game2 {
 			void reset();
 
 		private:
-			static constexpr int ROWS = 5, COLUMNS = 5;
+			static constexpr int ROWS = 7, COLUMNS = 7;
 			static constexpr int BUTTON_COUNT = ROWS * COLUMNS;
 			AppWindow &appWindow;
 			Gtk::Grid grid;
