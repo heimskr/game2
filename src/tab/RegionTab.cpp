@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "NameGen.h"
 #include "UI.h"
+#include "tab/ExtractionsTab.h"
 #include "tab/RegionTab.h"
 #include "ui/AppWindow.h"
 #include "ui/BasicEntry.h"
@@ -75,6 +76,7 @@ namespace Game2 {
 						}
 						extraction = &appWindow.game->extract(*area, resource_name, chosen, minimum);
 						extractionIter = std::next(appWindow.game->extractions.end(), -1);
+						appWindow.extractionsTab->reset();
 					});
 					appWindow.dialog->show();
 				});
