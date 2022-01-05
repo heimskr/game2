@@ -21,14 +21,19 @@ namespace Game2 {
 
 			Gtk::Widget & getWidget() override { return grid; }
 			Glib::ustring getName() override { return "Travel"; }
+			void onFocus() override;
+			void onBlur() override;
 			void reset();
 
 		private:
-			static constexpr int ROWS = 7, COLUMNS = 7;
-			static constexpr int BUTTON_COUNT = ROWS * COLUMNS;
+			int rows = 7, columns = 7;
+			int buttonCount() const { return rows * columns; }
+
+			std::unique_ptr<Gtk::Button> zoomOutButton, zoomInButton;
 			AppWindow &appWindow;
 			Gtk::Grid grid;
-			Gtk::Button buttons[BUTTON_COUNT];
+			std::unique_ptr<Gtk::Button[]> buttons;
+			size_t buttonsLength = 0;
 			Position getPosition(Region &, int row, int column);
 	};
 }

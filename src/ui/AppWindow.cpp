@@ -153,7 +153,6 @@ namespace Game2 {
 			if (auto *udialog = dynamic_cast<UpdatingDialog *>(dialog.get()))
 				udialog->updateData();
 
-		    travelTab->reset();
 		 inventoryTab->update();
 		    regionTab->update();
 		conversionTab->update();
