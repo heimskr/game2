@@ -42,8 +42,8 @@ namespace Game2 {
 		add(Resource(this, "Fish").setBasePrice(5.).addTypes("living", "centrifugable"));
 		add(Resource(this, "Flour").setBasePrice(0.52).addTypes("ingredient"));
 		add(Resource(this, "Glass").setBasePrice(1.));
-		add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "food").add(Processor::Type::Fermenter, {0.1, "Mead"}));
-		add(Resource(this, "Hops").setBasePrice(0.4).addTypes("farmable").add(Processor::Type::Fermenter, {0.1, "Beer"}));
+		add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "fermentable", "food").add(Processor::Type::Fermenter, {0.1, "Mead"}));
+		add(Resource(this, "Hops").setBasePrice(0.4).addTypes("farmable", "fermentable").add(Processor::Type::Fermenter, {0.1, "Beer"}));
 		add(Resource(this, "Human").setBasePrice(9999.).addTypes("alive", "sapient"));
 		add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron", "smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
 		add(Resource(this, "Lignin").setBasePrice(10.0).addTypes("molecule", "chemical", "electrolyzable"));
@@ -51,10 +51,12 @@ namespace Game2 {
 		add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Microchip").setBasePrice(300.).addTypes("rare spawnable"));
 		add(Resource(this, "Plastic").setBasePrice(2.5));
+		add(Resource(this, "Potato").setBasePrice(0.6).addTypes("farmable", "fermentable", "food").add(Processor::Type::Fermenter, {0.1, "Vodka"}));
 		add(Resource(this, "Rum").setBasePrice(20.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Sand").setBasePrice(0.6).addTypes("smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.25, "Glass"}));
 		add(Resource(this, "Stone").setBasePrice(0.1).setDefaultExtractionRate(0.5).addTypes("centrifugable"));
-		add(Resource(this, "Sugarcane").setBasePrice(0.7).addTypes("farmable", "food", "centrifugable").add(Processor::Type::Fermenter, {0.1, "Rum"}));
+		add(Resource(this, "Sugarcane").setBasePrice(0.7).addTypes("farmable", "food", "fermentable", "centrifugable").add(Processor::Type::Fermenter, {0.1, "Rum"}));
+		add(Resource(this, "Vodka").setBasePrice(18.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid", "centrifugable", "electrolyzable"));
 		add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable", "crushable"));
 		add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural", "centrifugable").add(Processor::Type::Furnace, {1., "Charcoal"}));
