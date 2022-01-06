@@ -279,7 +279,7 @@ namespace Game2 {
 			{"size", region.size},
 			{"money", region.money},
 			{"greed", region.greed},
-			{"areas", {}},
+			{"areas", std::vector<nlohmann::json>()},
 		};
 
 		for (const auto &[name, area]: region.areas)

@@ -457,7 +457,7 @@ namespace Game2 {
 
 	void to_json(nlohmann::json &json, const Game &game) {
 		json = {
-			{"regions", {}},
+			{"regions", std::vector<nlohmann::json>()},
 			{"money", game.money},
 			{"inventory", game.inventory},
 			{"craftingInventory", game.craftingInventory},
