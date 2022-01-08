@@ -32,6 +32,7 @@ namespace Game2 {
 
 	void Game::addResources() {
 		add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food", "centrifugable").add(Processor::Type::Fermenter, {0.1, "Cider"}));
+		add(Resource(this, "Barley").setBasePrice(0.4).addTypes("farmable", "fermentable").add(Processor::Type::Fermenter, {0.1, "Whiskey"}));
 		add(Resource(this, "Beer").setBasePrice(20.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Blood").setBasePrice(10.).addTypes("liquid", "electrolyzable"));
 		add(Resource(this, "Cellulose").setBasePrice(1.0).addTypes("molecule", "chemical", "electrolyzable"));
@@ -59,6 +60,7 @@ namespace Game2 {
 		add(Resource(this, "Vodka").setBasePrice(18.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid", "centrifugable", "electrolyzable"));
 		add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable", "crushable"));
+		add(Resource(this, "Whiskey").setBasePrice(20.).addTypes("drink", "alcohol", "liquid"));
 		add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural", "centrifugable").add(Processor::Type::Furnace, {1., "Charcoal"}));
 		add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermentable"));
 
